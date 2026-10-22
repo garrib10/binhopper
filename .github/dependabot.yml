@@ -42,6 +42,10 @@ updates:
           - "@vitest/*"
       npm-minor-and-patch:
         update-types: ["minor", "patch"]
+    # @types/node majors track the Node version CI runs (24). Bump both together by hand.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions versions used in .github/workflows/ci.yml
   - package-ecosystem: "github-actions"

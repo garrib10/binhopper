@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>You, desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1000px; box-sizing: border-box; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif">
+<header style="background: #FFFDF8; border-bottom: 1px solid #DDD6C8">
+<div style="max-width: 1360px; margin: 0 auto; padding: 14px 2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px">
+<div style="display: flex; align-items: center; gap: 8px; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 24px; letter-spacing: 0.02em; text-transform: uppercase"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D2451E" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="2.5"></circle></svg>Spindle</div>
+<label style="flex: 1 1 320px; display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 12px; background: #F3EFE6; border: 1px solid #CFC7B7">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1814" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search records</span>
+<input type="search" placeholder="Artist, album, label…" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 15px; color: #1B1814">
+</label>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px">
+<a href="DesktopSearch.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 10px; color: #4A443B; font-size: 14px; font-weight: 600; text-decoration: none">Search</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 10px; color: #4A443B; font-size: 14px; font-weight: 600; text-decoration: none">Wishlist</a>
+<a href="Desktop.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 10px; color: #4A443B; font-size: 14px; font-weight: 600; text-decoration: none">Nearby</a>
+<a href="DesktopCollection.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 10px; color: #4A443B; font-size: 14px; font-weight: 600; text-decoration: none">Collection</a>
+</nav>
+<a href="DesktopYou.dc.html" aria-current="page" aria-label="You: account and settings" style="flex: none; width: 44px; height: 44px; border-radius: 22px; background: #E2B13C; color: #1B1814; display: flex; align-items: center; justify-content: center; font-family: Archivo, sans-serif; font-weight: 800; font-size: 15px; text-decoration: none; box-shadow: 0 0 0 3px #1B1814">JR</a>
+</div>
+</header>
+<div style="max-width: 1360px; margin: 0 auto; padding: 32px 2rem 48px; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+<aside style="flex: 1 1 240px; max-width: 300px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="flex: none; width: 56px; height: 56px; border-radius: 28px; background: #E2B13C; color: #1B1814; display: flex; align-items: center; justify-content: center; font-family: Archivo, sans-serif; font-weight: 800; font-size: 21px">JR</div>
+<div style="display: flex; flex-direction: column"><h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 36px; line-height: 1; text-transform: uppercase">You</h1><span style="font-size: 13px; color: #6B645A">crate_digger</span></div>
+</div>
+<div role="tablist" aria-orientation="vertical" aria-label="Settings sections" style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-height: 52px; padding: 8px 14px; border: 0; border-radius: 12px; background: {{t.bg}}; color: {{t.fg}}; text-align: left; cursor: pointer"><span style="font-size: 15px; font-weight: 700">{{t.label}}</span><span style="font-size: 12px; opacity: 0.8">{{t.note}}</span></button>
+</sc-for>
+</div>
+</aside>
+<main role="tabpanel" aria-label="{{tabLabel}}" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<h2 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 44px; line-height: 1; text-transform: uppercase">{{tabLabel}}</h2>
+
+<sc-if value="{{isProfile}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start">
+<section aria-labelledby="pf-h" style="display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="pf-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Profile</h3>
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 600">Username</span><input type="text" value="crate_digger" style="min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid #CFC7B7; background: #F3EFE6; font-size: 15px; color: #1B1814"></label>
+<div style="display: flex; align-items: center; gap: 12px"><div style="flex: none; width: 48px; height: 48px; border-radius: 24px; background: #E2B13C; display: flex; align-items: center; justify-content: center; font-family: Archivo, sans-serif; font-weight: 800">JR</div><button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #CFC7B7; background: transparent; color: #1B1814; font-size: 13px; font-weight: 600">Upload photo</button></div>
+<a href="Profile.dc.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 700">See my shareable profile →</a>
+</section>
+<section aria-labelledby="gn-h" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="gn-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Favorite genres</h3>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{genres}}" as="g" hint-placeholder-count="12">
+<button type="button" aria-pressed="{{g.pressed}}" onClick="{{g.toggle}}" style="min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid {{g.border}}; background: {{g.bg}}; color: {{g.fg}}; font-size: 13px; font-weight: 600; cursor: pointer">{{g.name}}</button>
+</sc-for>
+</div>
+</section>
+<section aria-labelledby="conn-h" style="display: flex; flex-direction: column; gap: 4px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="conn-h" style="margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Connected accounts</h3>
+<sc-for list="{{connections}}" as="c" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 60px; border-top: 1px solid #EFEAE0">
+<span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">{{c.name}}</span><span style="font-size: 12px; color: #6B645A">{{c.note}}</span></span>
+<button type="button" onClick="{{c.toggle}}" style="min-height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{c.action}}</button>
+</div>
+</sc-for>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isPrefs}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start">
+<section aria-labelledby="loc-h" style="display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="loc-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Location</h3>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px"><span style="font-size: 15px; font-weight: 600">Home ZIP</span><input type="text" inputmode="numeric" value="10011" style="width: 110px; min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1.5px solid #1B1814; background: #F3EFE6; font-size: 16px; font-weight: 700; color: #1B1814; text-align: center"></label>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 600">Default radius</span>
+<div role="group" aria-label="Default radius" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #E5DECF">
+<sc-for list="{{radii}}" as="r" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{r.pressed}}" onClick="{{r.pick}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{r.bg}}; color: {{r.fg}}; font-size: 14px; font-weight: 700; cursor: pointer">{{r.label}} mi</button>
+</sc-for>
+</div>
+</div>
+<label style="display: flex; align-items: center; gap: 12px; min-height: 44px"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Use current location</span><span style="font-size: 12px; color: #6B645A">Only while the app is open. Off means we use your home ZIP</span></span><input type="checkbox" style="width: 22px; height: 22px; accent-color: #1B1814"></label>
+</section>
+<section aria-labelledby="ap-h" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="ap-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Appearance</h3>
+<div role="group" aria-label="Appearance" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{looks}}" as="lk" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{lk.pressed}}" onClick="{{lk.pick}}" style="display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 8px; border-radius: 12px; border: {{lk.border}}; background: #F3EFE6; color: #1B1814; cursor: pointer">
+<span aria-hidden="true" style="height: 72px; border-radius: 8px; overflow: hidden; display: flex"><span style="flex: 1; background: {{lk.left}}; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; gap: 4px"><span style="height: 6px; width: 70%; border-radius: 3px; background: {{lk.leftBar}}"></span><span style="height: 12px; width: 50%; border-radius: 3px; background: {{lk.leftAccent}}"></span></span><span style="flex: 1; background: {{lk.right}}; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; gap: 4px"><span style="height: 6px; width: 70%; border-radius: 3px; background: {{lk.rightBar}}"></span><span style="height: 12px; width: 50%; border-radius: 3px; background: {{lk.rightAccent}}"></span></span></span>
+<span style="font-size: 13px; font-weight: 700">{{lk.label}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isNotify}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start">
+<fieldset style="margin: 0; display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<legend style="padding: 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">How often</legend>
+<sc-for list="{{freq}}" as="f" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 14px; border-radius: 12px; border: {{f.border}}; background: #F3EFE6; text-align: left; color: #1B1814; cursor: pointer">
+<span aria-hidden="true" style="flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #1B1814; box-sizing: border-box; display: flex; align-items: center; justify-content: center"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{f.dot}}"></span></span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">{{f.label}}</span><span style="font-size: 12px; color: #6B645A">{{f.note}}</span></span>
+</button>
+</sc-for>
+<label style="display: flex; align-items: center; gap: 12px; min-height: 56px; margin-top: 6px"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 600">Quiet hours</span><span style="font-size: 12px; color: #6B645A">10 pm – 8 am · alerts wait until morning</span></span><input type="checkbox" checked style="width: 22px; height: 22px; accent-color: #1B1814"></label>
+</fieldset>
+<fieldset style="margin: 0; display: flex; flex-direction: column; gap: 4px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<legend style="padding: 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Notify me about</legend>
+<sc-for list="{{kinds}}" as="k" hint-placeholder-count="5">
+<label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #EFEAE0">
+<span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 600">{{k.label}}</span><span style="font-size: 12px; color: #6B645A">{{k.note}}</span></span>
+<input type="checkbox" checked="{{k.on}}" onChange="{{k.toggle}}" style="width: 22px; height: 22px; accent-color: #1B1814">
+</label>
+</sc-for>
+</fieldset>
+</div>
+</sc-if>
+
+<sc-if value="{{isPrivacy}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start">
+<section aria-labelledby="priv-h" style="display: flex; flex-direction: column; gap: 16px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="priv-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Who can see</h3>
+<sc-for list="{{privacy}}" as="p" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 600">{{p.label}}</span>
+<div role="group" aria-label="{{p.label}}" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #E5DECF">
+<sc-for list="{{p.options}}" as="o" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="min-height: 42px; border: 0; border-radius: 9px; background: {{o.bg}}; color: {{o.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{o.label}}</button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+<p style="margin: 0; font-size: 12px; color: #6B645A; line-height: 1.45">Everything starts private. Share when you're ready. Your exact location, what you paid and your collection's value are never shown to anyone.</p>
+</section>
+<section aria-labelledby="data-h" style="display: flex; flex-direction: column; gap: 4px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="data-h" style="margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Your data</h3>
+<a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; border-top: 1px solid #EFEAE0; color: #1B1814; text-decoration: none"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Export my collection</span><span style="font-size: 12px; color: #6B645A">CSV, or send to Discogs</span></span><span aria-hidden="true">→</span></a>
+<a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 60px; border-top: 1px solid #EFEAE0; color: #1B1814; text-decoration: none"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Download all my data</span><span style="font-size: 12px; color: #6B645A">Everything we store about you</span></span><span aria-hidden="true">→</span></a>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isAccount}}" hint-placeholder-val="{{false}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start">
+<section aria-labelledby="acct-h" style="display: flex; flex-direction: column; gap: 4px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="acct-h" style="margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Sign-in</h3>
+<a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-top: 1px solid #EFEAE0; color: #1B1814; text-decoration: none"><span style="flex: 1; font-size: 15px; font-weight: 600">Email</span><span style="font-size: 13px; color: #6B645A">j•••@gmail.com</span></a>
+<a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-top: 1px solid #EFEAE0; color: #1B1814; text-decoration: none"><span style="flex: 1; font-size: 15px; font-weight: 600">Sign-in method</span><span style="font-size: 13px; color: #6B645A">Sign in with Apple</span></a>
+<a href="#" style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-top: 1px solid #EFEAE0; color: #1B1814; text-decoration: none"><span style="flex: 1; font-size: 15px; font-weight: 600">Password &amp; security</span><span style="font-size: 13px; color: #6B645A">2-step on</span></a>
+<button type="button" style="margin-top: 12px; min-height: 48px; border-radius: 12px; border: 1.5px solid #1B1814; background: transparent; color: #1B1814; font-size: 15px; font-weight: 700">Sign out</button>
+</section>
+<div style="display: flex; flex-direction: column; gap: 18px">
+<section aria-labelledby="help-h" style="display: flex; flex-direction: column; gap: 4px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h3 id="help-h" style="margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Help</h3>
+<a href="#" style="display: flex; align-items: center; min-height: 52px; border-top: 1px solid #EFEAE0; color: #1B1814; font-size: 15px; font-weight: 600; text-decoration: none">Help &amp; FAQ</a>
+<a href="#" style="display: flex; align-items: center; min-height: 52px; border-top: 1px solid #EFEAE0; color: #1B1814; font-size: 15px; font-weight: 600; text-decoration: none">Suggest a record shop</a>
+<a href="#" style="display: flex; align-items: center; min-height: 52px; border-top: 1px solid #EFEAE0; color: #1B1814; font-size: 15px; font-weight: 600; text-decoration: none">Send feedback</a>
+</section>
+<section aria-labelledby="dz-h" style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E8C4B8">
+<h3 id="dz-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #A12A1C">Delete account</h3>
+<sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}">
+<p style="margin: 0; font-size: 13px; color: #4A443B; line-height: 1.5">Permanently remove your account and everything in it.</p>
+<button type="button" onClick="{{askDelete}}" style="align-self: flex-start; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A12A1C; background: transparent; color: #A12A1C; font-size: 14px; font-weight: 700; cursor: pointer">Delete account…</button>
+</sc-if>
+<sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
+<div role="alertdialog" aria-labelledby="del-h" style="display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 12px; background: #FBE3D9; color: #5A1E0B">
+<strong id="del-h" style="font-size: 15px">Delete your account?</strong>
+<p style="margin: 0; font-size: 13px; line-height: 1.5">This permanently removes your collection, wishlist, alerts and holds. Export your collection first if you want to keep it.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{goPrivacy}}" style="min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #A12A1C; background: transparent; color: #5A1E0B; font-size: 14px; font-weight: 700; cursor: pointer">Export first</button>
+<button type="button" onClick="{{cancelDelete}}" style="min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #CFC7B7; background: #FFFDF8; color: #1B1814; font-size: 14px; font-weight: 700; cursor: pointer">Keep account</button>
+<button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 12px; border: 0; background: #A12A1C; color: #FFFFFF; font-size: 14px; font-weight: 700">Delete forever</button>
+</div>
+</div>
+</sc-if>
+</section>
+</div>
+</div>
+</sc-if>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"startTab":{"editor":"enum","options":["profile","prefs","notify","privacy","account"],"default":"profile"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: null,
+      radius: 25,
+      look: 'system',
+      freq: 'instant',
+      kinds: { stock: true, price: true, store: true, hold: true, rsd: false },
+      genres: { Rock: true, Jazz: true, 'Soul & Funk': true },
+      conn: { discogs: true, spotify: false, apple: false },
+      priv: { profile: 'private', collection: 'private', wishlist: 'private' },
+      confirming: false
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const tab = s.tab || this.props.startTab || 'profile';
+    const seg = (on) => ({ pressed: on ? 'true' : 'false', bg: on ? '#1B1814' : 'transparent', fg: on ? '#F3EFE6' : '#1B1814' });
+    const pill = (on) => ({ pressed: on ? 'true' : 'false', bg: on ? '#1B1814' : '#FFFDF8', fg: on ? '#F3EFE6' : '#1B1814', border: on ? '#1B1814' : '#CFC7B7' });
+    const pal = { light: ['#F3EFE6', '#1B1814', '#D2451E'], dark: ['#1E0B0F', '#F4E9D8', '#E8B23A'] };
+    const tabDefs = [
+      ['profile', 'Profile', 'Name, genres, connected apps'],
+      ['prefs', 'Settings', 'Location, radius, appearance'],
+      ['notify', 'Notifications', 'Alerts and how often'],
+      ['privacy', 'Privacy', 'Who sees what, your data'],
+      ['account', 'Account', 'Sign-in, help, delete']
+    ];
+    const conns = [
+      { k: 'discogs', name: 'Discogs', on: 'Synced: collection and wantlist', off: 'Import your collection and wantlist' },
+      { k: 'spotify', name: 'Spotify', on: 'Previews open in Spotify', off: 'Preview albums before you buy' },
+      { k: 'apple', name: 'Apple Music', on: 'Previews open in Apple Music', off: 'Preview albums before you buy' }
+    ];
+    const freqs = [
+      { k: 'instant', label: 'Instantly', note: 'Best for in-demand records' },
+      { k: 'digest', label: 'Daily digest', note: 'One summary each evening' },
+      { k: 'weekly', label: 'Weekly', note: 'Sunday roundup' }
+    ];
+    const kinds = [
+      { k: 'stock', label: 'Wishlist in stock', note: 'Within your radius' },
+      { k: 'price', label: 'Price drops', note: 'Below your alert price' },
+      { k: 'store', label: 'Followed stores', note: 'New arrivals' },
+      { k: 'hold', label: 'Holds & orders', note: 'Reminders and shipping' },
+      { k: 'rsd', label: 'Record Store Day', note: 'Lists and allocations' }
+    ];
+    const privItems = [['profile', 'My profile'], ['collection', 'My collection'], ['wishlist', 'My wishlist']];
+    const privOpts = [['public', 'Everyone'], ['friends', 'Friends'], ['private', 'Only me']];
+    return {
+      tabs: tabDefs.map(([k, label, note]) => ({
+        label: label,
+        note: note,
+        selected: k === tab ? 'true' : 'false',
+        bg: k === tab ? '#1B1814' : 'transparent',
+        fg: k === tab ? '#F3EFE6' : '#1B1814',
+        pick: () => this.setState({ tab: k, confirming: false })
+      })),
+      tabLabel: tabDefs.find(([k]) => k === tab)[1],
+      isProfile: tab === 'profile',
+      isPrefs: tab === 'prefs',
+      isNotify: tab === 'notify',
+      isPrivacy: tab === 'privacy',
+      isAccount: tab === 'account',
+      genres: ['Rock', 'Jazz', 'Soul & Funk', 'Hip-Hop', 'Electronic', 'Folk', 'Country', 'Reggae', 'Classical', 'Metal', 'Latin', 'Blues'].map((g) => {
+        const on = !!s.genres[g];
+        return { ...pill(on), name: g, toggle: () => this.setState({ genres: { ...s.genres, [g]: !on } }) };
+      }),
+      connections: conns.map((c) => {
+        const on = !!s.conn[c.k];
+        return {
+          name: c.name,
+          note: on ? c.on : c.off,
+          action: on ? 'Disconnect' : 'Connect',
+          bg: on ? 'transparent' : '#1B1814',
+          fg: on ? '#1B1814' : '#F3EFE6',
+          border: on ? '#CFC7B7' : '#1B1814',
+          toggle: () => this.setState({ conn: { ...s.conn, [c.k]: !on } })
+        };
+      }),
+      radii: [10, 25, 50, 100].map((r) => ({ ...seg(r === s.radius), label: String(r), pick: () => this.setState({ radius: r }) })),
+      looks: [
+        { k: 'light', label: 'Light', l: 'light', r: 'light' },
+        { k: 'dark', label: 'Dark', l: 'dark', r: 'dark' },
+        { k: 'system', label: 'Match system', l: 'light', r: 'dark' }
+      ].map((o) => {
+        const on = o.k === s.look;
+        return {
+          label: o.label,
+          pressed: on ? 'true' : 'false',
+          border: on ? '2px solid #1B1814' : '1px solid #E5DECF',
+          left: pal[o.l][0], leftBar: pal[o.l][1], leftAccent: pal[o.l][2],
+          right: pal[o.r][0], rightBar: pal[o.r][1], rightAccent: pal[o.r][2],
+          pick: () => this.setState({ look: o.k })
+        };
+      }),
+      freq: freqs.map((f) => ({
+        ...f,
+        pressed: f.k === s.freq ? 'true' : 'false',
+        dot: f.k === s.freq ? '#1B1814' : 'transparent',
+        border: f.k === s.freq ? '2px solid #1B1814' : '1px solid #E5DECF',
+        pick: () => this.setState({ freq: f.k })
+      })),
+      kinds: kinds.map((k) => ({ ...k, on: !!s.kinds[k.k], toggle: () => this.setState({ kinds: { ...s.kinds, [k.k]: !s.kinds[k.k] } }) })),
+      privacy: privItems.map(([k, label]) => ({
+        label: label,
+        options: privOpts.map(([v, l]) => ({ ...seg(s.priv[k] === v), label: l, pick: () => this.setState({ priv: { ...s.priv, [k]: v } }) }))
+      })),
+      confirming: s.confirming,
+      notConfirming: !s.confirming,
+      askDelete: () => this.setState({ confirming: true }),
+      cancelDelete: () => this.setState({ confirming: false }),
+      goPrivacy: () => this.setState({ tab: 'privacy', confirming: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

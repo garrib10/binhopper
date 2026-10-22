@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sell or trade</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; padding: 12px 20px 10px; display: flex; flex-direction: column; gap: 10px">
+<a href="Owned.dc.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; gap: 4px; color: #1B1814; font-size: 14px; font-weight: 600; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Your copy</a>
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 40px; line-height: 1; text-transform: uppercase">Sell or trade</h1>
+<div style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 14px; background: #FFFDF8; border: 1px solid #E5DECF">
+<div style="flex: none; width: 52px; height: 52px; border-radius: 5px; background: #2F4F8A; position: relative; overflow: hidden"><div style="position: absolute; right: -16px; top: 7px; width: 38px; height: 38px; border-radius: 50%; background: #1B1814; display: flex; align-items: center; justify-content: center"><div style="width: 12px; height: 12px; border-radius: 50%; background: #F3EFE6"></div></div></div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">Kind of Blue · copy 2</span><span style="font-size: 12px; color: #6B645A">180g reissue · VG+ / VG · est. $[VALUE]</span></div>
+</div>
+<div role="group" aria-label="Option" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #E5DECF">
+<button type="button" aria-pressed="{{sellPressed}}" onClick="{{pickSell}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{sellBg}}; color: {{sellFg}}; font-size: 14px; font-weight: 700; cursor: pointer">Sell to a shop</button>
+<button type="button" aria-pressed="{{listPressed}}" onClick="{{pickList}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{listBg}}; color: {{listFg}}; font-size: 14px; font-weight: 700; cursor: pointer">List online</button>
+</div>
+</header>
+<main style="flex: 1; overflow-y: auto; padding: 4px 20px 20px; display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{isSell}}" hint-placeholder-val="{{true}}">
+<p style="margin: 0; font-size: 13px; color: #4A443B; line-height: 1.45">Shops near you that buy used records. Offers are typically cash or store credit.</p>
+<sc-for list="{{shops}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #FFFDF8; border: 1px solid #E5DECF">
+<div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 15px; font-weight: 700">{{s.name}}</span><span style="font-size: 12px; color: #6B645A">{{s.mi}}</span></div>
+<div style="font-size: 12px; color: #6B645A">{{s.terms}}</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" style="min-height: 44px; border-radius: 10px; border: 1px solid #CFC7B7; background: transparent; color: #1B1814; font-size: 13px; font-weight: 600">Mark for trade</button>
+<button type="button" style="min-height: 44px; border-radius: 10px; border: 0; background: #1B1814; color: #F3EFE6; font-size: 13px; font-weight: 700">Ask for an offer</button>
+</div>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{isList}}" hint-placeholder-val="{{false}}">
+<p style="margin: 0; font-size: 13px; color: #4A443B; line-height: 1.45">We prefill the listing from your copy's pressing and condition. You finish it on the seller's site.</p>
+<sc-for list="{{markets}}" as="m" hint-placeholder-count="2">
+<a href="#" style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; background: #FFFDF8; border: 1px solid #E5DECF; color: #1B1814; text-decoration: none">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{m.name}}</span><span style="font-size: 12px; color: #6B645A">{{m.note}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B645A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 11 13"></path><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>
+</a>
+</sc-for>
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 12px; background: #FFFDF8; border: 1.5px solid #1B1814">
+<span style="font-size: 11px; font-weight: 600; color: #6B645A">Your asking price</span>
+<input type="text" value="$[PRICE]" style="border: 0; outline: none; background: transparent; padding: 0; font-size: 18px; font-weight: 700; color: #1B1814">
+</label>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: 'sell' };
+  }
+  renderVals() {
+    const sell = this.state.mode === 'sell';
+    return {
+      isSell: sell,
+      isList: !sell,
+      sellPressed: sell ? 'true' : 'false',
+      listPressed: sell ? 'false' : 'true',
+      sellBg: sell ? '#1B1814' : 'transparent',
+      sellFg: sell ? '#F3EFE6' : '#1B1814',
+      listBg: sell ? 'transparent' : '#1B1814',
+      listFg: sell ? '#1B1814' : '#F3EFE6',
+      pickSell: () => this.setState({ mode: 'sell' }),
+      pickList: () => this.setState({ mode: 'list' }),
+      shops: [
+        { name: 'Second Pressing', mi: '8.7 mi', terms: 'Buys used jazz & soul · walk-ins Tue–Thu' },
+        { name: 'Dead Wax Exchange', mi: '44 mi', terms: 'Trade credit +20% over cash' },
+        { name: 'Spin Cycle Records', mi: '3.2 mi', terms: 'Buys by appointment' }
+      ],
+      markets: [
+        { name: 'Discogs Marketplace', note: 'Prefilled with exact pressing and grade' },
+        { name: 'eBay', note: 'Prefilled title, photos and condition' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

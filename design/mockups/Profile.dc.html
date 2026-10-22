@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shareable profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; background: #1B1814; color: #F3EFE6; padding: 12px 20px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<a href="Collection.dc.html" aria-label="Back to collection" style="width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; color: #F3EFE6"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></a>
+<span style="font-size: 12px; font-weight: 600; color: #B5AC9B">Preview: what friends see</span>
+</div>
+<div style="display: flex; align-items: center; gap: 14px">
+<div style="flex: none; width: 64px; height: 64px; border-radius: 32px; background: #E2B13C; color: #1B1814; display: flex; align-items: center; justify-content: center; font-family: Archivo, sans-serif; font-weight: 800; font-size: 26px">JR</div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 28px; text-transform: uppercase">crate_digger</span><span style="font-size: 13px; color: #D8D1C3">Rock · Jazz · Soul · digging since 2019</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 12px; border: 0; background: #F3EFE6; color: #1B1814; font-size: 14px; font-weight: 700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 9l5-5 5 5"></path><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"></path></svg>Share profile</button>
+<a href="You.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; border: 1px solid #6B645A; color: #F3EFE6; font-size: 14px; font-weight: 700; text-decoration: none">Privacy</a>
+</div>
+</header>
+<div role="group" aria-label="Show" style="flex: none; margin: 14px 20px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #E5DECF">
+<button type="button" aria-pressed="{{colPressed}}" onClick="{{showCol}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{colBg}}; color: {{colFg}}; font-size: 14px; font-weight: 700; cursor: pointer">Collection</button>
+<button type="button" aria-pressed="{{giftPressed}}" onClick="{{showGift}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{giftBg}}; color: {{giftFg}}; font-size: 14px; font-weight: 700; cursor: pointer">Gift list</button>
+</div>
+<main style="flex: 1; overflow-y: auto; padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{isGift}}" hint-placeholder-val="{{false}}">
+<div style="font-size: 13px; line-height: 1.45; color: #4A443B; padding: 12px 14px; border-radius: 12px; background: #E5DECF">Friends see your wishlist without prices you've set. When someone marks a record as bought, it's hidden from others so nobody doubles up, and you won't see it.</div>
+</sc-if>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{records}}" as="r" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="aspect-ratio: 1 / 1; border-radius: 6px; background: {{r.c1}}; position: relative; overflow: hidden"><div style="position: absolute; right: -30%; top: 12%; width: 76%; height: 76%; border-radius: 50%; background: #1B1814; display: flex; align-items: center; justify-content: center"><div style="width: 30%; height: 30%; border-radius: 50%; background: {{r.c2}}"></div></div></div>
+<div style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</div>
+<sc-if value="{{r.giftable}}" hint-placeholder-val="{{false}}">
+<button type="button" style="min-height: 36px; border-radius: 8px; border: 1px solid #CFC7B7; background: transparent; color: #1B1814; font-size: 12px; font-weight: 700">I'll get this</button>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'col' };
+  }
+  renderVals() {
+    const col = this.state.tab === 'col';
+    const collection = [
+      { title: 'Rumours', c1: '#E2B13C', c2: '#D2451E' },
+      { title: 'Kind of Blue', c1: '#2F4F8A', c2: '#F3EFE6' },
+      { title: 'Random Access Memories', c1: '#8C8579', c2: '#F3EFE6' },
+      { title: 'Songs in the Key of Life', c1: '#B85C38', c2: '#E2B13C' },
+      { title: 'Remain in Light', c1: '#3E6B58', c2: '#D2451E' },
+      { title: 'Fear of Music', c1: '#4A443B', c2: '#E2B13C' }
+    ];
+    const gifts = [
+      { title: 'Purple Rain', c1: '#6B3FA0', c2: '#E2B13C' },
+      { title: 'Blue', c1: '#5B7FA6', c2: '#E2B13C' },
+      { title: 'Blonde', c1: '#C9C2B4', c2: '#D2451E' }
+    ];
+    return {
+      isGift: !col,
+      colPressed: col ? 'true' : 'false',
+      giftPressed: col ? 'false' : 'true',
+      colBg: col ? '#1B1814' : 'transparent',
+      colFg: col ? '#F3EFE6' : '#1B1814',
+      giftBg: col ? 'transparent' : '#1B1814',
+      giftFg: col ? '#1B1814' : '#F3EFE6',
+      showCol: () => this.setState({ tab: 'col' }),
+      showGift: () => this.setState({ tab: 'gift' }),
+      records: (col ? collection : gifts).map((r) => ({ ...r, giftable: !col }))
+    };
+  }
+}
+</script>
+</body>
+</html>

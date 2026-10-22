@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>No stores in range</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; padding: 16px 20px 12px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Looking for</span><span style="font-weight: 700; font-size: 16px">Blue · Joni Mitchell</span></div>
+<div style="display: flex; gap: 8px">
+<div style="width: 112px; display: flex; flex-direction: column; justify-content: center; gap: 1px; padding: 6px 12px; border-radius: 12px; background: #FFFDF8; border: 1.5px solid #1B1814"><span style="font-size: 11px; font-weight: 600; color: #6B645A">ZIP code</span><span style="font-size: 17px; font-weight: 700">10011</span></div>
+<div aria-hidden="true" style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #E5DECF">
+<span style="display: flex; align-items: center; justify-content: center; border-radius: 9px; background: #1B1814; color: #F3EFE6; font-size: 13px; font-weight: 700">10</span>
+<span style="display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">25</span>
+<span style="display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">50</span>
+<span style="display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">100</span>
+</div>
+</div>
+</header>
+<main style="flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px">
+<div aria-hidden="true" style="width: 120px; height: 120px; border-radius: 60px; border: 2px dashed #D2451E; display: flex; align-items: center; justify-content: center; margin-top: 12px"><div style="width: 16px; height: 16px; border-radius: 8px; background: #1B1814"></div></div>
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 32px; text-transform: uppercase">Nothing within 10 mi</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #4A443B; max-width: 300px">No shop near you has Blue right now, but it's closer than you think.</p>
+<a href="Stores.dc.html" style="align-self: stretch; display: flex; align-items: center; justify-content: space-between; min-height: 60px; padding: 0 16px; border-radius: 14px; background: #D2451E; color: #FFFFFF; text-decoration: none; text-align: left"><span style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Try 50 mi</span><span style="font-size: 12px">Nearest copy is 38 mi away</span></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a>
+<a href="Alert.dc.html" style="align-self: stretch; display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 14px; border: 1.5px solid #1B1814; color: #1B1814; font-size: 15px; font-weight: 700; text-decoration: none">Alert me when it's within 10 mi</a>
+<a href="Stores.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 700">See online sellers instead</a>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

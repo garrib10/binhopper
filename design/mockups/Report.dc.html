@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Report stock and review a store</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input,textarea{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; padding: 12px 20px 8px; display: flex; flex-direction: column; gap: 8px">
+<a href="Store.dc.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; gap: 4px; color: #1B1814; font-size: 14px; font-weight: 600; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Spin Cycle Records</a>
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 36px; line-height: 1; text-transform: uppercase">I'm at the shop</h1>
+<p style="margin: 0; font-size: 14px; color: #4A443B; line-height: 1.45">Your reports keep stock honest for every digger nearby.</p>
+</header>
+<main style="flex: 1; overflow-y: auto; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 18px">
+<section aria-labelledby="r-h" style="display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<h2 id="r-h" style="margin: 0; font-size: 15px; font-weight: 700">Was Rumours on the shelf?</h2>
+<div style="font-size: 12px; color: #6B645A">Listed: 180g reissue · $26 · 2 in stock · synced 6 hr ago</div>
+<div role="group" aria-label="Stock report" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{answers}}" as="a" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{a.pressed}}" onClick="{{a.pick}}" style="min-height: 56px; padding: 0 6px; border-radius: 12px; border: 1.5px solid {{a.border}}; background: {{a.bg}}; color: {{a.fg}}; font-size: 13px; font-weight: 700; line-height: 1.2; cursor: pointer">{{a.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{isDiff}}" hint-placeholder-val="{{false}}">
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 12px; border: 1px solid #CFC7B7">
+<span style="font-size: 11px; font-weight: 600; color: #6B645A">Price on the sticker</span>
+<input type="text" value="$29" style="border: 0; outline: none; background: transparent; padding: 0; font-size: 16px; font-weight: 700; color: #1B1814">
+</label>
+</sc-if>
+<sc-if value="{{isAnswered}}" hint-placeholder-val="{{false}}">
+<div style="font-size: 13px; color: #1F5A3E; padding: 10px 12px; border-radius: 10px; background: #DCEBDF">{{thanks}}</div>
+</sc-if>
+</section>
+<section aria-labelledby="rev-h" style="display: flex; flex-direction: column; gap: 10px">
+<h2 id="rev-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Rate this shop</h2>
+<div role="group" aria-label="Rating" style="display: flex; gap: 6px">
+<sc-for list="{{stars}}" as="st" hint-placeholder-count="5">
+<button type="button" aria-label="{{st.aria}}" aria-pressed="{{st.pressed}}" onClick="{{st.pick}}" style="width: 48px; height: 48px; border: 0; border-radius: 10px; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="30" height="30" viewBox="0 0 24 24" fill="{{st.fill}}" stroke="#B5862A" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"></path></svg></button>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{tags}}" as="t" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-size: 13px; font-weight: 600; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 12px; background: #FFFDF8; border: 1px solid #CFC7B7">
+<span style="font-size: 11px; font-weight: 600; color: #6B645A">Quick note (optional)</span>
+<textarea rows="3" placeholder="What's the shop like?" style="border: 0; outline: none; background: transparent; padding: 0; font-size: 14px; color: #1B1814; resize: none"></textarea>
+</label>
+</section>
+</main>
+<div style="flex: none; padding: 12px 20px 28px; background: #FFFDF8; border-top: 1px solid #DDD6C8">
+<a href="Store.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 54px; border-radius: 14px; background: #D2451E; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none">Submit</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { answer: null, rating: 4, tags: { 'Well organized': true, 'Fair prices': true } };
+  }
+  renderVals() {
+    const s = this.state;
+    const pill = (on) => ({ pressed: on ? 'true' : 'false', bg: on ? '#1B1814' : '#FFFDF8', fg: on ? '#F3EFE6' : '#1B1814', border: on ? '#1B1814' : '#CFC7B7' });
+    const thanks = {
+      yes: 'Thanks! Listing marked verified for the next few hours.',
+      no: "Thanks. We'll flag it as possibly sold and let the shop know.",
+      diff: 'Thanks. We’ll show your price until the shop confirms.'
+    };
+    return {
+      answers: [['yes', 'Yes, it’s there'], ['no', 'Not on the shelf'], ['diff', 'Different price']].map(([k, label]) => ({ ...pill(s.answer === k), label: label, pick: () => this.setState({ answer: k }) })),
+      isDiff: s.answer === 'diff',
+      isAnswered: !!s.answer,
+      thanks: s.answer ? thanks[s.answer] : '',
+      stars: [1, 2, 3, 4, 5].map((n) => ({ aria: n + (n === 1 ? ' star' : ' stars'), pressed: n === s.rating ? 'true' : 'false', fill: n <= s.rating ? '#E2B13C' : 'none', pick: () => this.setState({ rating: n }) })),
+      tags: ['Well organized', 'Fair prices', 'Great used bins', 'Helpful staff', 'Listening station'].map((t) => {
+        const on = !!s.tags[t];
+        return { ...pill(on), label: t, toggle: () => this.setState({ tags: { ...s.tags, [t]: !on } }) };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

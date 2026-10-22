@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scan a record</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #14120F; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<div style="flex: 1; position: relative; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 0; position: relative; z-index: 1">
+<a href="Collection.dc.html" aria-label="Close scanner" style="width: 44px; height: 44px; border-radius: 22px; background: rgba(243, 239, 230, 0.14); display: flex; align-items: center; justify-content: center; color: #F3EFE6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></a>
+<div role="group" aria-label="Scan mode" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(243, 239, 230, 0.14)">
+<button type="button" aria-pressed="{{bcPressed}}" onClick="{{modeBarcode}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: {{bcBg}}; color: {{bcFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Barcode</button>
+<button type="button" aria-pressed="{{cvPressed}}" onClick="{{modeCover}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: {{cvBg}}; color: {{cvFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Cover photo</button>
+</div>
+<div style="width: 44px"></div>
+</div>
+<div role="img" aria-label="Camera viewfinder" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px">
+<div style="position: relative; width: {{frameW}}; height: {{frameH}}">
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-left: 4px solid #E2B13C; border-top: 4px solid #E2B13C; border-top-left-radius: 10px"></div>
+<div aria-hidden="true" style="position: absolute; right: 0; top: 0; width: 28px; height: 28px; border-right: 4px solid #E2B13C; border-top: 4px solid #E2B13C; border-top-right-radius: 10px"></div>
+<div aria-hidden="true" style="position: absolute; left: 0; bottom: 0; width: 28px; height: 28px; border-left: 4px solid #E2B13C; border-bottom: 4px solid #E2B13C; border-bottom-left-radius: 10px"></div>
+<div aria-hidden="true" style="position: absolute; right: 0; bottom: 0; width: 28px; height: 28px; border-right: 4px solid #E2B13C; border-bottom: 4px solid #E2B13C; border-bottom-right-radius: 10px"></div>
+<div aria-hidden="true" style="position: absolute; left: 12px; right: 12px; top: 50%; height: 2px; background: #D2451E"></div>
+</div>
+<div style="color: #D8D1C3; font-size: 14px; font-weight: 600">{{hint}}</div>
+</div>
+</div>
+<section aria-labelledby="match-h" style="flex: none; background: #F3EFE6; border-radius: 22px 22px 0 0; padding: 18px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="flex: none; width: 60px; height: 60px; border-radius: 6px; background: {{c1}}; position: relative; overflow: hidden">
+<div style="position: absolute; right: -18px; top: 8px; width: 44px; height: 44px; border-radius: 50%; background: #1B1814; display: flex; align-items: center; justify-content: center"><div style="width: 14px; height: 14px; border-radius: 50%; background: {{c2}}"></div></div>
+</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Match found</div>
+<h2 id="match-h" style="margin: 0; font-size: 17px; font-weight: 700">{{title}}</h2>
+<div style="font-size: 13px; color: #6B645A">{{meta}}</div>
+</div>
+</div>
+<sc-if value="{{isDup}}" hint-placeholder-val="{{true}}">
+<div role="alert" style="display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #FBE3D9; color: #5A1E0B">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5v.5"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.4"><strong>You already own this pressing</strong><span>Your copy: VG+ media, VG sleeve. This one's sleeve is NM, so it could be an upgrade.</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<a href="Owned.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; border: 1px solid #CFC7B7; color: #1B1814; font-size: 14px; font-weight: 700; text-decoration: none">View my copy</a>
+<a href="Owned.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; background: #1B1814; color: #F3EFE6; font-size: 14px; font-weight: 700; text-decoration: none">Add as 2nd copy</a>
+</div>
+</sc-if>
+<sc-if value="{{isNew}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1F6B4A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1F6B4A"></span>Not in your collection · on your wishlist</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<a href="Stores.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; border: 1px solid #CFC7B7; color: #1B1814; font-size: 14px; font-weight: 700; text-decoration: none">Compare prices</a>
+<a href="Owned.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; background: #D2451E; color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Add to collection</a>
+</div>
+</sc-if>
+<button type="button" onClick="{{next}}" style="min-height: 44px; border: 0; background: transparent; color: #B83A17; font-size: 14px; font-weight: 700; cursor: pointer">Scan another</button>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: 'barcode', which: 0 };
+  }
+  renderVals() {
+    const bc = this.state.mode === 'barcode';
+    const scans = [
+      { title: 'Kind of Blue', meta: 'Miles Davis · 180g reissue · Columbia', c1: '#2F4F8A', c2: '#F3EFE6', dup: true },
+      { title: 'Purple Rain', meta: 'Prince · 1984 · Warner Bros.', c1: '#6B3FA0', c2: '#E2B13C', dup: false }
+    ];
+    const s = scans[this.state.which];
+    return {
+      ...s,
+      isDup: s.dup,
+      isNew: !s.dup,
+      bcPressed: bc ? 'true' : 'false',
+      cvPressed: bc ? 'false' : 'true',
+      bcBg: bc ? '#F3EFE6' : 'transparent',
+      bcFg: bc ? '#1B1814' : '#F3EFE6',
+      cvBg: bc ? 'transparent' : '#F3EFE6',
+      cvFg: bc ? '#F3EFE6' : '#1B1814',
+      frameW: bc ? '280px' : '250px',
+      frameH: bc ? '150px' : '250px',
+      hint: bc ? 'Line up the barcode on the back sleeve' : 'Fit the front cover inside the frame',
+      modeBarcode: () => this.setState({ mode: 'barcode' }),
+      modeCover: () => this.setState({ mode: 'cover' }),
+      next: () => this.setState({ which: this.state.which === 0 ? 1 : 0 })
+    };
+  }
+}
+</script>
+</body>
+</html>

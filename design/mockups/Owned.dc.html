@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your copy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input,textarea{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; display: flex; align-items: center; gap: 4px; padding: 12px 12px 4px">
+<a href="Collection.dc.html" aria-label="Back to collection" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1B1814"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></a>
+<span style="font-size: 14px; font-weight: 600">Collection</span>
+</header>
+<main style="flex: 1; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; gap: 14px; align-items: center">
+<div style="flex: none; width: 84px; height: 84px; border-radius: 6px; background: #2F4F8A; position: relative; overflow: hidden">
+<div style="position: absolute; right: -26px; top: 10px; width: 64px; height: 64px; border-radius: 50%; background: #1B1814; display: flex; align-items: center; justify-content: center"><div style="width: 20px; height: 20px; border-radius: 50%; background: #F3EFE6"></div></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 3px">
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 30px; line-height: 1; text-transform: uppercase">Kind of Blue</h1>
+<div style="font-size: 14px; font-weight: 600">Miles Davis</div>
+<div style="font-size: 12px; color: #6B645A">In your collection</div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: #1B1814; color: #F3EFE6">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #B5AC9B">Estimated value</span>
+<span style="font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 85%; font-size: 30px">$[VALUE]</span>
+</div>
+<span style="max-width: 150px; font-size: 12px; line-height: 1.4; color: #D8D1C3">From recent sales of the {{pressingName}} in {{mediaGrade}}</span>
+</div>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Which pressing?</legend>
+<sc-for list="{{pressings}}" as="p" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px; border-radius: 12px; border: {{p.border}}; background: #FFFDF8; text-align: left; cursor: pointer; color: #1B1814">
+<span aria-hidden="true" style="flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #1B1814; box-sizing: border-box; display: flex; align-items: center; justify-content: center"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{p.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 14px; font-weight: 700">{{p.name}}</span><span style="font-size: 12px; color: #6B645A">{{p.detail}}</span></span>
+</button>
+</sc-for>
+</fieldset>
+<fieldset style="margin: 0; padding: 0; border: 0">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Media condition (the vinyl)</legend>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{media}}" as="g" hint-placeholder-count="7">
+<button type="button" aria-pressed="{{g.pressed}}" aria-label="{{g.full}}" onClick="{{g.pick}}" style="min-height: 44px; padding: 0; border-radius: 10px; border: 1px solid {{g.border}}; background: {{g.bg}}; color: {{g.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{g.label}}</button>
+</sc-for>
+</div>
+</fieldset>
+<fieldset style="margin: 0; padding: 0; border: 0">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">Sleeve condition</legend>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{sleeve}}" as="g" hint-placeholder-count="7">
+<button type="button" aria-pressed="{{g.pressed}}" aria-label="{{g.full}}" onClick="{{g.pick}}" style="min-height: 44px; padding: 0; border-radius: 10px; border: 1px solid {{g.border}}; background: {{g.bg}}; color: {{g.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{g.label}}</button>
+</sc-for>
+</div>
+</fieldset>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 12px; background: #FFFDF8; border: 1px solid #CFC7B7">
+<span style="font-size: 11px; font-weight: 600; color: #6B645A">Paid</span>
+<input type="text" value="$32" style="border: 0; outline: none; background: transparent; padding: 0; font-size: 16px; font-weight: 700; color: #1B1814">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 12px; background: #FFFDF8; border: 1px solid #CFC7B7">
+<span style="font-size: 11px; font-weight: 600; color: #6B645A">Bought at</span>
+<input type="text" value="Second Pressing" style="border: 0; outline: none; background: transparent; padding: 0; font-size: 16px; font-weight: 700; color: #1B1814; min-width: 0">
+</label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 12px; background: #FFFDF8; border: 1px solid #CFC7B7">
+<span style="font-size: 11px; font-weight: 600; color: #6B645A">Notes</span>
+<textarea rows="2" style="border: 0; outline: none; background: transparent; padding: 0; font-size: 14px; color: #1B1814; resize: none">Light crackle on side B, track 2.</textarea>
+</label>
+<a href="Sell.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; border: 1px solid #CFC7B7; color: #1B1814; font-size: 14px; font-weight: 600; text-decoration: none">Sell or trade this copy</a>
+</main>
+<div style="flex: none; padding: 12px 20px 28px; background: #FFFDF8; border-top: 1px solid #DDD6C8">
+<a href="Collection.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 54px; border-radius: 14px; background: #D2451E; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none">Save my copy</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { pressing: 1, media: 'VG+', sleeve: 'VG' };
+  }
+  renderVals() {
+    const s = this.state;
+    const pressings = [
+      { name: 'Original press', detail: '1959 · Columbia · Mono' },
+      { name: '180g reissue', detail: 'Remastered · Stereo' },
+      { name: 'Mono reissue', detail: 'Audiophile edition' }
+    ];
+    const grades = [['M', 'Mint'], ['NM', 'Near Mint'], ['VG+', 'Very Good Plus'], ['VG', 'Very Good'], ['G+', 'Good Plus'], ['G', 'Good'], ['P', 'Poor']];
+    const chip = (key) => grades.map(([label, full]) => {
+      const on = s[key] === label;
+      return {
+        label: label,
+        full: full,
+        pressed: on ? 'true' : 'false',
+        bg: on ? '#1B1814' : '#FFFDF8',
+        fg: on ? '#F3EFE6' : '#1B1814',
+        border: on ? '#1B1814' : '#CFC7B7',
+        pick: () => this.setState({ [key]: label })
+      };
+    });
+    return {
+      pressingName: pressings[s.pressing].name.toLowerCase(),
+      mediaGrade: s.media,
+      pressings: pressings.map((p, i) => ({
+        ...p,
+        pressed: i === s.pressing ? 'true' : 'false',
+        dot: i === s.pressing ? '#1B1814' : 'transparent',
+        border: i === s.pressing ? '2px solid #1B1814' : '1px solid #E5DECF',
+        pick: () => this.setState({ pressing: i })
+      })),
+      media: chip('media'),
+      sleeve: chip('sleeve')
+    };
+  }
+}
+</script>
+</body>
+</html>

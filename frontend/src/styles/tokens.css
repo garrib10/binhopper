@@ -1,0 +1,123 @@
+/*
+ * Binhopper design tokens: the single source for colors, type, radii and spacing.
+ * Values come from the mockups in design/mockups (light = original theme,
+ * dark = "Night Session"). Components use these variables only; never hard-code colors.
+ *
+ * Theme selection: <html data-theme="light|dark">. With no data-theme, the
+ * phone or computer setting decides ("Match system").
+ */
+
+:root {
+  /* Type */
+  --font-display: 'Archivo', system-ui, sans-serif; /* used condensed: font-stretch 75% */
+  --font-body: 'Inter', system-ui, sans-serif;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --display-sm: 26px;
+  --display-md: 40px;
+  --display-lg: 56px;
+
+  /* Shape and spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --touch-target: 44px;
+
+  /* Light theme (default) */
+  --color-bg: #f3efe6;
+  --color-surface: #fffdf8;
+  --color-surface-sunken: #e5decf; /* segmented controls */
+  --color-chip-bg: #efeae0; /* tags on cards */
+  --color-text: #1b1814;
+  --color-text-muted: #6b645a;
+  --color-text-subtle: #4a443b;
+  --color-border: #e5decf;
+  --color-border-strong: #cfc7b7;
+  --color-inverse-bg: #1b1814; /* selected segment, dark buttons */
+  --color-inverse-text: #f3efe6;
+  --color-accent: #d2451e; /* primary buttons, map pins */
+  --color-on-accent: #ffffff;
+  --color-link: #b83a17;
+  --color-heart: #d2451e;
+  --color-brass: #e2b13c;
+  --color-ok: #1f6b4a;
+  --color-ok-bg: #dcebdf;
+  --color-ok-text: #1f5a3e;
+  --color-warn-bg: #fbf0d0;
+  --color-warn-text: #4a3a0b;
+  --color-danger: #a12a1c;
+  --color-danger-bg: #fbe3d9;
+  --color-vinyl: #1b1814; /* the record disc on cover tiles */
+  color-scheme: light;
+}
+
+/* Dark theme: "Night Session" (oxblood + brass) */
+:root[data-theme='dark'] {
+  --color-bg: #1e0b0f;
+  --color-surface: #2c1318;
+  --color-surface-sunken: #2c1318;
+  --color-chip-bg: #3a1c22;
+  --color-text: #f4e9d8;
+  --color-text-muted: #cdb8a4;
+  --color-text-subtle: #e0cfbf;
+  --color-border: #45232b;
+  --color-border-strong: #5a3440;
+  --color-inverse-bg: #f4e9d8;
+  --color-inverse-text: #2a0f14;
+  --color-accent: #e8b23a; /* brass replaces red-orange in the dark */
+  --color-on-accent: #2a0f14;
+  --color-link: #e8b23a;
+  --color-heart: #f06a4a;
+  --color-brass: #e8b23a;
+  --color-ok: #9bd9b0;
+  --color-ok-bg: #1e3a2b;
+  --color-ok-text: #a8e3bc;
+  --color-warn-bg: #3a2e12;
+  --color-warn-text: #f3d9a0;
+  --color-danger: #f08a78;
+  --color-danger-bg: #3a1c22;
+  --color-vinyl: #0b0405;
+  color-scheme: dark;
+}
+
+/* "Match system": same dark values when the device prefers dark and no theme is forced */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg: #1e0b0f;
+    --color-surface: #2c1318;
+    --color-surface-sunken: #2c1318;
+    --color-chip-bg: #3a1c22;
+    --color-text: #f4e9d8;
+    --color-text-muted: #cdb8a4;
+    --color-text-subtle: #e0cfbf;
+    --color-border: #45232b;
+    --color-border-strong: #5a3440;
+    --color-inverse-bg: #f4e9d8;
+    --color-inverse-text: #2a0f14;
+    --color-accent: #e8b23a;
+    --color-on-accent: #2a0f14;
+    --color-link: #e8b23a;
+    --color-heart: #f06a4a;
+    --color-brass: #e8b23a;
+    --color-ok: #9bd9b0;
+    --color-ok-bg: #1e3a2b;
+    --color-ok-text: #a8e3bc;
+    --color-warn-bg: #3a2e12;
+    --color-warn-text: #f3d9a0;
+    --color-danger: #f08a78;
+    --color-danger-bg: #3a1c22;
+    --color-vinyl: #0b0405;
+    color-scheme: dark;
+  }
+}

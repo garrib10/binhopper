@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Crate-digging route</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; padding: 12px 20px 12px; display: flex; flex-direction: column; gap: 8px">
+<a href="Wishlist.dc.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; gap: 4px; color: #1B1814; font-size: 14px; font-weight: 600; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Wishlist</a>
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 38px; line-height: 1; text-transform: uppercase">Crate dig</h1>
+<div style="font-size: 14px; color: #4A443B">{{summary}}</div>
+<div role="group" aria-label="Route length" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #E5DECF">
+<button type="button" aria-pressed="{{shortPressed}}" onClick="{{pickShort}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{shortBg}}; color: {{shortFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Fewest stops</button>
+<button type="button" aria-pressed="{{mostPressed}}" onClick="{{pickMost}}" style="min-height: 44px; border: 0; border-radius: 9px; background: {{mostBg}}; color: {{mostFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Most wishlist finds</button>
+</div>
+</header>
+<div role="img" aria-label="Route map with {{stopCount}} stops" style="flex: none; margin: 0 20px; height: 200px; border-radius: 16px; overflow: hidden; position: relative; background: #E6E0D3; border: 1px solid #D8D0BF">
+<div aria-hidden="true" style="position: absolute; inset: 0; background-image: linear-gradient(#DAD3C3 1px, transparent 1px), linear-gradient(90deg, #DAD3C3 1px, transparent 1px); background-size: 28px 28px"></div>
+<svg aria-hidden="true" width="100%" height="100%" viewBox="0 0 350 200" preserveAspectRatio="none" style="position: absolute; inset: 0"><path d="{{path}}" fill="none" stroke="#D2451E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 9"></path></svg>
+<div aria-hidden="true" style="position: absolute; left: 40px; top: 150px; width: 16px; height: 16px; margin-left: -8px; margin-top: -8px; border-radius: 50%; background: #1B1814; border: 3px solid #FFFDF8; box-sizing: border-box"></div>
+<sc-for list="{{stops}}" as="p" hint-placeholder-count="3">
+<div aria-hidden="true" style="position: absolute; left: {{p.left}}; top: {{p.top}}; width: 26px; height: 26px; margin-left: -13px; margin-top: -13px; border-radius: 13px; background: #D2451E; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFDF8; box-sizing: border-box">{{p.n}}</div>
+</sc-for>
+</div>
+<main style="flex: 1; overflow-y: auto; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 0">
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{stops}}" as="s" hint-placeholder-count="3">
+<li style="display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #FFFDF8; border: 1px solid #E5DECF">
+<div style="flex: none; width: 26px; height: 26px; border-radius: 13px; background: #D2451E; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{s.n}}</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<a href="Store.dc.html" style="font-weight: 700; font-size: 15px; color: #1B1814; text-decoration: none">{{s.name}}</a>
+<div style="font-size: 12px; color: #6B645A">{{s.leg}} · {{s.hours}}</div>
+<div style="font-size: 13px; font-weight: 600; color: #1F5A3E">{{s.finds}}</div>
+</div>
+</li>
+</sc-for>
+</ol>
+</main>
+<div style="flex: none; padding: 12px 20px 28px; background: #FFFDF8; border-top: 1px solid #DDD6C8">
+<a href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 54px; border-radius: 14px; background: #D2451E; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 21 3l-8 18-2-8z"></path></svg>Start in Maps</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: 'short' };
+  }
+  renderVals() {
+    const short = this.state.mode === 'short';
+    const a = { name: 'Spin Cycle Records', hours: 'Open 11–9', finds: 'Rumours, Purple Rain', x: 120, y: 95, k: 2 };
+    const b = { name: 'Second Pressing', hours: 'Open 12–8', finds: 'Blue, Purple Rain (cheaper)', x: 215, y: 135, k: 2 };
+    const c = { name: 'Groove Merchant', hours: 'Open 10–7', finds: 'Blonde', x: 305, y: 45, k: 1 };
+    const raw = short ? [a, b] : [a, b, c];
+    const legs = short ? ['3.2 mi from you', '+5.5 mi'] : ['3.2 mi from you', '+5.5 mi', '+13 mi'];
+    const stops = raw.map((s, i) => ({
+      ...s,
+      n: String(i + 1),
+      leg: legs[i],
+      left: Math.round((s.x / 350) * 100) + '%',
+      top: Math.round((s.y / 200) * 100) + '%'
+    }));
+    const finds = short ? 3 : 4;
+    const miles = short ? '8.7' : '21.7';
+    return {
+      stops: stops,
+      stopCount: String(stops.length),
+      path: 'M 40 150 ' + raw.map((s) => 'L ' + s.x + ' ' + s.y).join(' '),
+      summary: stops.length + ' shops · ' + miles + ' mi · ' + finds + ' of your wishlist records',
+      shortPressed: short ? 'true' : 'false',
+      mostPressed: short ? 'false' : 'true',
+      shortBg: short ? '#1B1814' : 'transparent',
+      shortFg: short ? '#F3EFE6' : '#1B1814',
+      mostBg: short ? 'transparent' : '#1B1814',
+      mostFg: short ? '#1B1814' : '#F3EFE6',
+      pickShort: () => this.setState({ mode: 'short' }),
+      pickMost: () => this.setState({ mode: 'most' })
+    };
+  }
+}
+</script>
+</body>
+</html>

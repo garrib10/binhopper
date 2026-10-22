@@ -1,0 +1,56 @@
+export type Freshness = 'verified' | 'current' | 'out_of_date' | 'reported_missing';
+
+export interface NearbyStore {
+  listing_id: number;
+  store_id: number;
+  store_name: string;
+  area: string | null;
+  distance_mi: number;
+  pressing_id: number;
+  pressing_note: string | null;
+  price: number;
+  condition: string;
+  quantity: number;
+  freshness: Freshness;
+  last_updated_at: string | null;
+}
+
+export interface NearbyStockResponse {
+  album_id: number;
+  zip: string;
+  radius_mi: number;
+  stores: NearbyStore[];
+  nearest_outside_mi: number | null;
+}
+
+export const RADII = [10, 25, 50, 100] as const;
+export type Radius = (typeof RADII)[number];
+
+export function isValidZip(zip: string): boolean {
+  return /^\d{5}$/.test(zip);
+}
+
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+export async function fetchNearbyStock(
+  albumId: number,
+  zip: string,
+  radius: Radius,
+  signal?: AbortSignal,
+): Promise<NearbyStockResponse> {
+  const params = new URLSearchParams({ zip, radius: String(radius) });
+  const res = await fetch(`/api/albums/${albumId}/stock?${params}`, { signal });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    const detail = typeof body.detail === 'string' ? body.detail : 'Something went wrong';
+    throw new ApiError(res.status, detail);
+  }
+  return res.json();
+}

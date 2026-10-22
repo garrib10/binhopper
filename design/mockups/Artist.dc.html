@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Artist page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<main style="flex: 1; overflow-y: auto; display: flex; flex-direction: column">
+<div style="position: relative; height: 230px; flex: none; background: #2B2620; display: flex; align-items: center; justify-content: center">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: #B5AC9B">
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="m21 16-5-5-8 8"></path></svg>
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase">Artist photo · from catalog API</span>
+</div>
+<a href="Main.dc.html" aria-label="Back to search" style="position: absolute; left: 12px; top: 12px; width: 44px; height: 44px; border-radius: 22px; background: rgba(243, 239, 230, 0.92); display: flex; align-items: center; justify-content: center; color: #1B1814"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></a>
+</div>
+<div style="padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 40px; line-height: 1; text-transform: uppercase">Fleetwood Mac</h1>
+<div style="font-size: 13px; color: #6B645A">Rock · Pop Rock · Formed in London, 1967</div>
+</div>
+<div style="display: flex; gap: 8px">
+<button type="button" aria-pressed="true" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border-radius: 12px; border: 0; background: #1B1814; color: #F3EFE6; font-size: 14px; font-weight: 700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"></path></svg>Following</button>
+<a href="Stores.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 12px; border: 1px solid #CFC7B7; color: #1B1814; font-size: 14px; font-weight: 600; text-decoration: none">7 records nearby</a>
+</div>
+<section aria-labelledby="bio-h" style="display: flex; flex-direction: column; gap: 6px">
+<h2 id="bio-h" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6B645A">About</h2>
+<p style="margin: 0; font-size: 14px; line-height: 1.5">British-American rock band that began as a London blues group. After Lindsey Buckingham and Stevie Nicks joined in 1974, they moved to a polished pop-rock sound, and <em>Rumours</em> became one of the best-selling albums ever made.</p>
+<button type="button" style="align-self: flex-start; min-height: 44px; padding: 0; border: 0; background: transparent; color: #B83A17; font-size: 13px; font-weight: 700">Read full bio</button>
+</section>
+<section aria-labelledby="disc-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 id="disc-h" style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 24px; text-transform: uppercase">Discography</h2>
+<span style="font-size: 12px; font-weight: 600; color: #6B645A">Oldest first</span>
+</div>
+<div role="group" aria-label="Release type" style="display: flex; gap: 8px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-size: 13px; font-weight: 600; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+<sc-for list="{{albums}}" as="al" hint-placeholder-count="6">
+<a href="Album.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 12px; background: #FFFDF8; border: 1px solid #E5DECF; text-decoration: none; color: #1B1814">
+<div style="flex: none; width: 52px; height: 52px; border-radius: 5px; background: {{al.c1}}; position: relative; overflow: hidden">
+<div style="position: absolute; right: -16px; top: 7px; width: 38px; height: 38px; border-radius: 50%; background: #1B1814; display: flex; align-items: center; justify-content: center"><div style="width: 12px; height: 12px; border-radius: 50%; background: {{al.c2}}"></div></div>
+</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-weight: 700; font-size: 15px">{{al.title}}</div>
+<div style="font-size: 12px; color: #6B645A">{{al.year}} · {{al.kind}}</div>
+</div>
+<span style="flex: none; padding: 3px 8px; border-radius: 6px; background: {{al.badgeBg}}; color: {{al.badgeFg}}; font-size: 11px; font-weight: 700">{{al.badge}}</span>
+</a>
+</sc-for>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'Studio' };
+  }
+  renderVals() {
+    const tab = this.state.tab;
+    const all = {
+      Studio: [
+        { title: 'Then Play On', year: '1969', n: 0, c1: '#7A6A4F', c2: '#E2B13C' },
+        { title: 'Fleetwood Mac', year: '1975', n: 1, c1: '#3E6B58', c2: '#F3EFE6' },
+        { title: 'Rumours', year: '1977', n: 3, c1: '#E2B13C', c2: '#D2451E' },
+        { title: 'Tusk', year: '1979', n: 2, c1: '#4A443B', c2: '#E2B13C' },
+        { title: 'Mirage', year: '1982', n: 0, c1: '#5B7FA6', c2: '#F3EFE6' },
+        { title: 'Tango in the Night', year: '1987', n: 1, c1: '#B85C38', c2: '#E2B13C' }
+      ],
+      Live: [
+        { title: 'Live', year: '1980', n: 0, c1: '#2F4F8A', c2: '#D2451E' },
+        { title: 'The Dance', year: '1997', n: 1, c1: '#8C8579', c2: '#F3EFE6' }
+      ],
+      Compilations: [
+        { title: 'Greatest Hits', year: '1988', n: 2, c1: '#6B3FA0', c2: '#E2B13C' },
+        { title: '50 Years – Don’t Stop', year: '2018', n: 0, c1: '#C9C2B4', c2: '#D2451E' }
+      ]
+    };
+    const kinds = { Studio: 'Studio album', Live: 'Live album', Compilations: 'Compilation' };
+    return {
+      tabs: ['Studio', 'Live', 'Compilations'].map((l) => ({
+        label: l,
+        pressed: l === tab ? 'true' : 'false',
+        bg: l === tab ? '#1B1814' : 'transparent',
+        fg: l === tab ? '#F3EFE6' : '#1B1814',
+        border: l === tab ? '#1B1814' : '#CFC7B7',
+        pick: () => this.setState({ tab: l })
+      })),
+      albums: all[tab].map((a) => ({
+        ...a,
+        kind: kinds[tab],
+        badge: a.n > 0 ? a.n + ' nearby' : 'Not nearby',
+        badgeBg: a.n > 0 ? '#DCEBDF' : '#EFEAE0',
+        badgeFg: a.n > 0 ? '#1F5A3E' : '#4A443B'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

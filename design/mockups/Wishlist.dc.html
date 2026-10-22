@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wishlist</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B83A17}a:hover{color:#8F2C10}
+button,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F3EFE6; color: #1B1814; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+<header style="flex: none; padding: 20px 20px 14px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end">
+<h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 75%; font-size: 40px; line-height: 1; text-transform: uppercase">Wishlist</h1>
+<span style="font-size: 13px; font-weight: 600; color: #6B645A">4 records</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #1B1814; color: #F3EFE6">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E2B13C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"></path><path d="M10 21h4"></path></svg>
+<div style="flex: 1; font-size: 13px; line-height: 1.35">Alerts on for stores within <strong>25 mi</strong> of <strong>10011</strong></div>
+<a href="Stores.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 4px; color: #E2B13C; font-size: 13px; font-weight: 700; text-decoration: none">Change</a>
+</div>
+</header>
+<main style="flex: 1; overflow-y: auto; padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px">
+<a href="Route.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #E2B13C; color: #1B1814; text-decoration: none">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="6" r="2"></circle><path d="M8 18h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"></path></svg>
+<span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">Plan a crate dig</span><span style="font-size: 12px">2 shops · 8.7 mi · 3 wishlist records</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+</a>
+<sc-for list="{{items}}" as="item" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E5DECF">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="flex: none; width: 72px; height: 72px; border-radius: 6px; background: {{item.c1}}; position: relative; overflow: hidden">
+<div style="position: absolute; right: -22px; top: 9px; width: 54px; height: 54px; border-radius: 50%; background: #1B1814; display: flex; align-items: center; justify-content: center"><div style="width: 18px; height: 18px; border-radius: 50%; background: {{item.c2}}"></div></div>
+</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<div style="font-weight: 700; font-size: 16px">{{item.title}}</div>
+<div style="font-size: 13px; color: #6B645A">{{item.artist}}</div>
+<div style="font-size: 12px; color: #6B645A">Wants: {{item.want}}</div>
+</div>
+</div>
+<sc-if value="{{item.inStock}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; align-items: center; gap: 10px; padding-top: 10px; border-top: 1px dashed #DDD6C8">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #1F6B4A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1F6B4A"></span>{{item.stock}}</div>
+<div style="font-size: 12px; color: #6B645A">{{item.nearest}}</div>
+</div>
+<a href="Stores.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; background: #D2451E; color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none">Find it</a>
+</div>
+</sc-if>
+<sc-if value="{{item.waiting}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; align-items: center; gap: 10px; padding-top: 10px; border-top: 1px dashed #DDD6C8">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 13px; font-weight: 700; color: #1B1814">{{item.stock}}</div>
+<div style="font-size: 12px; color: #6B645A">{{item.nearest}}</div>
+</div>
+<a href="Alert.dc.html" style="display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #CFC7B7; color: #1B1814; font-size: 13px; font-weight: 600; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"></path></svg>Alert on</a>
+</div>
+</sc-if>
+</div>
+</sc-for>
+<a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 14px; border: 1.5px dashed #B5AC9B; color: #1B1814; font-size: 14px; font-weight: 600; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a record to your wishlist</a>
+</main>
+<nav aria-label="Main" style="display: flex; flex: none; background: #FFFDF8; border-top: 1px solid #DDD6C8; padding: 4px 8px 22px">
+<a href="Main.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; min-height: 44px; text-decoration: none; color: #6B645A; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>Search</a>
+<a href="Wishlist.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; min-height: 44px; text-decoration: none; color: #B83A17; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="#D2451E" stroke="#D2451E" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>Wishlist</a>
+<a href="Stores.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; min-height: 44px; text-decoration: none; color: #6B645A; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Nearby</a>
+<a href="Collection.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; min-height: 44px; text-decoration: none; color: #6B645A; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="2.5"></circle></svg>Collection</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const data = [
+      { title: 'Rumours', artist: 'Fleetwood Mac', want: 'Any pressing · under $35', inStock: true, stock: '3 stores in range', nearest: 'Nearest: Spin Cycle Records · 3.2 mi · $26', c1: '#E2B13C', c2: '#D2451E' },
+      { title: 'Purple Rain', artist: 'Prince', want: 'Used VG+ or better', inStock: true, stock: '4 stores in range', nearest: 'Cheapest: Second Pressing · 8.7 mi · $24', c1: '#6B3FA0', c2: '#E2B13C' },
+      { title: 'Blue', artist: 'Joni Mitchell', want: 'Original press', inStock: false, stock: 'None within 25 mi', nearest: 'Closest copy is 38 mi away', c1: '#5B7FA6', c2: '#E2B13C' },
+      { title: 'Blonde', artist: 'Frank Ocean', want: 'Any pressing', inStock: false, stock: 'Not in stock nearby', nearest: "We'll notify you when a store gets it", c1: '#C9C2B4', c2: '#D2451E' }
+    ];
+    return { items: data.map((d) => ({ ...d, waiting: !d.inStock })) };
+  }
+}
+</script>
+</body>
+</html>

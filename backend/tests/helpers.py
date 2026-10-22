@@ -1,11 +1,12 @@
 """Shared test constants and helpers (no app or database imports)."""
 
 import math
-from datetime import datetime
+from datetime import UTC, datetime
 
 from app.geo import EARTH_RADIUS_MI
 
-NOW = datetime(2026, 10, 22, 12, 0, 0)
+# The app stores naive UTC times, so the frozen test clock is naive UTC too.
+NOW = datetime(2026, 10, 22, 12, 0, 0, tzinfo=UTC).replace(tzinfo=None)
 ZIP_10011 = (40.7418, -74.0040)
 
 

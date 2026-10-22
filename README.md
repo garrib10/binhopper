@@ -17,7 +17,7 @@ and track your collection.
 
 ## Getting started
 
-You need Python 3.12+, Node 20+, and Docker (for MySQL).
+You need Python 3.12+, Node 24+, and Docker (for MySQL).
 
 ```bash
 # 1. Database

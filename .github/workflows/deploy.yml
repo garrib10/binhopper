@@ -29,8 +29,8 @@ jobs:
       - name: Build frontend
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
-      - run: npm install && npm run build
+          node-version: "24"
+      - run: npm ci && npm run build
         working-directory: frontend
 
       - name: Check backend installs and imports

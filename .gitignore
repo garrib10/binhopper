@@ -6,6 +6,8 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 backend/.env
+# Census ZIP download (see README)
+backend/*_Gaz_zcta_national.*
 
 # Node
 node_modules/

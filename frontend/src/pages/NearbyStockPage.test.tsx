@@ -13,6 +13,12 @@ function mockApi(body: Partial<NearbyStockResponse>) {
   );
 }
 
+function mockError(status: number, body: unknown) {
+  return vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }),
+  );
+}
+
 const page = <NearbyStockPage albumId={1} albumTitle="Rumours" artistName="Fleetwood Mac" />;
 
 describe('NearbyStockPage', () => {
@@ -54,5 +60,58 @@ describe('NearbyStockPage', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent('Enter a 5-digit ZIP code');
     expect(fetchSpy.mock.calls.length).toBe(callsBefore);
+  });
+
+  describe('errors', () => {
+    it('explains an unknown ZIP', async () => {  // AC-04
+      mockError(404, { detail: 'Unknown ZIP code' });
+      render(page);
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        "We don't have that ZIP yet. Check it or try a nearby one.",
+      );
+      expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
+    });
+
+    it('shows the first validation message from a 422', async () => {
+      mockError(422, {
+        detail: [
+          { type: 'string_pattern_mismatch', loc: ['query', 'zip'], msg: "String should match pattern '^\\d{5}$'" },
+          { type: 'missing', loc: ['query', 'radius'], msg: 'Field required' },
+        ],
+      });
+      render(page);
+      expect(await screen.findByRole('alert')).toHaveTextContent("String should match pattern '^\\d{5}$'");
+      expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument();
+    });
+
+    it('offers Try again when the network fails', async () => {
+      vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
+      render(page);
+      expect(await screen.findByRole('alert')).toHaveTextContent("Can't reach Binhopper right now.");
+      expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    });
+
+    it('offers Try again on a server error', async () => {
+      mockError(500, { detail: 'Internal Server Error' });
+      render(page);
+      expect(await screen.findByRole('alert')).toHaveTextContent("Can't reach Binhopper right now.");
+      expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    });
+
+    it('Try again fetches the stores again', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new TypeError('Failed to fetch'));
+      fetchSpy.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({ album_id: 1, zip: '10011', radius_mi: 25, stores: [], nearest_outside_mi: null }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      );
+      render(page);
+      await userEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+
+      expect(await screen.findByRole('heading', { name: 'Nothing within 25 mi' })).toBeInTheDocument();
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
   });
 });

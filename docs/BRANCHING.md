@@ -43,6 +43,7 @@ For something broken in production that can't wait for a full release:
 | Deploy | Push to staging or main | Builds and checks; deploy step is a placeholder until hosting is chosen |
 | Release | Push to main | Creates a dated tag and GitHub Release with generated notes |
 | Back-merge | Push to main | Opens `main → develop` when main has changes develop lacks |
+| Labeler | Every PR | Adds area labels (frontend, backend, tests…) from changed files and type labels (enhancement, bug, chore) from the branch name. Rules in `.github/labeler.yml` |
 | CodeQL | PRs and pushes (GitHub's default setup) | Security scanning |
 | Dependabot | Weekly / monthly | Dependency update PRs into develop |
 

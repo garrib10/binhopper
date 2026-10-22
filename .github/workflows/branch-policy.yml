@@ -1,0 +1,37 @@
+name: Branch policy
+
+# Enforces the release flow: develop → staging → main.
+#   - PRs into staging must come from develop (or a hotfix/* branch).
+#   - PRs into main must come from staging (or a hotfix/* branch).
+#   - Everything else goes into develop.
+# Make "Branch policy / check" a required status check on staging and main
+# (see docs/BRANCHING.md) so a PR that skips a step can't be merged.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source and target branches
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+        run: |
+          echo "Pull request: $HEAD → $BASE"
+          case "$BASE" in
+            staging)
+              if [[ "$HEAD" == "develop" || "$HEAD" == hotfix/* ]]; then exit 0; fi
+              echo "::error::Only develop (or hotfix/*) can merge into staging. Merge '$HEAD' into develop first."
+              exit 1 ;;
+            main)
+              if [[ "$HEAD" == "staging" || "$HEAD" == hotfix/* ]]; then exit 0; fi
+              echo "::error::Only staging (or hotfix/*) can merge into main. Promote '$HEAD' through develop → staging first."
+              exit 1 ;;
+            *)
+              echo "Target '$BASE' has no restriction."
+              exit 0 ;;
+          esac

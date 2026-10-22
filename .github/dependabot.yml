@@ -1,11 +1,13 @@
 # Dependabot: weekly pull requests to keep dependencies up to date.
 # Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# Updates target develop, so they ship through staging like any other change.
 
 version: 2
 updates:
   # Backend: Python packages in backend/pyproject.toml
   - package-ecosystem: "pip"
     directory: "/backend"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -17,6 +19,7 @@ updates:
   # Frontend: npm packages in frontend/package.json
   - package-ecosystem: "npm"
     directory: "/frontend"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -28,5 +31,6 @@ updates:
   # GitHub Actions versions used in .github/workflows/ci.yml
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "monthly"

@@ -55,6 +55,11 @@ cd frontend && npx playwright install chromium && npm run e2e   # browser tests,
 
 Tests reference the acceptance criteria in `docs/SPEC.md` by id (AC-01, AC-02, …).
 
+## Branches and releases
+
+Work flows **develop → staging → main**. Feature branches merge into `develop`; releases are
+promoted with the Promote workflow. Details in [`docs/BRANCHING.md`](docs/BRANCHING.md).
+
 ## Status
 
 Early v1. Built so far: data model, nearby-stock API (radius, freshness, empty state),

@@ -1,0 +1,40 @@
+name: Release
+
+# Every merge into main is a release: tag it and publish a GitHub Release with
+# notes generated from the merged pull requests.
+# Tags are calendar versions: v2026.10.22, then v2026.10.22.2 for a second
+# release the same day.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Pick the next tag
+        id: tag
+        run: |
+          BASE="v$(date -u +%Y.%m.%d)"
+          TAG="$BASE"; N=2
+          while git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; do
+            TAG="$BASE.$N"; N=$((N+1))
+          done
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes

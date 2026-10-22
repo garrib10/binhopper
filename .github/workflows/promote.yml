@@ -1,0 +1,59 @@
+name: Promote
+
+# One click (Actions → Promote → Run workflow) opens the next pull request in the
+# release flow: develop → staging, or staging → main.
+#
+# Note: pull requests opened with the built-in GITHUB_TOKEN don't trigger other
+# workflows, so CI won't start on them by itself. Either add a fine-grained
+# personal access token as the repo secret PROMOTE_TOKEN (permissions: contents
+# read, pull requests write), or click "Close" then "Reopen" on the PR to start CI.
+on:
+  workflow_dispatch:
+    inputs:
+      to:
+        description: Branch to promote into
+        type: choice
+        options: [staging, main]
+        default: staging
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Open or reuse the promotion pull request
+        env:
+          GH_TOKEN: ${{ secrets.PROMOTE_TOKEN || github.token }}
+          TO: ${{ inputs.to }}
+        run: |
+          if [ "$TO" = "staging" ]; then FROM=develop; else FROM=staging; fi
+          git fetch origin "$FROM" "$TO"
+
+          AHEAD=$(git rev-list --count "origin/$TO..origin/$FROM")
+          if [ "$AHEAD" = "0" ]; then
+            echo "Nothing to promote: $TO already has everything in $FROM."
+            exit 0
+          fi
+
+          EXISTING=$(gh pr list --base "$TO" --head "$FROM" --state open --json url --jq '.[0].url')
+          if [ -n "$EXISTING" ]; then
+            echo "Promotion PR already open: $EXISTING"
+            exit 0
+          fi
+
+          {
+            echo "Promotes \`$FROM\` → \`$TO\` ($AHEAD commits)."
+            echo
+            echo "### Changes"
+            git log --no-merges --format='- %s (%h)' "origin/$TO..origin/$FROM"
+          } > body.md
+
+          gh pr create --base "$TO" --head "$FROM" \
+            --title "Promote $FROM → $TO ($(date -u +%Y-%m-%d))" \
+            --body-file body.md

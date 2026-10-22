@@ -60,3 +60,19 @@ test('has no automatically detectable accessibility problems', async ({ page }) 
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
+
+for (const theme of ['Light', 'Dark']) {
+  test(`server error offers Try again and passes axe in ${theme.toLowerCase()} mode`, async ({ page }) => {
+    await page.getByRole('button', { name: theme }).click();
+    await page.route('**/api/albums/*/stock?*', (route) => route.fulfill({ status: 503, body: '' }));
+    await page.getByRole('button', { name: '10 mi' }).click();
+    await expect(page.getByRole('alert')).toHaveText("Can't reach Binhopper right now.");
+
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+
+    await mockStockApi(page);
+    await page.getByRole('button', { name: 'Try again' }).click();
+    await expect(page.getByRole('heading', { name: '2 stores have it' })).toBeVisible();
+  });
+}

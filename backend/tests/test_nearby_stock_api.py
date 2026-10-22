@@ -90,7 +90,9 @@ def test_invalid_zip_is_rejected(client, pressing, bad_zip):  # AC-04
 
 
 def test_unknown_zip_is_404(client, pressing):  # AC-04
-    assert get_stock(client, pressing.album_id, zip="99999").status_code == 404
+    res = get_stock(client, pressing.album_id, zip="99999")
+    assert res.status_code == 404
+    assert res.json() == {"detail": "Unknown ZIP code"}
 
 
 def test_radius_must_be_an_allowed_value(client, pressing):

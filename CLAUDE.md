@@ -48,6 +48,8 @@ cp .env.example .env
 alembic revision --autogenerate -m "initial tables"   # first time only
 alembic upgrade head
 python -m scripts.seed_sample            # fictional sample data
+# All US ZIPs: download + unzip the Census ZCTA Gazetteer file first (see README.md), then
+python -m scripts.load_zip_codes 2026_Gaz_zcta_national.txt   # safe to re-run
 uvicorn app.main:app --reload            # API on :8000, try it at /docs
 pytest                                   # backend tests (SQLite, no MySQL needed)
 

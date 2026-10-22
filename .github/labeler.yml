@@ -1,0 +1,60 @@
+# Labels added to pull requests automatically by .github/workflows/labeler.yml.
+# Area labels come from the files a PR changes; type labels come from the branch name.
+# Format: https://github.com/actions/labeler#usage
+
+# ── Area: which part of the app the PR touches ───────────────────────
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: frontend/**
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file: backend/**
+
+database:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/migrations/**
+          - backend/app/models.py
+          - docker-compose.yml
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/tests/**
+          - frontend/e2e/**
+          - frontend/src/**/*.test.ts
+          - frontend/src/**/*.test.tsx
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: .github/**
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - "**/*.md"
+
+design:
+  - changed-files:
+      - any-glob-to-any-file:
+          - design/**
+          - frontend/src/styles/**
+
+# ── Type: from the branch naming rules in docs/BRANCHING.md ──────────
+enhancement:
+  - head-branch: ["^feature/"]
+
+bug:
+  - head-branch: ["^fix/", "^hotfix/"]
+
+hotfix:
+  - head-branch: ["^hotfix/"]
+
+chore:
+  - head-branch: ["^chore/"]
+
+# ── Release flow: PRs that promote develop → staging → main ──────────
+release:
+  - base-branch: ["^staging$", "^main$"]

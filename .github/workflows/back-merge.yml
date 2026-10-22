@@ -1,0 +1,39 @@
+name: Back-merge
+
+# After a hotfix lands on main, develop is missing it. This opens a
+# main → develop pull request whenever main has changes develop doesn't.
+# A normal release (staging → main) has nothing new, so no PR is opened.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sync-develop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Open a main → develop pull request if needed
+        env:
+          GH_TOKEN: ${{ secrets.PROMOTE_TOKEN || github.token }}
+        run: |
+          git fetch origin main develop
+          # Changes on main since it last shared history with develop.
+          if git diff --quiet origin/develop...origin/main; then
+            echo "develop already has everything from main."
+            exit 0
+          fi
+          EXISTING=$(gh pr list --base develop --head main --state open --json url --jq '.[0].url')
+          if [ -n "$EXISTING" ]; then
+            echo "Back-merge PR already open: $EXISTING"
+            exit 0
+          fi
+          gh pr create --base develop --head main \
+            --title "Back-merge main → develop ($(date -u +%Y-%m-%d))" \
+            --body "main has changes develop doesn't (usually a hotfix). Merge this so the next release doesn't undo them."

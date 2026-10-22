@@ -25,9 +25,9 @@ def get_now() -> datetime:
 def nearby_stock(
     album_id: int,
     zip: Annotated[str, Query(pattern=r"^\d{5}$", description="5-digit US ZIP code")],
+    session: Annotated[Session, Depends(get_session)],
+    now: Annotated[datetime, Depends(get_now)],
     radius: Annotated[int, Query(description="Search radius in miles: 10, 25, 50 or 100")] = 25,
-    session: Session = Depends(get_session),
-    now: datetime = Depends(get_now),
 ) -> NearbyStockResponse:
     if radius not in ALLOWED_RADII_MI:
         raise HTTPException(422, f"radius must be one of {list(ALLOWED_RADII_MI)}")

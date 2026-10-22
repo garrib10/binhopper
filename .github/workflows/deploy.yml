@@ -1,0 +1,48 @@
+name: Deploy
+
+# staging branch → "staging" environment; main → "production" environment.
+#
+# Hosting isn't chosen yet, so the deploy step is a placeholder: the job builds
+# and checks everything a real deploy would ship, then stops. When you pick a
+# host, replace the "Deploy" step and add its secrets to each environment
+# (Settings → Environments). Add required reviewers to "production" so every
+# production deploy waits for your approval.
+on:
+  push:
+    branches: [staging, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build frontend
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: npm install && npm run build
+        working-directory: frontend
+
+      - name: Check backend installs and imports
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install . && python -c "import app.main"
+        working-directory: backend
+
+      - name: Deploy (placeholder)
+        env:
+          TARGET: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+        run: |
+          echo "Built commit $GITHUB_SHA for $TARGET."
+          echo "No host configured yet: replace this step with the real deploy."

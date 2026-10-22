@@ -28,6 +28,13 @@ and track your collection. React web app (mobile + desktop) + Python FastAPI + M
 - **Mock outside services** (Discogs, Places) in tests. Never call real APIs from tests.
 - **Keep secrets out of the frontend.** API keys live only in `backend/.env`.
 
+## Branches
+
+develop → staging → main (see `docs/BRANCHING.md`). Start work from `develop` on a
+`feature/…`, `fix/…` or `chore/…` branch and open the PR into `develop`. Never commit directly
+to `staging` or `main`; urgent production fixes use `hotfix/…` from `main`. Fill in the PR
+template's testing and security checklist.
+
 ## Commands
 
 ```bash

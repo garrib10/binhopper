@@ -24,9 +24,28 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 5
+    # A package joins the first group it matches, so the React and Vite groups come
+    # first. They cover every update type (majors too), because these packages'
+    # versions must move together.
     groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+          - "vitest"
+          - "@vitest/*"
       npm-minor-and-patch:
         update-types: ["minor", "patch"]
+    # @types/node majors track the Node version CI runs (24). Bump both together by hand.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions versions used in .github/workflows/ci.yml
   - package-ecosystem: "github-actions"

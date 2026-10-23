@@ -49,8 +49,15 @@ export async function fetchNearbyStock(
   const res = await fetch(`/api/albums/${albumId}/stock?${params}`, { signal });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    const detail = typeof body.detail === 'string' ? body.detail : 'Something went wrong';
-    throw new ApiError(res.status, detail);
+    throw new ApiError(res.status, errorDetail(body) ?? 'Something went wrong');
   }
   return res.json();
+}
+
+/** FastAPI sends `detail` as a string, or for validation errors (422) as a list of `{ msg }`. */
+function errorDetail(body: { detail?: unknown }): string | null {
+  const { detail } = body;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail) && typeof detail[0]?.msg === 'string') return detail[0].msg;
+  return null;
 }

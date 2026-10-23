@@ -246,7 +246,7 @@ The riskiest logic is the radius math, stock freshness and duplicate handling, s
 - End-to-end: Playwright on mobile (390 px) and desktop (1440 px) widths, light and dark themes, covering the core loop: search → wishlist → nearby → hand-off → collection.
 - Discogs and Places are mocked in all automated tests; one nightly smoke test hits the real Discogs API.
 - Accessibility: automated checks (axe) in the Playwright run; 44 px touch targets and 4.5:1 text contrast, as in the mockups.
-- CI: unit and API tests on every pull request; E2E on merge to main.
+- CI: lint, unit and API tests, frontend build, and E2E (Playwright at 390 px and 1440 px, API mocked) on every pull request and on pushes to develop, staging and main.
 
 ## Open decisions and next steps
 

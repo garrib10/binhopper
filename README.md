@@ -17,7 +17,7 @@ and track your collection.
 
 ## Getting started
 
-You need Python 3.12+, Node 20+, and Docker (for MySQL).
+You need Python 3.12+, Node 24+, and Docker (for MySQL).
 
 ```bash
 # 1. Database
@@ -33,6 +33,21 @@ alembic upgrade head
 python -m scripts.seed_sample
 uvicorn app.main:app --reload
 ```
+
+**ZIP codes.** The sample data only knows ZIP 10011. To search from any US ZIP, load the
+US Census Bureau's ZIP center points (ZCTA Gazetteer, public domain, about 34,000 rows).
+Download and unzip the file yourself; the loader never goes online. Re-running it updates
+rows in place.
+
+```bash
+# from backend/
+curl -O https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2026_Gazetteer/2026_Gaz_zcta_national.zip
+unzip 2026_Gaz_zcta_national.zip
+python -m scripts.load_zip_codes 2026_Gaz_zcta_national.txt
+```
+
+The Census file covers ZIPs with street addresses. PO-box-only ZIPs (for example 06011) are
+not in it and show "We don't have that ZIP yet."
 
 Open http://localhost:8000/docs to try the API, e.g. `GET /api/albums/1/stock?zip=10011&radius=25`.
 

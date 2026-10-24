@@ -13,8 +13,18 @@ interface Props {
 
 type State =
   | { kind: 'loading' }
-  | { kind: 'error'; message: string }
+  | { kind: 'error'; message: string; canRetry: boolean }
   | { kind: 'loaded'; data: NearbyStockResponse };
+
+const UNKNOWN_ZIP = "We don't have that ZIP yet. Check it or try a nearby one.";
+const UNREACHABLE = "Can't reach Binhopper right now.";
+
+/** Turn a failed request into what the user sees. Network failures and 5xx can be retried. */
+function describeError(err: unknown): { message: string; canRetry: boolean } {
+  if (!(err instanceof ApiError) || err.status >= 500) return { message: UNREACHABLE, canRetry: true };
+  if (err.status === 404 && err.message === 'Unknown ZIP code') return { message: UNKNOWN_ZIP, canRetry: false };
+  return { message: err.message, canRetry: false };
+}
 
 /** Nearby stock (SPEC.md › Nearby stock; mockups Stores.dc.html + Desktop.dc.html). */
 export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = '10011', initialRadius = 25 }: Props) {
@@ -23,6 +33,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
   const [zipError, setZipError] = useState<string | null>(null);
   const [radius, setRadius] = useState<Radius>(initialRadius);
   const [state, setState] = useState<State>({ kind: 'loading' });
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -31,11 +42,10 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
       .then((data) => setState({ kind: 'loaded', data }))
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
-        const message = err instanceof ApiError ? err.message : 'Could not load stores. Try again.';
-        setState({ kind: 'error', message });
+        setState({ kind: 'error', ...describeError(err) });
       });
     return () => controller.abort();
-  }, [albumId, zip, radius]);
+  }, [albumId, zip, radius, attempt]);
 
   function submitZip(event: FormEvent) {
     event.preventDefault();
@@ -83,9 +93,16 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
         {state.kind === 'loading' && <p className="muted">Finding shops…</p>}
 
         {state.kind === 'error' && (
-          <p role="alert" className="notice notice--danger">
-            {state.message}
-          </p>
+          <div className="error-state">
+            <p role="alert" className="notice notice--danger">
+              {state.message}
+            </p>
+            {state.canRetry && (
+              <button type="button" className="button button--primary" onClick={() => setAttempt((n) => n + 1)}>
+                Try again
+              </button>
+            )}
+          </div>
         )}
 
         {state.kind === 'loaded' && state.data.stores.length > 0 && (

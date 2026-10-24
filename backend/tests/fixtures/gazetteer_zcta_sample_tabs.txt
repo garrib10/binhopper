@@ -1,0 +1,2 @@
+GEOID	ALAND	AWATER	ALAND_SQMI	AWATER_SQMI	INTPTLAT	INTPTLONG                                                                                                               
+06010	68428633	1253553	26.42	0.484	41.681578	-72.940749                                                                                                               

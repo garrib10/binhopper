@@ -8,9 +8,17 @@ name: Branch policy
 # (see docs/BRANCHING.md) so a PR that skips a step can't be merged.
 on:
   pull_request:
+    # "edited" catches a PR whose base branch is changed after it was opened.
     types: [opened, reopened, synchronize, edited]
 
 permissions: {}
+
+# Editing the PR description (e.g. ticking checkboxes) also sends "edited". A newer run
+# cancels the older one so they don't pile up. Every run still does the check: a job
+# skipped with `if:` would report success and could hide an earlier failure.
+concurrency:
+  group: branch-policy-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   check:

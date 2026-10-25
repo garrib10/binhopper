@@ -45,8 +45,8 @@ docker compose up -d                      # MySQL 8 on localhost:3306
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env
-alembic revision --autogenerate -m "initial tables"   # first time only
-alembic upgrade head
+alembic upgrade head                     # creates/updates tables from migrations/versions/
+# Changed a model? alembic revision --autogenerate -m "what changed", review it, commit it
 python -m scripts.seed_sample            # fictional sample data
 # All US ZIPs: download + unzip the Census ZCTA Gazetteer file first (see README.md), then
 python -m scripts.load_zip_codes 2026_Gaz_zcta_national.txt   # safe to re-run

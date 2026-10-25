@@ -28,7 +28,6 @@ cd backend
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 cp .env.example .env
-alembic revision --autogenerate -m "initial tables"  # first time only
 alembic upgrade head
 python -m scripts.seed_sample
 uvicorn app.main:app --reload

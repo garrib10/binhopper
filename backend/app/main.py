@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import stock
+from app.routers.search import router as search_router
 from app.routers.albums import router as albums_router
 from app.routers.artists import router as artists_router
 
@@ -22,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(stock.router)
+app.include_router(search_router)
 app.include_router(albums_router)
 app.include_router(artists_router)
 

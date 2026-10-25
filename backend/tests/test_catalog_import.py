@@ -128,3 +128,48 @@ def test_expired_gap_album_is_hidden_even_when_worker_is_down(client, session):
         'artists': [{'id': 99999998, 'name': 'Gap artist'}]}, NOW - timedelta(hours=6))
     session.commit()
     assert client.get(f'/api/albums/{row.id}/stock?zip=10011&radius=25').status_code == 404
+
+
+def test_api_release_cannot_contaminate_durable_cc0_master_or_artist(session):
+    import_path(session, SAMPLE, limit=1)
+    durable = session.scalar(select(Album))
+    durable.tracklist = []
+    original_name, original_title = durable.artist.name, durable.title
+    session.commit()
+    row = apply_response(session, 'releases', {
+        'id': 99999997, 'master_id': durable.discogs_master_id, 'title': 'API title',
+        'artists': [{'id': durable.artist.discogs_artist_id, 'name': 'API alias'}],
+        'formats': [{'name': 'Vinyl', 'descriptions': ['LP', 'Live']}],
+        'tracklist': [{'position': 'A1', 'title': 'API-only track'}],
+    }, NOW)
+    session.commit()
+    assert row.api_fetched_at == NOW
+    assert durable.title == original_title and durable.tracklist == []
+    assert durable.artist.name == original_name and durable.api_fetched_at is None
+    expire(session, NOW + timedelta(hours=6))
+    assert durable.title == original_title and durable.tracklist == []
+
+
+def test_AC_16_fractional_reservations_survive_a_worker_restart(session):  # AC-16
+    clock, calls = Clock(), []
+    clock.time += timedelta(microseconds=900000)
+    def fake(request):
+        calls.append(clock.now())
+        return httpx.Response(200, json={})
+    def queue():
+        return RequestQueue(session, 'test-only', 'Binhopper/test',
+                            now=clock.now, sleep=clock.sleep, transport=httpx.MockTransport(fake))
+    first = queue()
+    try:
+        for _ in range(60):
+            first.get('artists', 1)
+    finally:
+        first.close()
+    session.expunge_all()
+    clock.time += timedelta(seconds=59.2)
+    restarted = queue()
+    try:
+        restarted.get('artists', 1)
+    finally:
+        restarted.close()
+    assert (calls[-1] - calls[0]).total_seconds() > 60

@@ -21,6 +21,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
+from sqlalchemy.dialects.mysql import DATETIME as MYSQL_DATETIME
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -225,4 +226,5 @@ class DiscogsCall(Base):
     """Persist reservations so a worker restart cannot reset its rolling quota."""
     __tablename__ = "discogs_calls"
     id: Mapped[int] = mapped_column(primary_key=True)
-    reserved_at: Mapped[datetime] = mapped_column(DateTime, index=True)
+    reserved_at: Mapped[datetime] = mapped_column(
+        DateTime().with_variant(MYSQL_DATETIME(fsp=6), "mysql"), index=True)

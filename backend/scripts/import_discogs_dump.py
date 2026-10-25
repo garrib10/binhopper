@@ -33,11 +33,13 @@ def upsert(s, model, key, value, **fields):
     return row
 
 
-def artist(s, node):
+def artist(s, node, *, from_api=False):
     identifier = int(node.findtext("id") or node.get("id"))
     # A credit may not contain profile; do not erase an artist dump's richer profile.
     fields = {"name": node.findtext("name") or f"Artist {identifier}", "api_fetched_at": None}
     old = s.scalar(select(Artist).where(Artist.discogs_artist_id == identifier))
+    if from_api and old is not None and old.api_fetched_at is None:
+        return old
     if old is not None and old.api_fetched_at is not None:
         fields["bio"] = None
         fields["origin"] = None
@@ -51,11 +53,11 @@ def tracks(node):
             for t in node.findall("tracklist/track")]
 
 
-def album(s, node, identifier):
+def album(s, node, identifier, *, from_api=False):
     credit = node.find("artists/artist")
     if credit is None:
         return None
-    a = artist(s, credit)
+    a = artist(s, credit, from_api=from_api)
     row = upsert(s, Album, "discogs_master_id", identifier, artist_id=a.id,
                  title=node.findtext("title") or "Untitled", year=int(node.findtext("year") or 0) or None,
                  tracklist=tracks(node), api_fetched_at=None)
@@ -70,7 +72,7 @@ def album(s, node, identifier):
     return row
 
 
-def release(s, node):
+def release(s, node, *, from_api=False):
     formats = node.findall("formats/format")
     if not any(f.get("name") == "Vinyl" for f in formats):
         return False
@@ -79,12 +81,12 @@ def release(s, node):
     identifier = master_id or -int(node.get("id"))
     a = s.scalar(select(Album).where(Album.discogs_master_id == identifier))
     if a is None:
-        a = album(s, node, identifier)
+        a = album(s, node, identifier, from_api=from_api)
     if a is None:
         return False
-    if not a.tracklist:
+    if not from_api and not a.tracklist:
         a.tracklist = tracks(node)
-    if not a.year:
+    if not from_api and not a.year:
         released = node.findtext("released") or ""
         if released[:4].isdigit():
             a.year = int(released[:4]) or None
@@ -93,9 +95,9 @@ def release(s, node):
         if f.get("text"):
             descriptions.append(f.get("text"))
     details = ", ".join(descriptions)
-    if "Compilation" in descriptions:
+    if not from_api and "Compilation" in descriptions:
         a.release_type = "Compilations"
-    elif "Live" in descriptions:
+    elif not from_api and "Live" in descriptions:
         a.release_type = "Live"
     exclusive = next((kind for text, kind in [("Artist Store Exclusive", "artist"),
                                               ("Retailer Exclusive", "retailer")]

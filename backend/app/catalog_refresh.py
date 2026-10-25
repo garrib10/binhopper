@@ -34,7 +34,7 @@ def apply_response(s, kind, payload, now):
             for key, value in {"id": identifier, "name": payload.get("name", "Unknown artist"),
                                "profile": payload.get("profile", "")}.items():
                 ET.SubElement(node, key).text = str(value)
-            row = artist(s, node)
+            row = artist(s, node, from_api=True)
             row.api_fetched_at = now
         images = payload.get("images") or []
         row.image_url = image_url(images[0].get("uri")) if images else None
@@ -65,7 +65,7 @@ def apply_response(s, kind, payload, now):
             for key in ("title", "position"):
                 ET.SubElement(t, key).text = track.get(key, "")
         if kind == "masters":
-            row = album(s, node, identifier)
+            row = album(s, node, identifier, from_api=True)
         else:
             formats = ET.SubElement(node, "formats")
             for fmt in payload.get("formats", []):
@@ -77,7 +77,7 @@ def apply_response(s, kind, payload, now):
             for label in payload.get("labels", []):
                 ET.SubElement(labels, "label", name=label.get("name", ""), catno=label.get("catno", ""))
             master_before = s.scalar(select(Album).where(Album.discogs_master_id == int(payload.get("master_id") or -identifier)))
-            if not release(s, node):
+            if not release(s, node, from_api=True):
                 return None
             row = s.scalar(select(Pressing).where(Pressing.discogs_release_id == identifier))
             if master_before is None:

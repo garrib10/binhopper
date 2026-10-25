@@ -9,6 +9,7 @@ interface Props {
   artistName: string;
   initialZip?: string;
   initialRadius?: Radius;
+  onLocationChange?: (zip: string, radius: Radius) => void;
 }
 
 type State =
@@ -27,7 +28,7 @@ function describeError(err: unknown): { message: string; canRetry: boolean } {
 }
 
 /** Nearby stock (SPEC.md › Nearby stock; mockups Stores.dc.html + Desktop.dc.html). */
-export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = '10011', initialRadius = 25 }: Props) {
+export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = '10011', initialRadius = 25, onLocationChange }: Props) {
   const [zipInput, setZipInput] = useState(initialZip);
   const [zip, setZip] = useState(initialZip);
   const [zipError, setZipError] = useState<string | null>(null);
@@ -47,6 +48,8 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
     return () => controller.abort();
   }, [albumId, zip, radius, attempt]);
 
+  useEffect(() => { onLocationChange?.(zip, radius); }, [zip, radius, onLocationChange]);
+
   function submitZip(event: FormEvent) {
     event.preventDefault();
     if (!isValidZip(zipInput)) {
@@ -60,7 +63,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
   const nextRadius = RADII.find((r) => r > radius);
 
   return (
-    <main className="page">
+    <main id="content" className="page">
       <header className="page__header">
         <p className="eyebrow">Looking for</p>
         <h1 className="display">{albumTitle}</h1>

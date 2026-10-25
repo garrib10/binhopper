@@ -21,7 +21,7 @@ function storeNames(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/albums/1/stores');
 });
 
 test('radius 10 shows only the shops within 10 mi, closest first', async ({ page }) => {  // AC-01

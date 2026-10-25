@@ -52,6 +52,8 @@ python -m scripts.seed_sample            # fictional sample data
 python -m scripts.load_zip_codes 2026_Gaz_zcta_national.txt   # safe to re-run
 uvicorn app.main:app --reload            # API on :8000, try it at /docs
 pytest                                   # backend tests (SQLite, no MySQL needed)
+# Same tests on MySQL (CI "integration" job); test DB setup in README.md › Tests
+TEST_DATABASE_URL=mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_test pytest
 
 # Frontend (from frontend/)
 npm install

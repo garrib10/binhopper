@@ -103,8 +103,10 @@ first.
 
 ## Staging sign-off
 
-Before merging a `staging → main` promotion (a release-sign-off issue template will capture
-this; see #75):
+For every `develop → staging` promotion, open a
+[Release sign-off issue](../.github/ISSUE_TEMPLATE/release-signoff.md). Record the staging
+commit SHA, CI/Deploy/Staging system run URLs, manual results at 390/1440 px in light/dark
+mode, known issues and go/no-go. Before merging its `staging → main` promotion:
 
 1. All CI checks on the promotion PR are green.
 2. The staging deploy finished and its post-deploy check passed (#82, once hosting exists).

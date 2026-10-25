@@ -33,6 +33,44 @@ jobs:
       - run: ruff check .
       - run: pytest
 
+  # The same pytest suite against real MySQL 8.4, after migrating an empty database.
+  # Catches what SQLite hides (column precision, upsert syntax, collation) and fails
+  # if a migration is broken (upgrade) or missing (check).
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: binhopper_test
+          MYSQL_USER: binhopper
+          MYSQL_PASSWORD: binhopper
+          MYSQL_ROOT_PASSWORD: binhopper-root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_test
+      TEST_DATABASE_URL: mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: alembic upgrade head
+      - run: alembic check
+      - run: pytest
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

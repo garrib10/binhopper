@@ -25,6 +25,7 @@ jobs:
   deploy:
     if: >-
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository &&
        (github.event.workflow_run.head_branch == 'staging' || github.event.workflow_run.head_branch == 'main')) ||
       (github.event_name == 'workflow_dispatch' && (github.ref_name == 'staging' || github.ref_name == 'main'))
     runs-on: ubuntu-latest
@@ -32,7 +33,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ (github.event.workflow_run.head_branch || github.ref_name) == 'main' && 'refs/heads/main' || 'refs/heads/staging' }}
+          persist-credentials: false
+
+      - name: Require the CI-verified promotion commit
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA" || {
+            echo 'The release branch moved since CI; use the newer promotion run.'
+            exit 1
+          }
 
       - name: Build frontend
         uses: actions/setup-node@v7

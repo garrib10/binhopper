@@ -34,8 +34,8 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('area', sa.String(length=120), nullable=True),
     sa.Column('address', sa.String(length=255), nullable=True),
-    sa.Column('lat', sa.Float(), nullable=False),
-    sa.Column('lng', sa.Float(), nullable=False),
+    sa.Column('lat', sa.Double(), nullable=False),
+    sa.Column('lng', sa.Double(), nullable=False),
     sa.Column('phone', sa.String(length=40), nullable=True),
     sa.Column('website', sa.String(length=500), nullable=True),
     sa.Column('hours', sa.JSON(), nullable=True),
@@ -61,8 +61,8 @@ def upgrade() -> None:
     )
     op.create_table('zip_codes',
     sa.Column('zip', sa.String(length=5), nullable=False),
-    sa.Column('lat', sa.Float(), nullable=False),
-    sa.Column('lng', sa.Float(), nullable=False),
+    sa.Column('lat', sa.Double(), nullable=False),
+    sa.Column('lng', sa.Double(), nullable=False),
     sa.PrimaryKeyConstraint('zip')
     )
     op.create_table('albums',

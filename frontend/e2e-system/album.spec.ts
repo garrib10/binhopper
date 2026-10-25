@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../test/fixtures';
 
 for (const theme of ['light', 'dark'] as const) {
   test(`album links, track sides and pressings use real API in ${theme}`, async ({ page }) => {

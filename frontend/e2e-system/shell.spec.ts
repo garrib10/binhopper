@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../test/fixtures';
 
 test('AC-14 shell navigation preserves system theme, history and direct routes', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });

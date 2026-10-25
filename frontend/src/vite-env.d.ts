@@ -5,6 +5,8 @@
 // TypeScript 6+ checks side-effect imports by default and errors without this.
 
 interface ImportMetaEnv {
+  readonly VITE_MAP_TILE_URL?: string;
+  readonly VITE_MAP_ATTRIBUTION?: string;
   readonly VITE_API_BASE_URL?: string;
 }
 

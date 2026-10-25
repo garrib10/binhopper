@@ -19,6 +19,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
+    env: { VITE_MAP_TILE_URL: 'https://tiles.binhopper.test/{z}/{x}/{y}.svg', VITE_MAP_ATTRIBUTION: 'Test tiles · © OpenStreetMap contributors' },
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
   },

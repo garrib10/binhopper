@@ -186,3 +186,47 @@ verify the API/catalog and frontend, and document the incident and corrected pro
 - [Vercel deployment protection](https://vercel.com/docs/deployment-protection)
 - [GitHub workflow_run semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
 - [Better Stack HTTP monitors](https://betterstack.com/docs/uptime/uptime-monitor/)
+
+## Nearby map tiles (#36)
+
+Leaflet shows ZIP-center coordinates and shop locations only; it never asks for
+browser geolocation. `npm run dev` defaults to OSM's standard HTTPS tiles with
+visible OpenStreetMap credit. Use ordinary browser caching, preserve Referer,
+and never prefetch or bulk-download tiles; see the
+[OSM tile policy](https://operations.osmfoundation.org/policies/tiles/).
+The built app **has no production default tile service**: without both variables
+below it shows a map-unavailable message and keeps the usable shop list.
+
+Configure separately for Vercel Production and Preview → staging, then rebuild:
+
+- `VITE_MAP_TILE_URL`: the provider's HTTPS **XYZ raster** template with `{z}/{x}/{y}`.
+- `VITE_MAP_ATTRIBUTION`: the provider's full required credit. Text and HTTPS
+  links are supported; other markup and attributes are discarded.
+
+Provider choices, checked 2026-10-25 (confirm current terms before activating):
+
+| Provider | Free tier and limit | Fit |
+| --- | --- | --- |
+| [Geoapify](https://www.geoapify.com/pricing/) | 3,000 credits/day, up to 5 requests/second; [raster tiles cost 0.25 credit/request](https://apidocs.geoapify.com/docs/maps), hence up to 12,000 tiles/day if no other APIs consume credits | Recommended starting option; provide both Geoapify and OSM attribution, including the required followed Geoapify link. |
+| [Stadia Maps](https://stadiamaps.com/pricing) | 200,000 credits/month; Free excludes commercial use and has no overage. Credits are shared with other APIs; tile styles/sizes can have different costs. | Alternative for eligible personal/noncommercial deployments; commercial use needs a paid plan (Starter currently $20/month). |
+
+Use the selected provider's dashboard-generated raster URL and attribution;
+do not paste a vector style JSON URL into Leaflet. A Geoapify-style attribution
+is `Powered by <a href="https://www.geoapify.com/">Geoapify</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>`.
+Restrict any browser-public tile credential to the app's exact domains and tile
+scope in the provider dashboard; frontend build values are public. Never place
+DISCOGS_TOKEN or another private service credential in a VITE_ variable.
+Set quota alerts and keep a hard usage cap if available. Panning and zooming use
+more tiles, so tile quota is not the same as map views. A provider outage leaves
+the shop list available.
+
+Automated browser tests set an artificial tiles.binhopper.test template and
+intercept it with an SVG tile fixture. Both e2e and e2e-system share an automatic
+fixture blocking live Discogs/OSM/tile-provider requests; app API/MySQL calls stay
+real in system tests. Remote staging tests also block those external hosts.
+
+Online sellers are **search links**, never live stock/prices. The optional
+backend `ARTIST_STORE_URLS` is a JSON object mapping internal artist IDs to
+manually verified HTTPS official-store URLs, e.g. `{"123":"https://artist.example/shop"}`
+(example only). An artist without a verified configured URL has no official-shop
+link. This avoids guessing ownership or adding an unnecessary schema migration.

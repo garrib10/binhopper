@@ -72,6 +72,9 @@ def nearby_stock(
                 store_id=listing.store.id,
                 store_name=listing.store.name,
                 area=listing.store.area,
+                lat=listing.store.lat,
+                lng=listing.store.lng,
+                phone=listing.store.phone,
                 distance_mi=display_miles(d),
                 pressing_id=listing.pressing.id,
                 pressing_note=listing.pressing.variant_note,
@@ -100,6 +103,8 @@ def nearby_stock(
         album_id=album_id,
         zip=zip,
         radius_mi=radius,
+        center_lat=origin.lat,
+        center_lng=origin.lng,
         stores=stores,
         nearest_outside_mi=nearest_outside,
     )

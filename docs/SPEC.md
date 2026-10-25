@@ -97,8 +97,8 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 4. Each store shows name, distance, area, quantity, condition, price and a freshness label.
 5. Freshness: verified in the last 24 h = "Verified"; synced in the last 72 h = normal; older than 7 days = "May be out of date" warning with "Call to confirm."
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
-7. No stores in radius → show the nearest copy's distance and offer the next radius up, an alert, and online sellers.
-8. Below the store list: "Can't make it? Buy online" with official artist store, retailer exclusives, and resellers (Discogs, eBay, Amazon). These open the seller's site.
+7. No stores in radius → show the nearest copy's distance and offer the next radius up and online sellers. Alerts stay hidden until v1.1.
+8. Below the store list: "Can't make it? Buy online" with search links for Discogs marketplace, eBay, Amazon and Urban Outfitters. Include the official artist store only when its verified HTTPS URL is configured. No scraped prices or availability claims.
 
 ### Locate, hold, buy
 

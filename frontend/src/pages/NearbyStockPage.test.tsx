@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import type { NearbyStockResponse } from '../api';
 import { NearbyStockPage } from './NearbyStockPage';
 
+vi.mock('../catalog', () => ({ getCatalog: vi.fn().mockResolvedValue({ album_title: 'Rumours', artist_name: 'Fleetwood Mac', sellers: [] }) }));
+
 function mockApi(body: Partial<NearbyStockResponse>) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(

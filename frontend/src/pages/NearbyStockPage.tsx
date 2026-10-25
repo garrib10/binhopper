@@ -2,6 +2,9 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { ApiError, fetchNearbyStock, isValidZip, RADII, type NearbyStockResponse, type Radius } from '../api';
 import { RadiusPicker } from '../components/RadiusPicker';
 import { StoreCard } from '../components/StoreCard';
+import { StockMap } from '../components/StockMap';
+import { OnlineSellers, type OnlineResult } from '../components/OnlineSellers';
+import { getCatalog } from '../catalog';
 
 interface Props {
   albumId: number;
@@ -35,12 +38,22 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
   const [radius, setRadius] = useState<Radius>(initialRadius);
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [attempt, setAttempt] = useState(0);
+  const [online, setOnline] = useState<OnlineResult | null>(null);
+  const [onlineError, setOnlineError] = useState(false);
+  useEffect(() => {
+    const controller = new AbortController();
+    setOnline(null); setOnlineError(false);
+    getCatalog<OnlineResult>(`/albums/${albumId}/online`, controller.signal)
+      .then((data) => { if (!controller.signal.aborted) setOnline(data); })
+      .catch(() => { if (!controller.signal.aborted) setOnlineError(true); });
+    return () => controller.abort();
+  }, [albumId, attempt]);
 
   useEffect(() => {
     const controller = new AbortController();
     setState({ kind: 'loading' });
     fetchNearbyStock(albumId, zip, radius, controller.signal)
-      .then((data) => setState({ kind: 'loaded', data }))
+      .then((data) => { if (!controller.signal.aborted) setState({ kind: 'loaded', data }); })
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
         setState({ kind: 'error', ...describeError(err) });
@@ -63,11 +76,11 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
   const nextRadius = RADII.find((r) => r > radius);
 
   return (
-    <main id="content" className="page">
+    <main id="content" className="page nearby-page">
       <header className="page__header">
         <p className="eyebrow">Looking for</p>
-        <h1 className="display">{albumTitle}</h1>
-        <p className="muted">{artistName}</p>
+        <h1 className="display">{online?.album_title ?? albumTitle}</h1>
+        <p className="muted">{online?.artist_name ?? artistName}</p>
       </header>
 
       <div className="controls">
@@ -92,6 +105,8 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
         <RadiusPicker value={radius} onChange={setRadius} />
       </div>
 
+      <div className="nearby-layout">
+      {state.kind === 'loaded' && <StockMap data={state.data} />}
       <section aria-live="polite" aria-busy={state.kind === 'loading'}>
         {state.kind === 'loading' && <p className="muted">Finding shops…</p>}
 
@@ -127,14 +142,20 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
             {state.data.nearest_outside_mi !== null && (
               <p className="muted">Nearest copy is {state.data.nearest_outside_mi} mi away.</p>
             )}
+            <p>No shop in this radius has this album right now.</p>
             {nextRadius && (
               <button type="button" className="button button--primary" onClick={() => setRadius(nextRadius)}>
                 Try {nextRadius} mi
               </button>
             )}
+            {online?.sellers?.length ? <a href="#online-sellers">See online sellers instead</a> : null}
           </div>
         )}
+        <OnlineSellers data={online} />
+        {onlineError && <p className="muted">Online sellers are unavailable right now.</p>}
       </section>
+      </div>
+      <p className="osm-credit">Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</p>
     </main>
   );
 }

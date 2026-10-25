@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../test/fixtures';
 import type { NearbyStockResponse } from '../src/api';
 
 // These checks use only GET requests. They tolerate sample data aging between deploys

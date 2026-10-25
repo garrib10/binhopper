@@ -132,3 +132,14 @@ def test_verified_listing_sorts_before_closer_unverified(client, session, pressi
     session.commit()
     names = [s["store_name"] for s in get_stock(client, pressing.album_id).json()["stores"]]
     assert names == ["Verified", "Close"]
+
+
+def test_AC_01_map_uses_zip_center_and_store_coordinates(client, session, pressing):
+    listing = add_store(session, pressing, 'Mapped fixture', 3)
+    listing.store.phone = '+1 203 555 0101'
+    session.commit()
+    data = get_stock(client, pressing.album_id).json()
+    assert (data['center_lat'], data['center_lng']) == ZIP_10011
+    assert data['stores'][0]['lat'] == listing.store.lat
+    assert data['stores'][0]['lng'] == listing.store.lng
+    assert data['stores'][0]['phone'] == '+1 203 555 0101'

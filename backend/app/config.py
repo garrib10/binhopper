@@ -1,4 +1,4 @@
-from pydantic import field_validator
+from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     discogs_token: str = ""
     discogs_user_agent: str = "Binhopper/0.1 (catalog-gap-worker; github.com/garrib10/binhopper)"
     cors_origins: list[str] = ["http://localhost:5173"]
+    # Manually verified artist-ID → official shop URL; never guessed from a name.
+    artist_store_urls: dict[int, HttpUrl] = Field(default_factory=dict)
 
     @field_validator("database_url", mode="before")
     @classmethod

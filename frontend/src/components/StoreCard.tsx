@@ -2,7 +2,7 @@ import type { Freshness, NearbyStore } from '../api';
 
 const FRESHNESS_LABEL: Record<Freshness, string | null> = {
   verified: 'Verified on the shelf',
-  current: null,
+  current: 'Current stock',
   out_of_date: 'May be out of date: call to confirm',
   reported_missing: 'Reported missing today',
 };
@@ -16,6 +16,7 @@ interface Props {
 
 export function StoreCard({ store, index }: Props) {
   const label = FRESHNESS_LABEL[store.freshness];
+  const phone = store.phone?.replace(/[^+\d]/g, '');
   return (
     <li className={`store-card store-card--${store.freshness}`}>
       <div className="store-card__row">
@@ -39,6 +40,13 @@ export function StoreCard({ store, index }: Props) {
             <a href={store.discogs_url}>Data provided by Discogs.</a>}
         </div>
         <span className="store-card__price">{price.format(store.price)}</span>
+      </div>
+      <div className="store-card__actions">
+        {phone && <a className="button" href={`tel:${phone}`}>
+          {store.freshness === 'out_of_date' ? 'Call to confirm' : 'Call shop'}</a>}
+        {Number.isFinite(store.lat) && Number.isFinite(store.lng) &&
+          <a className="button" href={`https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`}
+            aria-label={`Directions to ${store.store_name}`}>Directions</a>}
       </div>
     </li>
   );

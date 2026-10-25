@@ -128,3 +128,14 @@ Run on staging before each release, at phone and desktop size, in light and dark
 - [ ] API down (stop the backend): "Can't reach Binhopper right now." and Try again works
 - [ ] Privacy: a second account can't see the first account's collection or wishlist
 - [ ] Anything that felt confusing: file an issue
+
+### Phase 4 nearby map coverage
+
+`test_online_sellers.py` names AC-03/04 for encoded album search links, missing
+artists' official shops, unsafe URLs and unknown/expired albums. Nearby stock
+continues to cover AC-01–06. `StoreCard.test.tsx` covers AC-05's callable stale
+stock and directions without a precise-origin parameter. Playwright nearby-stock
+cases cover map pins refreshing with ZIP/radius, AC-03 widening/online fallback,
+AC-04 invalid ZIP, stale calls, and screenshots at 390/1440 in light/dark modes.
+`frontend/test/fixtures.ts` automatically intercepts external map/Discogs services
+for **both** browser suites. System tests retain the real app API and MySQL.

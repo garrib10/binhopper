@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../test/fixtures';
 
 const album = { id: 1, title: 'Rumours', artist: { id: 1, name: 'Fleetwood Mac' }, year: 1977,
   format: 'LP', cover_url: null, label: 'Warner Bros.', store_count: 3, lowest_price: 26,

@@ -97,8 +97,8 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 4. Each store shows name, distance, area, quantity, condition, price and a freshness label.
 5. Freshness: Discogs-sourced inventory is hidden at six hours since its last successful sync, even if a user verified it more recently. Manual and user-report stock verified in the last 24 h shows "Verified"; otherwise older than 7 days shows "May be out of date" with "Call to confirm." Two missing reports in 24 h show "Reported missing today". Discogs cards link their individual listing with "Data provided by Discogs."
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
-7. No stores in radius → show the nearest copy's distance and offer the next radius up, an alert, and online sellers.
-8. Below the store list: "Can't make it? Buy online" with official artist store, retailer exclusives, and resellers (Discogs, eBay, Amazon). These open the seller's site.
+7. No stores in radius → show the nearest copy's distance and offer the next radius up and online sellers. Alerts stay hidden until v1.1.
+8. Below the store list: "Can't make it? Buy online" with search links for Discogs marketplace, eBay, Amazon and Urban Outfitters. Include the official artist store only when its verified HTTPS URL is configured. No scraped prices or availability claims.
 
 ### Locate, hold, buy
 

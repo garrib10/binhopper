@@ -1,7 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../test/fixtures';
 
 /**
- * Nearby stock end to end: real API, real MySQL, nothing mocked.
+ * Nearby stock end to end: real API and MySQL; third-party map/Discogs services mocked.
  *
  * Data comes from backend/scripts/seed_sample.py (Rumours, four NYC shops around ZIP
  * 10011) plus ZIP 06010 from tests/fixtures/gazetteer_zcta_sample.txt, which is about
@@ -74,6 +74,25 @@ test('a 4-digit ZIP is rejected without calling the API', async ({ page }) => { 
   await expect(page.getByRole('alert')).toHaveText('Enter a 5-digit ZIP code');
   expect(apiCalls).toEqual([]);
 });
+
+for (const theme of ['Light', 'Dark']) {
+  test(`AC-01 AC-03 AC-04 map follows ZIP and radius with real API in ${theme}`, async ({ page }) => {
+    await page.getByRole('button', { name: theme }).click();
+    await expect(page.locator('.shop-marker')).toHaveCount(4);
+    await expect(page.getByRole('link', { name: 'Discogs marketplace' })).toHaveAttribute('href', /Rumours/);
+    await page.screenshot({ path: test.info().outputPath(`nearby-${theme}.png`), fullPage: true });
+    await searchZip(page, '06010');
+    await expect(page.getByRole('heading', { name: 'Nothing within 25 mi' })).toBeVisible();
+    await expect(page.locator('.shop-marker')).toHaveCount(0);
+    await expect(page.getByText('25 mi radius · Centered on ZIP 06010, not your precise location.')).toBeVisible();
+    await page.screenshot({ path: test.info().outputPath(`empty-${theme}.png`), fullPage: true });
+    await page.getByRole('button', { name: '100 mi' }).click();
+    await expect(page.locator('.shop-marker')).toHaveCount(4);
+    await searchZip(page, '1001');
+    await expect(page.getByRole('alert')).toHaveText('Enter a 5-digit ZIP code');
+    await expect(page.locator('.shop-marker')).toHaveCount(4);
+  });
+}
 
 
 test('AC-05 fictional manual stock retains its stale warning without a marketplace attribution', async ({ page }) => {

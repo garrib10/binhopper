@@ -13,6 +13,9 @@ export interface NearbyStore {
   quantity: number;
   freshness: Freshness;
   last_updated_at: string | null;
+  lat?: number;
+  lng?: number;
+  phone?: string | null;
   source?: string;
   discogs_url?: string | null;
 }
@@ -21,6 +24,8 @@ export interface NearbyStockResponse {
   album_id: number;
   zip: string;
   radius_mi: number;
+  center_lat?: number;
+  center_lng?: number;
   stores: NearbyStore[];
   nearest_outside_mi: number | null;
 }

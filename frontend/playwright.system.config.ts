@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * System tests: the built frontend (vite preview) against the real FastAPI app and a
- * real, seeded MySQL database. Nothing is mocked. Run with `npm run e2e:system`.
+ * real, seeded MySQL database. External map and Discogs services are mocked; the app API and database are real. Run with `npm run e2e:system`.
  *
  * The database must already be migrated and seeded (see README.md › Tests). The API
  * and preview use their own ports (8010, 4173) so they don't clash with dev servers.
@@ -49,7 +49,7 @@ export default defineConfig({
       url: `http://127.0.0.1:${APP_PORT}`,
       reuseExistingServer: false,
       timeout: 180_000,
-      env: { API_PROXY_TARGET: `http://127.0.0.1:${API_PORT}` },
+      env: { API_PROXY_TARGET: `http://127.0.0.1:${API_PORT}`, VITE_MAP_TILE_URL: 'https://tiles.binhopper.test/{z}/{x}/{y}.svg', VITE_MAP_ATTRIBUTION: 'Test tiles · © OpenStreetMap contributors' },
     },
   ],
 });

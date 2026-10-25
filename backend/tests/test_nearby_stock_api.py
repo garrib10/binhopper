@@ -14,6 +14,7 @@ def add_store(session, pressing, name, miles, **listing):
     session.add(store)
     session.flush()
     row = StockListing(
+        source=listing.get("source", "manual"),
         store_id=store.id,
         pressing_id=pressing.id,
         price=listing.get("price", 25),

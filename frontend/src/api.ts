@@ -16,6 +16,8 @@ export interface NearbyStore {
   lat?: number;
   lng?: number;
   phone?: string | null;
+  source?: string;
+  discogs_url?: string | null;
 }
 
 export interface NearbyStockResponse {

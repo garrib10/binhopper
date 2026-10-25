@@ -95,7 +95,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 2. Distance = straight-line from the ZIP's center point to the store, in miles, rounded to one decimal.
 3. Only stores within the radius appear, sorted by stock freshness tier, then distance.
 4. Each store shows name, distance, area, quantity, condition, price and a freshness label.
-5. Freshness: verified in the last 24 h = "Verified"; synced in the last 72 h = normal; older than 7 days = "May be out of date" warning with "Call to confirm."
+5. Freshness: Discogs-sourced inventory is hidden at six hours since its last successful sync, even if a user verified it more recently. Manual and user-report stock verified in the last 24 h shows "Verified"; otherwise older than 7 days shows "May be out of date" with "Call to confirm." Two missing reports in 24 h show "Reported missing today". Discogs cards link their individual listing with "Data provided by Discogs."
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
 7. No stores in radius → show the nearest copy's distance and offer the next radius up and online sellers. Alerts stay hidden until v1.1.
 8. Below the store list: "Can't make it? Buy online" with search links for Discogs marketplace, eBay, Amazon and Urban Outfitters. Include the official artist store only when its verified HTTPS URL is configured. No scraped prices or availability claims.
@@ -163,7 +163,7 @@ Launch data comes from Discogs (catalog and shop inventory), a places API (shop 
 
 **Refresh rules**
 
-- Shop inventories from Discogs sync at least every 6 hours (target about every 4, staggered); a Discogs-sourced listing older than 6 hours is hidden (Discogs API Terms of Use). Manual and user-reported stock keep the 7-day rule.
+- Shop inventories from Discogs sync about every 4 hours, staggered in the separate worker. All pages must succeed before replacing a snapshot; missing listings get quantity 0. Only for-sale vinyl with known release IDs and USD prices is shown (v1 prices are USD). Unknown releases wait for a CC0 import. Discogs-sourced inventory is hidden at six hours since sync, regardless of user verification; expired prices, quantities and condition are scrubbed by the worker. Manual and user-reported stock keep the 7-day rule.
 - A global request queue keeps total Discogs calls under 60 per minute.
 - Catalog data comes from the monthly CC0 data dumps; API lookups fill gaps and are refreshed or replaced within 6 hours.
 - Freshness labels on listings use `last_verified_at` (user report) first, then `last_synced_at`.

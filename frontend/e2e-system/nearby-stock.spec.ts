@@ -93,3 +93,9 @@ for (const theme of ['Light', 'Dark']) {
     await expect(page.locator('.shop-marker')).toHaveCount(4);
   });
 }
+
+
+test('AC-05 fictional manual stock retains its stale warning without a marketplace attribution', async ({ page }) => {
+  await expect(page.getByText('May be out of date: call to confirm')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toHaveCount(0);
+});

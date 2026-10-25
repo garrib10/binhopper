@@ -4,7 +4,7 @@ import { expect, test, type Page } from '../test/fixtures';
 const STORES = [
   { listing_id: 1, store_id: 1, store_name: 'Spin Cycle Records', area: 'Chelsea', distance_mi: 3.2,
     lat: 40.75, lng: -74, phone: '+1 212 555 0101', pressing_id: 1, pressing_note: '180g reissue', price: 26, condition: 'New', quantity: 2,
-    freshness: 'current', last_updated_at: null },
+    freshness: 'current', last_updated_at: null, source: 'discogs', discogs_url: 'https://www.discogs.com/sell/item/123' },
   { listing_id: 2, store_id: 2, store_name: 'Second Pressing', area: 'Williamsburg', distance_mi: 8.7,
     lat: 40.8, lng: -74, phone: null, pressing_id: 2, pressing_note: 'Original press', price: 18, condition: 'VG+', quantity: 1,
     freshness: 'verified', last_updated_at: null },
@@ -94,7 +94,7 @@ for (const theme of ['Light', 'Dark']) {
     await page.getByRole('button', { name: theme }).click();
     await page.route('**/api/albums/*/stock?*', route => route.fulfill({ json: {
       album_id: 1, zip: '10011', center_lat: 40.74, center_lng: -74, radius_mi: 10,
-      stores: [{ ...STORES[0], freshness: 'out_of_date' }], nearest_outside_mi: null,
+      stores: [{ ...STORES[0], source: 'manual', discogs_url: null, freshness: 'out_of_date' }], nearest_outside_mi: null,
     } }));
     await page.getByRole('button', { name: '10 mi' }).click();
     await expect(page.getByRole('link', { name: 'Call to confirm' })).toHaveAttribute('href', 'tel:+12125550101');
@@ -109,5 +109,20 @@ for (const theme of ['Light', 'Dark']) {
     await expect(page.getByRole('link', { name: /alert/i })).toHaveCount(0);
     await page.screenshot({ path: test.info().outputPath(`nearby-empty-${theme}.png`), fullPage: true });
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+}
+
+
+test('AC-05 Discogs stock has a followed individual-listing attribution', async ({ page }) => {
+  const link = page.getByRole('link', { name: 'Data provided by Discogs.' });
+  await expect(link).toHaveAttribute('href', 'https://www.discogs.com/sell/item/123');
+  await expect(link).not.toHaveAttribute('rel', /nofollow/);
+});
+
+for (const theme of ['Light', 'Dark']) {
+  test(`AC-05 attribution is visible in ${theme}`, async ({ page }) => {
+    await page.getByRole('button', { name: theme }).click();
+    await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toBeVisible();
+    await page.screenshot({ path: test.info().outputPath(`inventory-${theme}.png`), fullPage: true });
   });
 }

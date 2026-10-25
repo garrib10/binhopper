@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from sqlalchemy import (
     JSON,
     Boolean,
+    BigInteger,
     DateTime,
     Double,
     ForeignKey,
@@ -141,6 +142,7 @@ class Store(Base):
     hours: Mapped[dict | None] = mapped_column(JSON)
     discogs_seller_name: Mapped[str | None] = mapped_column(String(120), unique=True)
     source: Mapped[str] = mapped_column(String(30), default="manual")  # manual | places
+    inventory_next_sync: Mapped[datetime | None] = mapped_column(DateTime, index=True)
 
 
 class StockListing(Base):
@@ -155,6 +157,7 @@ class StockListing(Base):
     source: Mapped[str] = mapped_column(String(30), default="discogs")  # discogs | manual | report
     last_synced_at: Mapped[datetime | None] = mapped_column(DateTime)
     last_verified_at: Mapped[datetime | None] = mapped_column(DateTime)
+    discogs_listing_id: Mapped[int | None] = mapped_column(BigInteger, unique=True)
 
     store: Mapped[Store] = relationship()
     pressing: Mapped[Pressing] = relationship()

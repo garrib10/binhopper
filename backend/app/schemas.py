@@ -21,6 +21,8 @@ class NearbyStore(BaseModel):
     lat: float
     lng: float
     phone: str | None
+    source: str = "manual"
+    discogs_url: str | None = None
 
 
 class NearbyStockResponse(BaseModel):

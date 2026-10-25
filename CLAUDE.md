@@ -48,6 +48,7 @@ cp .env.example .env
 alembic upgrade head                     # creates/updates tables from migrations/versions/
 # Changed a model? alembic revision --autogenerate -m "what changed", review it, commit it
 python -m scripts.seed_sample            # fictional sample data
+python -m scripts.seed_test_data         # test cases: radius edges, every freshness tier (not for demos)
 # All US ZIPs: download + unzip the Census ZCTA Gazetteer file first (see README.md), then
 python -m scripts.load_zip_codes 2026_Gaz_zcta_national.txt   # safe to re-run
 uvicorn app.main:app --reload            # API on :8000, try it at /docs

@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 from app.db import get_session
 from app.geo import bounding_box, haversine_mi, within_radius
 from app.models import Album, AlbumGenre, Artist, Pressing, StockListing, Store, WishlistItem, ZipCode
+from app.inventory import visible_inventory
 from app.routers.stock import get_now
 
 router = APIRouter(prefix="/api", tags=["catalog"])
@@ -38,7 +39,7 @@ def origin(session, zip, radius):
 
 
 def listing_terms(lp, new, used, under_30, now):
-    terms = [StockListing.quantity > 0, visible(Pressing, now)]
+    terms = [StockListing.quantity > 0, visible(Pressing, now), visible_inventory(now)]
     if lp:
         terms.append(Pressing.format.ilike("%LP%"))
     if new != used:

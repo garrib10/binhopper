@@ -10,6 +10,7 @@ from app.catalog_refresh import apply_response, expire
 from app.config import settings
 from app.db import SessionLocal, engine
 from app.discogs import RequestQueue, enqueue
+from app.inventory import drain_inventory
 from app.models import CatalogJob, utcnow
 
 log = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ log = logging.getLogger(__name__)
 def drain(queue, now=utcnow):
     s = queue.session
     expire(s, now())
+    drain_inventory(queue, now)
     jobs = s.scalars(select(CatalogJob).where(CatalogJob.next_fetch <= now()).order_by(CatalogJob.id)).all()
     for job in jobs:
         try:

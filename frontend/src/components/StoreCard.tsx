@@ -35,6 +35,8 @@ export function StoreCard({ store, index }: Props) {
             </span>
           </div>
           {label && <p className={`store-card__freshness`}>{label}</p>}
+          {store.source === 'discogs' && store.discogs_url &&
+            <a href={store.discogs_url}>Data provided by Discogs.</a>}
         </div>
         <span className="store-card__price">{price.format(store.price)}</span>
       </div>

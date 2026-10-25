@@ -74,3 +74,9 @@ test('a 4-digit ZIP is rejected without calling the API', async ({ page }) => { 
   await expect(page.getByRole('alert')).toHaveText('Enter a 5-digit ZIP code');
   expect(apiCalls).toEqual([]);
 });
+
+
+test('AC-05 fictional manual stock retains its stale warning without a marketplace attribution', async ({ page }) => {
+  await expect(page.getByText('May be out of date: call to confirm')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toHaveCount(0);
+});

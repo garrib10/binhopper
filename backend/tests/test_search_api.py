@@ -51,7 +51,7 @@ def test_filters_cannot_match_different_pressings_of_the_same_album(client, sess
     cd = Pressing(album_id=album.id, format='CD')
     session.add_all([vinyl, cd])
     session.flush()
-    session.add_all([StockListing(store_id=shop.id, pressing_id=vinyl.id, price=40, condition='VG+'),
-                     StockListing(store_id=shop.id, pressing_id=cd.id, price=20, condition='New')])
+    session.add_all([StockListing(source="manual", store_id=shop.id, pressing_id=vinyl.id, price=40, condition='VG+'),
+                     StockListing(source="manual", store_id=shop.id, pressing_id=cd.id, price=20, condition='New')])
     session.commit()
     assert client.get('/api/search?q=Cross&lp=true&new=true&under_30=true').json()['albums'] == []

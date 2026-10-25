@@ -101,7 +101,7 @@ def load(session: Session, now: datetime | None = None) -> bool:
     session.flush()
 
     def listing(store: str, **times) -> StockListing:
-        return StockListing(store_id=stores[store].id, pressing_id=reissue.id, price=25,
+        return StockListing(source="manual", store_id=stores[store].id, pressing_id=reissue.id, price=25,
                             condition="New", quantity=1, **times)
 
     listings = {name: listing(name, last_synced_at=now - timedelta(hours=3))

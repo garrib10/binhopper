@@ -69,14 +69,14 @@ def load(s: Session) -> bool:
     s.flush()
     s.add_all(
         [
-            StockListing(store_id=stores[0].id, pressing_id=reissue.id, price=26, condition="New",
+            StockListing(source="manual", store_id=stores[0].id, pressing_id=reissue.id, price=26, condition="New",
                          quantity=2, last_synced_at=now - timedelta(hours=3)),
-            StockListing(store_id=stores[1].id, pressing_id=original.id, price=18, condition="VG+",
+            StockListing(source="manual", store_id=stores[1].id, pressing_id=original.id, price=18, condition="VG+",
                          quantity=1, last_synced_at=now - timedelta(hours=20),
                          last_verified_at=now - timedelta(hours=2)),
-            StockListing(store_id=stores[2].id, pressing_id=reissue.id, price=28, condition="New",
+            StockListing(source="manual", store_id=stores[2].id, pressing_id=reissue.id, price=28, condition="New",
                          quantity=3, last_synced_at=now - timedelta(days=9)),
-            StockListing(store_id=stores[3].id, pressing_id=original.id, price=22, condition="NM",
+            StockListing(source="manual", store_id=stores[3].id, pressing_id=original.id, price=22, condition="NM",
                          quantity=1, last_synced_at=now - timedelta(days=1)),
         ]
     )

@@ -186,3 +186,28 @@ verify the API/catalog and frontend, and document the incident and corrected pro
 - [Vercel deployment protection](https://vercel.com/docs/deployment-protection)
 - [GitHub workflow_run semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
 - [Better Stack HTTP monitors](https://betterstack.com/docs/uptime/uptime-monitor/)
+
+## Discogs catalog and inventory worker (#90)
+
+From `backend/`, after `alembic upgrade head`, set `DISCOGS_TOKEN` and a unique
+`DISCOGS_USER_AGENT` in the backend environment, then run `python -m app.worker`.
+`python -m app.worker --once` runs one due-job pass; new shops are spread across
+four hours, so this does not force every shop to sync immediately. Fill each
+verified shop's `stores.discogs_seller_name` from its own website's seller link.
+Unknown releases are skipped until imported from the CC0 dumps. Non-USD listings
+are skipped because v1 displays USD; there is no implicit currency conversion.
+
+In **each** Railway environment create a separate `worker` service from the same
+repository and branch as its API, Root Directory `/backend`. Override its config
+file to `/backend/railway.worker.json`. Set its `DATABASE_URL` to that environment's
+MySQL reference, plus `DISCOGS_TOKEN` and `DISCOGS_USER_AGENT`. Keep one replica,
+Wait for CI on, and no public domain. The worker config overrides the API start
+command and health check; do not run it inside uvicorn. Deploy the API/migrations
+first, then the worker. The MySQL advisory lease prevents overlapping workers and
+all catalog/inventory calls share durable rolling quota reservations.
+
+A failed inventory page retains the previous snapshot and retries after five
+minutes; API readers hide it at six hours even while the worker is down. The
+worker scrubs expired marketplace values. Watch worker failure logs and last sync
+times: stale content stays hidden rather than being kept on screen. Fictional
+sample/test stock is explicitly manual and never triggers seller requests.

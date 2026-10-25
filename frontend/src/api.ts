@@ -13,6 +13,8 @@ export interface NearbyStore {
   quantity: number;
   freshness: Freshness;
   last_updated_at: string | null;
+  source?: string;
+  discogs_url?: string | null;
 }
 
 export interface NearbyStockResponse {

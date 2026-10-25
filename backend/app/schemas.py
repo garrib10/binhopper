@@ -18,6 +18,8 @@ class NearbyStore(BaseModel):
     quantity: int
     freshness: Freshness
     last_updated_at: datetime | None
+    source: str = "manual"
+    discogs_url: str | None = None
 
 
 class NearbyStockResponse(BaseModel):

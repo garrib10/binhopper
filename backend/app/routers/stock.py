@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.db import get_session
 from app.freshness import SORT_TIER, classify
+from app.inventory import visible_inventory
 from app.geo import ALLOWED_RADII_MI, bounding_box, display_miles, haversine_mi, within_radius
 from app.models import Album, Pressing, StockListing, StockReport, Store, ZipCode, utcnow
 from app.schemas import NearbyStockResponse, NearbyStore
@@ -42,7 +43,7 @@ def nearby_stock(
         select(StockListing)
         .join(StockListing.store)
         .join(StockListing.pressing)
-        .where(Pressing.album_id == album_id, StockListing.quantity > 0,
+        .where(Pressing.album_id == album_id, StockListing.quantity > 0, visible_inventory(now),
                or_(Pressing.api_fetched_at.is_(None), Pressing.api_fetched_at > now - timedelta(hours=6)))
         .options(joinedload(StockListing.store), joinedload(StockListing.pressing))
     )
@@ -78,6 +79,9 @@ def nearby_stock(
                 price=float(listing.price),
                 condition=listing.condition,
                 quantity=listing.quantity,
+                source=listing.source,
+                discogs_url=(f"https://www.discogs.com/sell/item/{listing.discogs_listing_id}"
+                             if listing.source == "discogs" and listing.discogs_listing_id else None),
                 freshness=fresh,
                 last_updated_at=max(
                     (t for t in (listing.last_synced_at, listing.last_verified_at) if t),

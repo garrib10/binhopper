@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
 const STORES = [
   { listing_id: 1, store_id: 1, store_name: 'Spin Cycle Records', area: 'Chelsea', distance_mi: 3.2,
     pressing_id: 1, pressing_note: '180g reissue', price: 26, condition: 'New', quantity: 2,
-    freshness: 'current', last_updated_at: null },
+    freshness: 'current', last_updated_at: null, source: 'discogs', discogs_url: 'https://www.discogs.com/sell/item/123' },
   { listing_id: 2, store_id: 2, store_name: 'Second Pressing', area: 'Williamsburg', distance_mi: 8.7,
     pressing_id: 2, pressing_note: 'Original press', price: 18, condition: 'VG+', quantity: 1,
     freshness: 'verified', last_updated_at: null },
@@ -74,5 +74,20 @@ for (const theme of ['Light', 'Dark']) {
     await mockStockApi(page);
     await page.getByRole('button', { name: 'Try again' }).click();
     await expect(page.getByRole('heading', { name: '2 stores have it' })).toBeVisible();
+  });
+}
+
+
+test('AC-05 Discogs stock has a followed individual-listing attribution', async ({ page }) => {
+  const link = page.getByRole('link', { name: 'Data provided by Discogs.' });
+  await expect(link).toHaveAttribute('href', 'https://www.discogs.com/sell/item/123');
+  await expect(link).not.toHaveAttribute('rel', /nofollow/);
+});
+
+for (const theme of ['Light', 'Dark']) {
+  test(`AC-05 attribution is visible in ${theme}`, async ({ page }) => {
+    await page.getByRole('button', { name: theme }).click();
+    await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toBeVisible();
+    await page.screenshot({ path: test.info().outputPath(`inventory-${theme}.png`), fullPage: true });
   });
 }

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.db import get_session
@@ -31,7 +31,8 @@ def nearby_stock(
 ) -> NearbyStockResponse:
     if radius not in ALLOWED_RADII_MI:
         raise HTTPException(422, f"radius must be one of {list(ALLOWED_RADII_MI)}")
-    if session.get(Album, album_id) is None:
+    album = session.get(Album, album_id)
+    if album is None or (album.api_fetched_at is not None and now - album.api_fetched_at >= timedelta(hours=6)):
         raise HTTPException(404, "Album not found")
     origin = session.get(ZipCode, zip)
     if origin is None:
@@ -41,7 +42,8 @@ def nearby_stock(
         select(StockListing)
         .join(StockListing.store)
         .join(StockListing.pressing)
-        .where(Pressing.album_id == album_id, StockListing.quantity > 0)
+        .where(Pressing.album_id == album_id, StockListing.quantity > 0,
+               or_(Pressing.api_fetched_at.is_(None), Pressing.api_fetched_at > now - timedelta(hours=6)))
         .options(joinedload(StockListing.store), joinedload(StockListing.pressing))
     )
 

@@ -10,6 +10,8 @@ dependencies = [
     "pymysql>=1.1",
     "cryptography>=42",
     "alembic>=1.13",
+    "apscheduler>=3.11,<4",
+    "httpx>=0.27",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
 ]

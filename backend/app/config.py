@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper"
+    discogs_token: str = ""
+    discogs_user_agent: str = "Binhopper/0.1 (catalog-gap-worker; github.com/garrib10/binhopper)"
     cors_origins: list[str] = ["http://localhost:5173"]
 
     @field_validator("database_url", mode="before")

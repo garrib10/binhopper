@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ThemePicker } from './components/ThemePicker';
 import { SearchPage } from './pages/SearchPage';
+import { ArtistPage } from './pages/ArtistPage';
+import { AlbumPage } from './pages/AlbumPage';
 import { NearbyStockPage } from './pages/NearbyStockPage';
 import { applyTheme, loadThemePreference, saveThemePreference, type ThemePreference } from './theme';
 import { loadLocation, saveLocation } from './location';
@@ -73,8 +75,8 @@ export function AppShell() {
       <Route path="/search" element={<SearchPage />} />
       <Route path="/genres" element={<SearchPage />} />
       <Route path="/genres/:genre/years" element={<SearchPage />} />
-      <Route path="/artists/:id" element={<Placeholder title="Artist" />} />
-      <Route path="/albums/:id" element={<Placeholder title="Album" />} />
+      <Route path="/artists/:id" element={<ArtistPage />} />
+      <Route path="/albums/:id" element={<AlbumPage />} />
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />
       <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
       <Route path="/wishlist" element={<Placeholder title="Wishlist" />} />

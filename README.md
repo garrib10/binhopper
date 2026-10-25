@@ -15,6 +15,11 @@ and track your collection.
 | `design/` | Mockups for every screen (mobile, desktop, dark mode) and how to read them |
 | `docs/` | `SPEC.md`: MVP scope, feature rules, data model, API, acceptance criteria |
 
+## Catalog
+
+See [catalog import and worker setup](docs/CATALOG.md) for the offline CC0 sample, monthly
+dump imports, API freshness rules and the separate Railway worker service.
+
 ## Hosting
 
 See [the deployment guide](docs/DEPLOY.md) for Railway/Vercel setup, environment variables,

@@ -28,7 +28,7 @@ async function mockStockApi(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await mockStockApi(page);
-  await page.goto('/');
+  await page.goto('/albums/1/stores');
 });
 
 test('shows nearby stores and updates when the radius changes', async ({ page }) => {

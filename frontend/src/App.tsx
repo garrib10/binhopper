@@ -1,30 +1,86 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ThemePicker } from './components/ThemePicker';
 import { NearbyStockPage } from './pages/NearbyStockPage';
 import { applyTheme, loadThemePreference, saveThemePreference, type ThemePreference } from './theme';
+import { loadLocation, saveLocation } from './location';
 
-export function App() {
+export function App() { return <BrowserRouter><AppShell /></BrowserRouter>; }
+
+export function Placeholder({ title }: { title: string }) {
+  return <main id="content" className="page shell-page"><h1 className="display">{title}</h1>
+    <p className="muted">This part of Binhopper is coming soon.</p>
+    <nav aria-label="Explore Binhopper" className="explore-links">
+      <Link to="/search">Search records</Link><Link to="/genres">Browse genres</Link>
+      <Link to="/genres/Rock/years">Browse years</Link><Link to="/albums/1">Sample album</Link><Link to="/artists/1">Sample artist</Link>
+      <Link to="/albums/1/stores">Find nearby stock</Link><Link to="/import">Import from Discogs</Link>
+      <Link to="/collection/1">Your copy</Link><Link to="/records/1">Locate, hold or buy</Link>
+      <Link to="/onboarding">Get started</Link><Link to="/stock/1/report">Report stock</Link>
+    </nav></main>;
+}
+
+function NearbyRoute() {
+  const { id = '' } = useParams();
+  const [saved] = useState(loadLocation);
+  if (!/^[1-9]\d*$/.test(id)) return <NotFound />;
+  return <NearbyStockPage key={id} albumId={Number(id)} albumTitle={id === '1' ? 'Rumours' : 'Nearby stock'}
+    artistName={id === '1' ? 'Fleetwood Mac' : ''} initialZip={saved.zip} initialRadius={saved.radius}
+    onLocationChange={saveLocation} />;
+}
+
+function NotFound() {
+  return <main id="content" className="page shell-page"><h1 className="display">Page not found</h1>
+    <p>That record may have skipped. <Link to="/search">Back to search</Link>.</p></main>;
+}
+
+function SearchEntry() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [query, setQuery] = useState(params.get('q') ?? '');
+  useEffect(() => { setQuery(params.get('q') ?? ''); }, [params]);
+  return <form className="header-search" role="search" onSubmit={(event) => {
+    event.preventDefault(); navigate(`/search?q=${encodeURIComponent(query)}`);
+  }}><label htmlFor="global-search" className="sr-only">Search records</label>
+    <input id="global-search" type="search" value={query} placeholder="Artist, album, label…"
+      onChange={(event) => {
+        setQuery(event.target.value);
+        if (location.pathname === '/search') navigate(`/search?q=${encodeURIComponent(event.target.value)}`, { replace: true });
+      }} /><button type="submit" aria-label="Search">↗</button></form>;
+}
+
+export function AppShell() {
   const [theme, setTheme] = useState<ThemePreference>(loadThemePreference);
-
-  useEffect(() => {
-    applyTheme(theme);
-    saveThemePreference(theme);
-  }, [theme]);
-
-  return (
-    <>
-      <header className="app-header">
-        <div className="app-header__brand">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="12" r="2.5" />
-          </svg>
-          Binhopper
-        </div>
-        <ThemePicker value={theme} onChange={setTheme} />
-      </header>
-      {/* Sample album from backend/scripts/seed_sample.py. Routing comes with the next screens. */}
-      <NearbyStockPage albumId={1} albumTitle="Rumours" artistName="Fleetwood Mac" />
-    </>
-  );
+  useEffect(() => { applyTheme(theme); saveThemePreference(theme); }, [theme]);
+  return <>
+    <a className="skip-link" href="#content">Skip to content</a>
+    <header className="app-header"><div className="shell-header">
+      <Link className="app-header__brand" to="/search"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="2.5" /></svg>Binhopper</Link>
+      <SearchEntry />
+      <nav aria-label="Main" className="main-nav">
+        <NavLink to="/search">Search</NavLink><NavLink to="/wishlist">Wishlist</NavLink>
+        <NavLink to="/albums/1/stores">Nearby</NavLink><NavLink to="/collection" end>Collection</NavLink>
+      </nav>
+      <NavLink className="profile-link" to="/you" aria-label="You: account and settings">You</NavLink>
+      <ThemePicker value={theme} onChange={setTheme} />
+    </div></header>
+    <Routes>
+      <Route path="/" element={<Navigate to="/search" replace />} />
+      <Route path="/search" element={<Placeholder title="Search records" />} />
+      <Route path="/genres" element={<Placeholder title="Genre & year" />} />
+      <Route path="/genres/:genre/years" element={<Placeholder title="Browse years" />} />
+      <Route path="/artists/:id" element={<Placeholder title="Artist" />} />
+      <Route path="/albums/:id" element={<Placeholder title="Album" />} />
+      <Route path="/albums/:id/stores" element={<NearbyRoute />} />
+      <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
+      <Route path="/wishlist" element={<Placeholder title="Wishlist" />} />
+      <Route path="/collection" element={<Placeholder title="Collection" />} />
+      <Route path="/collection/:id" element={<Placeholder title="Your copy" />} />
+      <Route path="/import" element={<Placeholder title="Import from Discogs" />} />
+      <Route path="/you/*" element={<Placeholder title="You" />} />
+      <Route path="/onboarding" element={<Placeholder title="Get started" />} />
+      <Route path="/stock/:id/report" element={<Placeholder title="Report stock" />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </>;
 }

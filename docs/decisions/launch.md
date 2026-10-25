@@ -1,14 +1,15 @@
-# Launch decisions: Discogs terms, places provider, name, metro
+# Launch decisions: Discogs terms, places provider, name, coverage
 
 Status: **draft recommendations** for #46, researched 2026-10-24. Nothing here is decided until
-you approve it. The launch metro is a question for you (last section).
+you approve it. The starting area for shop mapping is a question for you (section 4).
 
 **The short version:** Discogs' API terms are stricter than SPEC.md assumes. Content from the API
 can't be shown if it's more than 6 hours behind Discogs, and shop inventory counts as restricted
 "Marketplace Data". So the catalog should come from Discogs' CC0 monthly dumps, and shop stock
 needs a much faster refresh than "once a day". Google Places doesn't fit the planned non-Google
 map or the permanent `stores` table; for 20–40 hand-mapped shops, use OpenStreetMap or Foursquare's
-open dataset plus manual checks. The custom domain is deferred: launch on the Vercel and Railway
+open dataset plus manual checks. The app is open US-wide, with shop mapping starting in one area
+(Connecticut, Chicago or New York). The custom domain is deferred: launch on the Vercel and Railway
 addresses (`binhopper.com` is already registered).
 
 ## 1. Discogs API terms: caching data and images
@@ -99,18 +100,37 @@ If binhopper.com isn't yours: register `binhopper.app` (HTTPS-only by default, f
    classes.
 4. Save the results. If anything close shows up, talk to a trademark attorney before launch.
 
-## 4. Launch metro: your call
+## 4. Where the app works, and where shop coverage starts
 
-The mockups use New York (ZIP 10011). Three ways to choose:
+**Decision (2026-10-24): available US-wide; shop coverage starts in one area and expands.**
 
-| Option | Pros | Cons |
-| --- | --- | --- |
-| **New York City** | Matches the mockups and sample data; many shops and many that sell on Discogs; large collector base | Too many shops to cover well with 20–40; launching against a crowded scene; hard to visit shops yourself |
-| **Your home metro** | You can visit shops, recruit beta testers you know, and check stock in person | Fewer shops; may be thin on Discogs sellers; the mockups' sample data needs replacing |
-| **A mid-size record city** (for example Philadelphia, Austin or Portland) | 20–40 shops covers most of the scene; strong collector communities | You may not know it well; remote shop verification |
+- Anyone in the US can sign up. Search, album pages, wishlist, collection and Discogs import don't
+  depend on location.
+- Nearby stock works for any US ZIP (all ZIPs are loaded). Where shops are mapped, it shows them;
+  elsewhere it shows the nearest mapped copy ("Nearest copy is X mi away").
+- The hand-mapping work (#47: 20–40 shops, checked in person where possible) starts in one area,
+  then expands region by region, starting with shops that sell on Discogs, since their stock syncs
+  on its own.
 
-**Question for you:** which metro? If it's not NYC, tell me a central ZIP and I'll update the
-sample data and #47.
+Why not map the whole country at once: each shop has to be found and checked by hand; stock only
+flows in automatically for shops that sell on Discogs; refreshing hundreds of shops' inventories
+every 6 hours strains Discogs' 60-requests-per-minute limit; and an app that's empty where a new
+user lives makes a poor first impression.
+
+**Starting area: Connecticut, Chicago or New York City (your pick).**
+
+| | Connecticut | Chicago | New York City |
+| --- | --- | --- | --- |
+| Shops | Fewer, spread across towns; 20–40 covers most of the state | Big, dense scene; 20–40 covers part of it | Biggest scene; 20–40 is a small slice |
+| Checking shops in person | Easiest if it's home | Hard from a distance | Doable on trips |
+| Beta testers | People you know | Recruited remotely | Large pool of strangers |
+| Exercises the radius feature | Well: 25–50 mi searches matter in suburbs | Mostly 10 mi | Mostly 10 mi |
+| Sample data | Needs replacing | Needs replacing | Already matches the mockups |
+
+**Recommendation:** start with **Connecticut** if it's home (shops you can visit, testers you know,
+real suburban distances), with **New York** as the second region next door. Start with New York
+instead if Connecticut isn't home, because the mockups and sample data already fit. Chicago works best
+later, once adding a region is routine.
 
 ## Proposed SPEC.md changes (not applied)
 
@@ -118,7 +138,8 @@ In **Open decisions**, once you approve:
 
 ```markdown
 - [x] Backend language: decided, Python (FastAPI) with MySQL 8
-- [ ] Launch metro area: <your choice>, central ZIP <zip>
+- [x] Coverage: available US-wide; shop mapping starts in <Connecticut / Chicago / New York City>
+      (central ZIP <zip>) and expands region by region
 - [ ] Name: decided, Binhopper. Launch on the default Vercel and Railway addresses; choose a
       custom domain (binhopper.com is taken as of 2026-10-24) and run a USPTO search before the
       public launch

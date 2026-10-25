@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ThemePicker } from './components/ThemePicker';
+import { SearchPage } from './pages/SearchPage';
 import { NearbyStockPage } from './pages/NearbyStockPage';
 import { applyTheme, loadThemePreference, saveThemePreference, type ThemePreference } from './theme';
 import { loadLocation, saveLocation } from './location';
@@ -45,7 +46,10 @@ function SearchEntry() {
     <input id="global-search" type="search" value={query} placeholder="Artist, album, label…"
       onChange={(event) => {
         setQuery(event.target.value);
-        if (location.pathname === '/search') navigate(`/search?q=${encodeURIComponent(event.target.value)}`, { replace: true });
+        if (location.pathname === '/search') {
+          const next = new URLSearchParams(params); next.set('q', event.target.value); next.delete('offset');
+          navigate(`/search?${next}`, { replace: true });
+        }
       }} /><button type="submit" aria-label="Search">↗</button></form>;
 }
 
@@ -66,9 +70,9 @@ export function AppShell() {
     </div></header>
     <Routes>
       <Route path="/" element={<Navigate to="/search" replace />} />
-      <Route path="/search" element={<Placeholder title="Search records" />} />
-      <Route path="/genres" element={<Placeholder title="Genre & year" />} />
-      <Route path="/genres/:genre/years" element={<Placeholder title="Browse years" />} />
+      <Route path="/search" element={<SearchPage />} />
+      <Route path="/genres" element={<SearchPage />} />
+      <Route path="/genres/:genre/years" element={<SearchPage />} />
       <Route path="/artists/:id" element={<Placeholder title="Artist" />} />
       <Route path="/albums/:id" element={<Placeholder title="Album" />} />
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />

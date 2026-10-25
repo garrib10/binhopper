@@ -23,7 +23,7 @@ if (process.env.SYSTEM_TARGET && !remote) {
 
 export default defineConfig({
   testDir: './e2e-system',
-  testMatch: remote ? '**/staging.spec.ts' : ['**/nearby-stock.spec.ts', '**/shell.spec.ts'],
+  testMatch: remote ? ['**/staging.spec.ts', '**/search.spec.ts'] : ['**/nearby-stock.spec.ts', '**/shell.spec.ts', '**/search.spec.ts'],
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   use: {

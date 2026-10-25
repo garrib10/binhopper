@@ -31,9 +31,17 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ (github.event.workflow_run.head_branch || github.ref_name) == 'main' && 'production' || 'staging' }}
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out trusted staging branch
+        if: (github.event.workflow_run.head_branch || github.ref_name) == 'staging'
+        uses: actions/checkout@v7
         with:
-          ref: ${{ (github.event.workflow_run.head_branch || github.ref_name) == 'main' && 'refs/heads/main' || 'refs/heads/staging' }}
+          ref: refs/heads/staging
+          persist-credentials: false
+      - name: Check out trusted production branch
+        if: (github.event.workflow_run.head_branch || github.ref_name) == 'main'
+        uses: actions/checkout@v7
+        with:
+          ref: refs/heads/main
           persist-credentials: false
 
       - name: Require the CI-verified promotion commit

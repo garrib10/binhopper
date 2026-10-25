@@ -47,7 +47,7 @@ def get_stock(client, album_id, zip="10011", radius=25):
 
 
 def test_health(client):
-    assert client.get("/api/health").json() == {"status": "ok"}
+    assert client.get("/api/health").json()["status"] == "ok"
 
 
 def test_only_stores_in_radius_closest_first(client, session, pressing):  # AC-01

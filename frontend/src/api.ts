@@ -46,7 +46,8 @@ export async function fetchNearbyStock(
   signal?: AbortSignal,
 ): Promise<NearbyStockResponse> {
   const params = new URLSearchParams({ zip, radius: String(radius) });
-  const res = await fetch(`/api/albums/${albumId}/stock?${params}`, { signal });
+  const base = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+  const res = await fetch(`${base}/api/albums/${albumId}/stock?${params}`, { signal });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new ApiError(res.status, errorDetail(body) ?? 'Something went wrong');

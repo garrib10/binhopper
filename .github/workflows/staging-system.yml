@@ -1,0 +1,57 @@
+name: Staging system
+
+# Deploy includes the commit-aware post-deploy check (#82). No production trigger.
+on:
+  workflow_run:
+    workflows: [Deploy]
+    types: [completed]
+    branches: [staging]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-system
+  cancel-in-progress: true
+
+jobs:
+  system:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    env:
+      SYSTEM_TARGET: staging
+      APP_URL: ${{ vars.APP_URL }}
+      API_URL: ${{ vars.API_URL }}
+      EXPECTED_COMMIT: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Read-only system tests against staging
+        run: npm run e2e:system
+        working-directory: frontend
+      - name: Link results for release sign-off
+        if: always()
+        env:
+          CHECKED_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+        run: |
+          echo "Staging commit: $CHECKED_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deploy check: $SOURCE_RUN" >> "$GITHUB_STEP_SUMMARY"
+          echo "Copy this run's URL into the release sign-off issue." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: staging-system-report
+          path: frontend/playwright-report

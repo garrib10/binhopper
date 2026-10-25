@@ -19,7 +19,7 @@ for (const radius of [10, 25] as const) {
       res.url().startsWith(`${api}/api/albums/1/stock?`) &&
       new URL(res.url()).searchParams.get('radius') === String(radius),
     );
-    await page.goto('/');
+    await page.goto('/albums/1/stores');
     if (radius === 10) await page.getByRole('button', { name: '10 mi', exact: true }).click();
     const result = await response;
     expect(result.status()).toBe(200);
@@ -33,7 +33,7 @@ for (const radius of [10, 25] as const) {
 }
 
 test('invalid ZIP stays in the browser without an API request', async ({ page }) => { // AC-04
-  await page.goto('/');
+  await page.goto('/albums/1/stores');
   await expect(page.getByRole('heading', { level: 3 }).first()).toBeVisible();
   const calls: string[] = [];
   page.on('request', (req) => {

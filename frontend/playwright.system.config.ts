@@ -12,19 +12,29 @@ const API_PORT = 8010;
 const APP_PORT = 4173;
 const python = process.env.PYTHON ?? 'python';
 
+// Remote mode is explicitly staging-only; it never starts local servers or seeds data.
+const remote = Boolean(process.env.APP_URL);
+if (remote && (process.env.SYSTEM_TARGET !== 'staging' || !process.env.API_URL)) {
+  throw new Error('Remote system tests require SYSTEM_TARGET=staging and API_URL');
+}
+if (process.env.SYSTEM_TARGET && !remote) {
+  throw new Error('Staging system tests require APP_URL');
+}
+
 export default defineConfig({
   testDir: './e2e-system',
+  testMatch: remote ? '**/staging.spec.ts' : '**/nearby-stock.spec.ts',
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   use: {
-    baseURL: `http://127.0.0.1:${APP_PORT}`,
+    baseURL: remote ? process.env.APP_URL : `http://127.0.0.1:${APP_PORT}`,
     trace: 'on-first-retry',
   },
   projects: [
     { name: 'mobile', use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 } } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
   ],
-  webServer: [
+  webServer: remote ? undefined : [
     {
       command: `${python} -m uvicorn app.main:app --host 127.0.0.1 --port ${API_PORT}`,
       cwd: '../backend',

@@ -1,14 +1,16 @@
 name: Deploy
+run-name: Deploy ${{ github.event.workflow_run.head_branch || github.ref_name }}@${{ github.event.workflow_run.head_sha || github.sha }}
 
 # staging branch → "staging" environment; main → "production" environment.
-#
-# Hosting isn't chosen yet, so the deploy step is a placeholder: the job builds
-# and checks everything a real deploy would ship, then stops. When you pick a
-# host, replace the "Deploy" step and add its secrets to each environment
-# (Settings → Environments). Add required reviewers to "production" so every
-# production deploy waits for your approval.
+# Hosting providers auto-deploy; this workflow verifies the deployed commit.
+# Run after CI, not on push: Railway Wait for CI must not wait for a workflow
+# that itself waits for Railway. workflow_run's own SHA/ref are the default branch;
+# always use the triggering CI run's branch/SHA for environment and verification.
+
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [staging, main]
   workflow_dispatch:
 
@@ -16,15 +18,40 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: deploy-${{ github.event.workflow_run.head_branch || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   deploy:
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository &&
+       (github.event.workflow_run.head_branch == 'staging' || github.event.workflow_run.head_branch == 'main')) ||
+      (github.event_name == 'workflow_dispatch' && (github.ref_name == 'staging' || github.ref_name == 'main'))
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    environment: ${{ (github.event.workflow_run.head_branch || github.ref_name) == 'main' && 'production' || 'staging' }}
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out trusted staging branch
+        if: (github.event.workflow_run.head_branch || github.ref_name) == 'staging'
+        uses: actions/checkout@v7
+        with:
+          ref: refs/heads/staging
+          persist-credentials: false
+      - name: Check out trusted production branch
+        if: (github.event.workflow_run.head_branch || github.ref_name) == 'main'
+        uses: actions/checkout@v7
+        with:
+          ref: refs/heads/main
+          persist-credentials: false
+
+      - name: Require the CI-verified promotion commit
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA" || {
+            echo 'The release branch moved since CI; use the newer promotion run.'
+            exit 1
+          }
 
       - name: Build frontend
         uses: actions/setup-node@v7
@@ -40,9 +67,13 @@ jobs:
       - run: pip install . && python -c "import app.main"
         working-directory: backend
 
-      - name: Deploy (placeholder)
+      - name: Test deployment verifier
+        run: python -m unittest discover -s .github/scripts -p 'test_*.py'
+
+      - name: Verify deployed API commit and frontend
+        timeout-minutes: 11
         env:
-          TARGET: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
-        run: |
-          echo "Built commit $GITHUB_SHA for $TARGET."
-          echo "No host configured yet: replace this step with the real deploy."
+          API_URL: ${{ vars.API_URL }}
+          APP_URL: ${{ vars.APP_URL }}
+          GITHUB_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: python .github/scripts/check_deploy.py

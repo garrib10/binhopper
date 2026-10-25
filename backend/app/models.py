@@ -67,6 +67,9 @@ class Artist(Base):
     discogs_artist_id: Mapped[int | None] = mapped_column(Integer, unique=True)
     name: Mapped[str] = mapped_column(String(255), index=True)
     bio: Mapped[str | None] = mapped_column(Text)
+    origin: Mapped[str | None] = mapped_column(String(120))
+    image_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    api_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
     image_url: Mapped[str | None] = mapped_column(String(500))
 
 
@@ -81,6 +84,9 @@ class Album(Base):
     title: Mapped[str] = mapped_column(String(255), index=True)
     year: Mapped[int | None] = mapped_column(Integer, index=True)
     cover_url: Mapped[str | None] = mapped_column(String(500))
+    cover_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    api_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    release_type: Mapped[str] = mapped_column(String(20), default="Studio", server_default="Studio")
     # [{"position": "A1", "title": "Second Hand News"}, ...]
     tracklist: Mapped[list[dict]] = mapped_column(JSON, default=list)
     cached_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
@@ -107,7 +113,9 @@ class Pressing(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     discogs_release_id: Mapped[int | None] = mapped_column(Integer, unique=True)
     album_id: Mapped[int] = mapped_column(ForeignKey("albums.id"), index=True)
-    label: Mapped[str | None] = mapped_column(String(255))
+    api_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    exclusive_kind: Mapped[str | None] = mapped_column(String(20))
+    label: Mapped[str | None] = mapped_column(String(255), index=True)
     catalog_no: Mapped[str | None] = mapped_column(String(100))
     barcode: Mapped[str | None] = mapped_column(String(32), index=True)
     format: Mapped[str] = mapped_column(String(60), default="LP")
@@ -201,3 +209,20 @@ class ZipCode(Base):
     zip: Mapped[str] = mapped_column(String(5), primary_key=True)
     lat: Mapped[float] = mapped_column(Double)
     lng: Mapped[float] = mapped_column(Double)
+
+
+class CatalogJob(Base):
+    """Durable API-gap/image refresh queue, consumed only by the separate worker."""
+    __tablename__ = "catalog_jobs"
+    __table_args__ = (UniqueConstraint("kind", "discogs_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(10))
+    discogs_id: Mapped[int] = mapped_column(Integer)
+    next_fetch: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True)
+
+
+class DiscogsCall(Base):
+    """Persist reservations so a worker restart cannot reset its rolling quota."""
+    __tablename__ = "discogs_calls"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reserved_at: Mapped[datetime] = mapped_column(DateTime, index=True)

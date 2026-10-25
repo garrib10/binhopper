@@ -15,7 +15,7 @@ Version 1 helps vinyl collectors find a record they want in a shop near them, th
 - A useful free product comes first. No paywalls or ads on core features; monetization is decided after launch.
 - Private by default. Profiles, collections and wishlists start as "Only me"; location is used only when needed.
 - Honest stock data. Every listing shows how fresh it is, and users can confirm or flag it.
-- Launch in one metro area first and cover it well, rather than thin coverage everywhere.
+- Open to anyone in the US, but map shops one area at a time and cover each well (Connecticut first), rather than thin coverage everywhere.
 
 **Name:** Binhopper. "Spindle" in the mockups is the old placeholder. Design reference: `design/mockups/` (original light theme plus Night Session dark mode).
 
@@ -156,7 +156,7 @@ Launch data comes from Discogs (catalog and shop inventory), a places API (shop 
 | [Discogs API](https://www.discogs.com/developers) | Artists, albums, pressings, tracklists, cover art, exclusive variants | Database endpoints, cached in our tables | 60 requests/min authenticated, 25 unauthenticated; images need auth; check the API Terms of Use before caching |
 | Discogs seller inventory | What a shop has for sale, price, condition | `GET /users/{username}/inventory` for each shop's Discogs seller account | Paginated; only "For Sale" items visible; we keep a store → seller-name directory by hand |
 | Discogs data dumps | Bulk catalog seed | Monthly CC0 dumps loaded into the database | Free to use; reduces API calls |
-| Places API (Google Places or similar) | Shop names, addresses, coordinates, hours | Search "record store" in the launch metro, review results by hand | Pricing and terms per provider; store only what terms allow |
+| Places API (Google Places or similar) | Shop names, addresses, coordinates, hours | Search "record store" in the area being mapped, review results by hand | Pricing and terms per provider; store only what terms allow |
 | User stock reports | "On the shelf" / "missing" / "different price" | Report screen on store and stock pages | One report per user per listing per day |
 | Online sellers | Fallback links | Deep links to a search on the seller's site (artist store, retailer, eBay, Amazon) | No stock data or scraping; affiliate links later |
 | Spotify / Apple Music | Listen links | Album search link or ID match | Link out only |
@@ -250,21 +250,21 @@ The riskiest logic is the radius math, stock freshness and duplicate handling, s
 
 ## Open decisions and next steps
 
-The backend is decided; launch metro and places provider still need deciding, and the Discogs terms check can run alongside setup.
+The backend, coverage and starting area are decided; the places provider and the Discogs terms recommendations are in `docs/decisions/launch.md`.
 
 **Open decisions**
 
 - [ ] Backend language: decided, Python (FastAPI) with MySQL 8
-- [ ] Launch metro area (the mockups use New York, ZIP 10011)
-- [ ] Name: decided, Binhopper (still check the domain and a USPTO search before launch)
+- [x] Coverage: available US-wide; shop mapping starts in Connecticut (central ZIP 06037, Berlin) and expands region by region, New York next
+- [ ] Name: decided, Binhopper. Development stays local; hosting will use the default Vercel and Railway addresses. Pick a custom domain (binhopper.com is taken) and run a USPTO search before the public launch
 - [ ] Places provider: Google Places or an alternative, after comparing pricing and terms
 - [ ] Read the Discogs API Terms of Use on caching catalog data and images
 
 **Next steps**
 
 1. Settle the decisions above.
-2. Map 20–40 record shops in the launch metro and find which sell on Discogs.
+2. Map 20–40 record shops in Connecticut and find which sell on Discogs.
 3. Show the clickable mockups to about 5 collectors and note where they hesitate.
 4. Set up the repo: React front end, chosen backend, MySQL 8, CI running the tests above.
 5. Build in this order: catalog import and search → album page → nearby stock → wishlist → collection → account settings → Discogs import.
-6. Private beta with a handful of local collectors, then launch in the one metro.
+6. Private beta with a handful of Connecticut collectors, then launch US-wide with Connecticut shops mapped.

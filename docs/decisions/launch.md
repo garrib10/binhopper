@@ -1,7 +1,8 @@
 # Launch decisions: Discogs terms, places provider, name, coverage
 
 Status: **draft recommendations** for #46, researched 2026-10-24. Nothing here is decided until
-you approve it. The starting area for shop mapping is a question for you (section 4).
+you approve it. Coverage, the starting area (Connecticut) and the domain are decided; the
+Discogs and places recommendations (sections 1 and 2) wait for your OK.
 
 **The short version:** Discogs' API terms are stricter than SPEC.md assumes. Content from the API
 can't be shown if it's more than 6 hours behind Discogs, and shop inventory counts as restricted
@@ -9,7 +10,7 @@ can't be shown if it's more than 6 hours behind Discogs, and shop inventory coun
 needs a much faster refresh than "once a day". Google Places doesn't fit the planned non-Google
 map or the permanent `stores` table; for 20–40 hand-mapped shops, use OpenStreetMap or Foursquare's
 open dataset plus manual checks. The app is open US-wide, with shop mapping starting in one area
-(Connecticut, Chicago or New York). The custom domain is deferred: launch on the Vercel and Railway
+(Connecticut first). The custom domain is deferred: launch on the Vercel and Railway
 addresses (`binhopper.com` is already registered).
 
 ## 1. Discogs API terms: caching data and images
@@ -117,7 +118,9 @@ flows in automatically for shops that sell on Discogs; refreshing hundreds of sh
 every 6 hours strains Discogs' 60-requests-per-minute limit; and an app that's empty where a new
 user lives makes a poor first impression.
 
-**Starting area: Connecticut, Chicago or New York City (your pick).**
+**Starting area: decided (2026-10-24), Connecticut.** Central ZIP **06037** (Berlin), about 2 mi from
+the middle of all 289 Connecticut ZIP areas; every Connecticut ZIP is within about 56 mi of it. New York City is
+the next region. The comparison that led here:
 
 | | Connecticut | Chicago | New York City |
 | --- | --- | --- | --- |
@@ -127,22 +130,18 @@ user lives makes a poor first impression.
 | Exercises the radius feature | Well: 25–50 mi searches matter in suburbs | Mostly 10 mi | Mostly 10 mi |
 | Sample data | Needs replacing | Needs replacing | Already matches the mockups |
 
-**Recommendation:** start with **Connecticut** if it's home (shops you can visit, testers you know,
-real suburban distances), with **New York** as the second region next door. Start with New York
-instead if Connecticut isn't home, because the mockups and sample data already fit. Chicago works best
-later, once adding a region is routine.
+Connecticut won on shops you can visit, testers you know and real suburban distances; New York is
+next door for the second region; Chicago comes later, once adding a region is routine.
 
-## Proposed SPEC.md changes (not applied)
+## SPEC.md changes
 
-In **Open decisions**, once you approve:
+**Applied in this PR** (decided): Overview principle on coverage, Open decisions › Coverage and
+Name, Next steps 2 and 6, and the places row's wording ("the area being mapped").
+
+**Still proposed** (waiting for your OK on sections 1 and 2): the Places provider and Discogs lines
+below, and the Refresh rules change. In **Open decisions**:
 
 ```markdown
-- [x] Backend language: decided, Python (FastAPI) with MySQL 8
-- [x] Coverage: available US-wide; shop mapping starts in <Connecticut / Chicago / New York City>
-      (central ZIP <zip>) and expands region by region
-- [ ] Name: decided, Binhopper. Launch on the default Vercel and Railway addresses; choose a
-      custom domain (binhopper.com is taken as of 2026-10-24) and run a USPTO search before the
-      public launch
 - [x] Places provider: none at launch. Shops are hand-mapped from OpenStreetMap and Foursquare Open
       Source Places and stored as manual; Google Places rules out non-Google maps and permanent storage
 - [x] Discogs terms: API content may not be shown more than 6 hours behind Discogs; catalog comes

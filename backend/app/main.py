@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,4 +24,4 @@ app.include_router(stock.router)
 
 @app.get("/api/health", tags=["health"])
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok", "commit": os.getenv("RAILWAY_GIT_COMMIT_SHA", "local")}

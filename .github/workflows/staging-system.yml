@@ -1,0 +1,73 @@
+name: Staging system
+
+# Deploy includes the commit-aware post-deploy check (#82). No production trigger.
+on:
+  workflow_run:
+    workflows: [Deploy]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-system
+  cancel-in-progress: true
+
+jobs:
+  system:
+    if: github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.display_title, 'Deploy staging@')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    env:
+      SYSTEM_TARGET: staging
+      APP_URL: ${{ vars.APP_URL }}
+      API_URL: ${{ vars.API_URL }}
+    steps:
+      # Deploy is workflow_run-triggered, so its own head_sha/head_branch refer
+      # to the default branch. Its explicit run-name carries the promotion SHA.
+      - name: Resolve verified staging commit
+        id: target
+        env:
+          DEPLOY_TITLE: ${{ github.event.workflow_run.display_title }}
+        run: |
+          python - <<'PYTHON'
+          import os
+          import re
+          match = re.fullmatch(r"Deploy staging@([0-9a-f]{40})", os.environ["DEPLOY_TITLE"])
+          if not match:
+              raise SystemExit("Expected a successful staging Deploy with an explicit commit")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"sha={match[1]}\n")
+          PYTHON
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Read-only system tests against staging
+        env:
+          EXPECTED_COMMIT: ${{ steps.target.outputs.sha }}
+        run: npm run e2e:system
+        working-directory: frontend
+      - name: Link results for release sign-off
+        if: always()
+        env:
+          CHECKED_COMMIT: ${{ steps.target.outputs.sha }}
+          SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+        run: |
+          echo "Staging commit: $CHECKED_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deploy check: $SOURCE_RUN" >> "$GITHUB_STEP_SUMMARY"
+          echo "Copy this run's URL into the release sign-off issue." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: staging-system-report
+          path: frontend/playwright-report

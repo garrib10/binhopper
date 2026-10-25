@@ -32,6 +32,8 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: pytest
+      - name: Test deployment verifier
+        run: python -m unittest discover -s ../.github/scripts -p 'test_*.py'
 
   # The same pytest suite against real MySQL 8.4, after migrating an empty database.
   # Catches what SQLite hides (column precision, upsert syntax, collation) and fails

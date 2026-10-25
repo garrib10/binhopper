@@ -100,6 +100,8 @@ unset DATABASE_URL
 ```
 
 Tests reference the acceptance criteria in `docs/SPEC.md` by id (AC-01, AC-02, …).
+[docs/TESTING.md](docs/TESTING.md) explains what each test level owns, the test data, mocking
+rules, CI gates and the release checklist.
 
 ## Branches and releases
 

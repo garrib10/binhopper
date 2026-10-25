@@ -7,6 +7,7 @@ and track your collection. React web app (mobile + desktop) + Python FastAPI + M
 
 - `docs/SPEC.md`: what to build. Feature rules, data model, API endpoints, acceptance
   criteria (AC-01 to AC-16). Follow it; if code and spec disagree, ask before changing either.
+- `docs/TESTING.md`: test levels, AC-01 to AC-16 → tests map, test data, mocking rules, CI gates.
 - `design/mockups/*.dc.html`: the visual target for every screen. `design/README.md` explains
   the file format and maps each file to its spec section.
 - `frontend/src/styles/tokens.css`: all colors, fonts, radii and spacing, light + dark.

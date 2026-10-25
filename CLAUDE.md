@@ -45,14 +45,16 @@ docker compose up -d                      # MySQL 8 on localhost:3306
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env
-alembic revision --autogenerate -m "initial tables"   # first time only
-alembic upgrade head
+alembic upgrade head                     # creates/updates tables from migrations/versions/
+# Changed a model? alembic revision --autogenerate -m "what changed", review it, commit it
 python -m scripts.seed_sample            # fictional sample data
 python -m scripts.seed_test_data         # test cases: radius edges, every freshness tier (not for demos)
 # All US ZIPs: download + unzip the Census ZCTA Gazetteer file first (see README.md), then
 python -m scripts.load_zip_codes 2026_Gaz_zcta_national.txt   # safe to re-run
 uvicorn app.main:app --reload            # API on :8000, try it at /docs
 pytest                                   # backend tests (SQLite, no MySQL needed)
+# Same tests on MySQL (CI "integration" job); test DB setup in README.md › Tests
+TEST_DATABASE_URL=mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_test pytest
 
 # Frontend (from frontend/)
 npm install
@@ -60,6 +62,7 @@ npm run dev                              # http://localhost:5173 (proxies /api t
 npm test                                 # Vitest
 npx playwright install chromium          # first time only
 npm run e2e                              # Playwright, API mocked
+npm run e2e:system                       # Playwright, real API + seeded MySQL (setup: README.md › Tests)
 npm run build                            # type-check + production build
 ```
 

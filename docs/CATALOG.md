@@ -55,8 +55,11 @@ python -m app.worker
 ```
 
 In Railway add a **separate worker service** using the same backend source/root and environment
-MySQL reference as the API, with start command `python -m app.worker`, no HTTP healthcheck
-and one replica. Keep staging and production databases separate. Do not start it inside
+MySQL reference as the API, with Config File Path `/backend/railway-worker.json` (not the API railway.json),
+start command `python -m app.worker`, no HTTP healthcheck and one replica. Use staging/main
+source branches and Wait for CI as on the API. Deploy/migrate the API first before initially
+starting the worker; the worker configuration intentionally does not run a competing Alembic
+migration or expose a public domain. Keep staging and production databases separate. Do not start it inside
 uvicorn. The worker holds a MySQL advisory lock for its whole lifetime, so an overlapping
 worker exits instead of creating a second queue. Request reservations persist in MySQL,
 so restarts do not reset the rolling quota. All worker API calls share this queue; do not

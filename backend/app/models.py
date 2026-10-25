@@ -1,7 +1,8 @@
 """Database tables (SPEC.md › Data model).
 
 Times are stored as naive UTC datetimes. Store locations are plain lat/lng
-columns with a composite index: the nearby search filters by a bounding box
+columns (DOUBLE: MySQL's FLOAT keeps only ~7 digits, enough to push a store
+at exactly 25.0 mi outside a 25 mi radius) with a composite index: the nearby search filters by a bounding box
 in SQL, then checks exact distance in Python (see app/geo.py).
 """
 
@@ -11,7 +12,7 @@ from sqlalchemy import (
     JSON,
     Boolean,
     DateTime,
-    Float,
+    Double,
     ForeignKey,
     Index,
     Integer,
@@ -124,8 +125,8 @@ class Store(Base):
     name: Mapped[str] = mapped_column(String(255))
     area: Mapped[str | None] = mapped_column(String(120))  # neighborhood or town shown in lists
     address: Mapped[str | None] = mapped_column(String(255))
-    lat: Mapped[float] = mapped_column(Float)
-    lng: Mapped[float] = mapped_column(Float)
+    lat: Mapped[float] = mapped_column(Double)
+    lng: Mapped[float] = mapped_column(Double)
     phone: Mapped[str | None] = mapped_column(String(40))
     website: Mapped[str | None] = mapped_column(String(500))
     hours: Mapped[dict | None] = mapped_column(JSON)
@@ -198,5 +199,5 @@ class ZipCode(Base):
     __tablename__ = "zip_codes"
 
     zip: Mapped[str] = mapped_column(String(5), primary_key=True)
-    lat: Mapped[float] = mapped_column(Float)
-    lng: Mapped[float] = mapped_column(Float)
+    lat: Mapped[float] = mapped_column(Double)
+    lng: Mapped[float] = mapped_column(Double)

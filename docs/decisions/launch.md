@@ -8,7 +8,8 @@ can't be shown if it's more than 6 hours behind Discogs, and shop inventory coun
 "Marketplace Data". So the catalog should come from Discogs' CC0 monthly dumps, and shop stock
 needs a much faster refresh than "once a day". Google Places doesn't fit the planned non-Google
 map or the permanent `stores` table; for 20–40 hand-mapped shops, use OpenStreetMap or Foursquare's
-open dataset plus manual checks. `binhopper.com` is already registered.
+open dataset plus manual checks. The custom domain is deferred: launch on the Vercel and Railway
+addresses (`binhopper.com` is already registered).
 
 ## 1. Discogs API terms: caching data and images
 
@@ -70,6 +71,10 @@ becomes viable but adds 30-day re-fetching and per-call costs.
 
 ## 3. Name: domain and trademark
 
+**Decision (2026-10-24): deferred.** Run staging and production on the default Vercel and Railway
+addresses (`*.vercel.app`, `*.up.railway.app`) and sort out a custom domain and the trademark
+search before the public launch. The findings below are kept for then.
+
 **Domains** (checked through each registry's RDAP service, 2026-10-24):
 
 | Domain | Status |
@@ -114,8 +119,9 @@ In **Open decisions**, once you approve:
 ```markdown
 - [x] Backend language: decided, Python (FastAPI) with MySQL 8
 - [ ] Launch metro area: <your choice>, central ZIP <zip>
-- [ ] Name: decided, Binhopper. binhopper.com is registered by someone else (2026-10-24); use
-      binhopper.app + getbinhopper.com unless .com can be bought. USPTO search: <date, result>
+- [ ] Name: decided, Binhopper. Launch on the default Vercel and Railway addresses; choose a
+      custom domain (binhopper.com is taken as of 2026-10-24) and run a USPTO search before the
+      public launch
 - [x] Places provider: none at launch. Shops are hand-mapped from OpenStreetMap and Foursquare Open
       Source Places and stored as manual; Google Places rules out non-Google maps and permanent storage
 - [x] Discogs terms: API content may not be shown more than 6 hours behind Discogs; catalog comes

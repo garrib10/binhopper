@@ -21,12 +21,13 @@ Branch names: `feature/…` for new things, `fix/…` for bugs, `chore/…` for 
 ## Releasing
 
 1. **Actions → Promote → Run workflow → to: staging.** This opens a `develop → staging` PR
-   listing every change. Merge it with **Create a merge commit**; the Deploy workflow ships
-   it to staging.
+   listing every change. Merge it with **Create a merge commit**; Railway and Vercel
+   autodeploy staging, then Deploy verifies the promoted commit after CI.
 2. Test on staging.
 3. **Actions → Promote → Run workflow → to: main.** Merge the `staging → main` PR with
    **Create a merge commit**.
-   Deploy ships to production, and Release tags it (`v2026.10.22`) with notes.
+   Railway and Vercel autodeploy production; Deploy verifies it after CI, and Release
+   tags it (`v2026.10.22`) with notes.
 
 ## Hotfixes
 

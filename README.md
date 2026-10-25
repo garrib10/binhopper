@@ -83,6 +83,22 @@ cd frontend && npm test                 # component tests
 cd frontend && npx playwright install chromium && npm run e2e   # browser tests, phone + desktop
 ```
 
+System tests run the built frontend against the real API and a seeded MySQL, with nothing
+mocked (CI's `system` job). Set up their database once, then run them from `frontend/`:
+
+```bash
+docker exec binhopper-mysql-1 mysql -uroot -pbinhopper-root \
+  -e "CREATE DATABASE IF NOT EXISTS binhopper_system; GRANT ALL ON binhopper_system.* TO 'binhopper'@'%';"
+export DATABASE_URL=mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_system
+cd backend
+alembic upgrade head
+python -m scripts.seed_sample
+python -m scripts.load_zip_codes tests/fixtures/gazetteer_zcta_sample.txt
+cd ../frontend
+PYTHON=../backend/.venv/bin/python npm run e2e:system   # starts the API on :8010 and preview on :4173
+unset DATABASE_URL
+```
+
 Tests reference the acceptance criteria in `docs/SPEC.md` by id (AC-01, AC-02, …).
 
 ## Branches and releases

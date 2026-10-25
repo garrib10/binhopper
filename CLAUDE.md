@@ -61,6 +61,7 @@ npm run dev                              # http://localhost:5173 (proxies /api t
 npm test                                 # Vitest
 npx playwright install chromium          # first time only
 npm run e2e                              # Playwright, API mocked
+npm run e2e:system                       # Playwright, real API + seeded MySQL (setup: README.md › Tests)
 npm run build                            # type-check + production build
 ```
 

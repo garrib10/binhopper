@@ -15,6 +15,11 @@ and track your collection.
 | `design/` | Mockups for every screen (mobile, desktop, dark mode) and how to read them |
 | `docs/` | `SPEC.md`: MVP scope, feature rules, data model, API, acceptance criteria |
 
+## Hosting
+
+See [the deployment guide](docs/DEPLOY.md) for Railway/Vercel setup, environment variables,
+first deployment, monitoring setup and rollback.
+
 ## Getting started
 
 You need Python 3.12+, Node 24+, and Docker (for MySQL).

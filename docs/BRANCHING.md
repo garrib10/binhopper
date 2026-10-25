@@ -8,6 +8,8 @@ Code moves through three long-lived branches: **develop → staging → main**.
 | `staging` | The next release candidate, being tested | Staging environment | `develop` only (or `hotfix/*`) |
 | `main` | What users have (production) | Production environment | `staging` only (or `hotfix/*`) |
 
+Hosting setup, deployment verification and rollback: [DEPLOY.md](DEPLOY.md).
+
 ## Day to day
 
 1. Branch from `develop`: `git switch develop && git pull && git switch -c feature/album-page`
@@ -51,7 +53,8 @@ other PRs.
 | Branch policy | Every PR | Fails a PR that skips a step (e.g. `feature/x → main`) |
 | Dependency review | Every PR | Fails a PR that adds or upgrades a dependency with a known high or critical vulnerability, and comments a summary |
 | Promote | You run it from the Actions tab | Opens the `develop → staging` or `staging → main` PR |
-| Deploy | Push to staging or main | Builds and checks; deploy step is a placeholder until hosting is chosen |
+| Deploy | Successful CI on staging/main; manual dispatch | Builds and verifies the promoted API SHA and frontend HTTP 200 |
+| Staging system | Successful staging Deploy | Read-only Playwright against deployed staging; never production |
 | Release | Push to main | Creates a dated tag and GitHub Release with generated notes |
 | Back-merge | Push to main | Opens `main → develop` when main has changes develop lacks |
 | Labeler | Every PR | Adds area labels (frontend, backend, tests…) from changed files and type labels (enhancement, bug, chore) from the branch name. Rules in `.github/labeler.yml` |

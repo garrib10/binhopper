@@ -163,9 +163,9 @@ Launch data comes from Discogs (catalog and shop inventory), a places API (shop 
 
 **Refresh rules**
 
-- Shop inventories sync once a day, staggered, plus on demand when a user opens that shop's listings and the last sync is more than 6 hours old.
+- Shop inventories from Discogs sync at least every 6 hours (target about every 4, staggered); a Discogs-sourced listing older than 6 hours is hidden (Discogs API Terms of Use). Manual and user-reported stock keep the 7-day rule.
 - A global request queue keeps total Discogs calls under 60 per minute.
-- Catalog data refreshes when an album page is opened and the cached copy is more than 30 days old.
+- Catalog data comes from the monthly CC0 data dumps; API lookups fill gaps and are refreshed or replaced within 6 hours.
 - Freshness labels on listings use `last_verified_at` (user report) first, then `last_synced_at`.
 
 ## Tech architecture
@@ -250,15 +250,15 @@ The riskiest logic is the radius math, stock freshness and duplicate handling, s
 
 ## Open decisions and next steps
 
-The backend, coverage and starting area are decided; the places provider and the Discogs terms recommendations are in `docs/decisions/launch.md`.
+All launch decisions are made (details and sources in `docs/decisions/launch.md`); only the custom domain and USPTO search wait until before the public launch.
 
 **Open decisions**
 
 - [ ] Backend language: decided, Python (FastAPI) with MySQL 8
 - [x] Coverage: available US-wide; shop mapping starts in Connecticut (central ZIP 06037, Berlin) and expands region by region, New York next
 - [ ] Name: decided, Binhopper. Development stays local; hosting will use the default Vercel and Railway addresses. Pick a custom domain (binhopper.com is taken) and run a USPTO search before the public launch
-- [ ] Places provider: Google Places or an alternative, after comparing pricing and terms
-- [ ] Read the Discogs API Terms of Use on caching catalog data and images
+- [x] Places provider: none at launch. Shops are hand-mapped from OpenStreetMap and Foursquare Open Source Places and stored as manual; Google Places rules out non-Google maps and permanent storage
+- [x] Discogs terms: API content may not be shown more than 6 hours behind Discogs; catalog comes from the CC0 monthly dumps; shop inventory is restricted data; cover images are shown from Discogs' URLs, not re-hosted; show both required notices (see `docs/decisions/launch.md`)
 
 **Next steps**
 

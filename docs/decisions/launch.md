@@ -1,8 +1,7 @@
 # Launch decisions: Discogs terms, places provider, name, coverage
 
-Status: **draft recommendations** for #46, researched 2026-10-24. Nothing here is decided until
-you approve it. Coverage, the starting area (Connecticut) and the domain are decided; the
-Discogs and places recommendations (sections 1 and 2) wait for your OK.
+Status: **decided** for #46 (researched and approved 2026-10-24). The custom domain and USPTO search
+wait until before the public launch.
 
 **The short version:** Discogs' API terms are stricter than SPEC.md assumes. Content from the API
 can't be shown if it's more than 6 hours behind Discogs, and shop inventory counts as restricted
@@ -38,8 +37,9 @@ own schedule, which the API copy is not.
    dumps. Use the API only for gaps (a release newer than the last dump), and refresh or drop those
    rows within 6 hours, or replace them from the next dump.
 2. **Shop stock (#90):** treat Discogs inventory as restricted, 6-hour data. Either sync each mapped
-   shop at least every 6 hours (40 shops is well within 60 calls/min unless a shop has many thousands
-   of listings), or stop showing a Discogs-sourced listing once its sync is older than 6 hours.
+   shop about every 4 hours, and hide a Discogs-sourced listing once its sync is older than 6 hours.
+   The 2-hour margin covers a slow or failed run (40 shops is well within 60 calls/min unless a shop
+   has many thousands of listings).
    User reports and manual stock aren't Discogs content, so the 7-day "May be out of date" rule can
    stay for those.
 3. **Images:** show cover images from the URL Discogs returns, without storing the files; don't
@@ -135,27 +135,10 @@ next door for the second region; Chicago comes later, once adding a region is ro
 
 ## SPEC.md changes
 
-**Applied in this PR** (decided): Overview principle on coverage, Open decisions › Coverage and
-Name, Next steps 2 and 6, and the places row's wording ("the area being mapped").
-
-**Still proposed** (waiting for your OK on sections 1 and 2): the Places provider and Discogs lines
-below, and the Refresh rules change. In **Open decisions**:
-
-```markdown
-- [x] Places provider: none at launch. Shops are hand-mapped from OpenStreetMap and Foursquare Open
-      Source Places and stored as manual; Google Places rules out non-Google maps and permanent storage
-- [x] Discogs terms: API content may not be shown more than 6 hours behind Discogs; catalog comes
-      from the CC0 monthly dumps; shop inventory is restricted data; show both required notices
-```
-
-In **Data sources › Refresh rules**, replace the first and third bullets with:
-
-```markdown
-- Shop inventories from Discogs sync at least every 6 hours; a Discogs-sourced listing older than
-  6 hours is hidden (Discogs API Terms of Use). Manual and user-reported stock keep the 7-day rule.
-- Catalog data comes from the monthly CC0 data dumps; API lookups fill gaps and are refreshed or
-  replaced within 6 hours.
-```
+All applied in this PR (approved 2026-10-24): the Overview coverage principle; Open decisions ›
+Coverage, Name, Places provider and Discogs terms; Data sources › Refresh rules (inventory at least
+every 6 hours, target about 4, hidden after 6; catalog from the CC0 dumps); the places row's wording;
+and Next steps 2 and 6.
 
 ## Sources
 

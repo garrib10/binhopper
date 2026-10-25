@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import stock
+from app.routers.albums import router as albums_router
 
 app = FastAPI(
     title="Binhopper API",
@@ -20,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(stock.router)
+app.include_router(albums_router)
 
 
 @app.get("/api/health", tags=["health"])

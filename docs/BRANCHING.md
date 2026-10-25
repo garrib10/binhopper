@@ -20,6 +20,11 @@ Branch names: `feature/…` for new things, `fix/…` for bugs, `chore/…` for 
 
 ## Releasing
 
+Open one [Release sign-off issue](../.github/ISSUE_TEMPLATE/release-signoff.md) for every
+`develop → staging` promotion. Link its CI, Deploy and Staging system run URLs for the
+same promotion SHA, record manual smoke at 390/1440 px in light/dark mode and known issues,
+and record a go/no-go decision before promoting staging to main.
+
 1. **Actions → Promote → Run workflow → to: staging.** This opens a `develop → staging` PR
    listing every change. Merge it with **Create a merge commit**; Railway and Vercel
    autodeploy staging, then Deploy verifies the promoted commit after CI.

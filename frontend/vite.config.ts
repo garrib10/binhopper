@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     port: 5173,
     // The React app calls /api/...; in development Vite forwards it to FastAPI.
-    proxy: { '/api': 'http://127.0.0.1:8000' },
+    // `vite preview` reuses this proxy. The system tests point it at their own API port.
+    proxy: { '/api': process.env.API_PROXY_TARGET ?? 'http://127.0.0.1:8000' },
   },
   test: {
     environment: 'jsdom',

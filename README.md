@@ -28,7 +28,6 @@ cd backend
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 cp .env.example .env
-alembic revision --autogenerate -m "initial tables"  # first time only
 alembic upgrade head
 python -m scripts.seed_sample
 uvicorn app.main:app --reload
@@ -64,11 +63,45 @@ Open http://localhost:5173.
 
 ```bash
 cd backend && pytest                    # unit + API tests (in-memory SQLite)
+```
+
+To run the same backend tests against MySQL, as CI's `integration` job does, create a separate
+test database once (the tests roll back every change, but they can't share the dev database):
+
+```bash
+docker exec binhopper-mysql-1 mysql -uroot -pbinhopper-root \
+  -e "CREATE DATABASE IF NOT EXISTS binhopper_test; GRANT ALL ON binhopper_test.* TO 'binhopper'@'%';"
+cd backend
+export TEST_DATABASE_URL=mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_test
+DATABASE_URL=$TEST_DATABASE_URL alembic upgrade head
+pytest
+unset TEST_DATABASE_URL                 # back to SQLite
+```
+
+```bash
 cd frontend && npm test                 # component tests
 cd frontend && npx playwright install chromium && npm run e2e   # browser tests, phone + desktop
 ```
 
+System tests run the built frontend against the real API and a seeded MySQL, with nothing
+mocked (CI's `system` job). Set up their database once, then run them from `frontend/`:
+
+```bash
+docker exec binhopper-mysql-1 mysql -uroot -pbinhopper-root \
+  -e "CREATE DATABASE IF NOT EXISTS binhopper_system; GRANT ALL ON binhopper_system.* TO 'binhopper'@'%';"
+export DATABASE_URL=mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper_system
+cd backend
+alembic upgrade head
+python -m scripts.seed_sample
+python -m scripts.load_zip_codes tests/fixtures/gazetteer_zcta_sample.txt
+cd ../frontend
+PYTHON=../backend/.venv/bin/python npm run e2e:system   # starts the API on :8010 and preview on :4173
+unset DATABASE_URL
+```
+
 Tests reference the acceptance criteria in `docs/SPEC.md` by id (AC-01, AC-02, …).
+[docs/TESTING.md](docs/TESTING.md) explains what each test level owns, the test data, mocking
+rules, CI gates and the release checklist.
 
 ## Branches and releases
 

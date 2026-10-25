@@ -1,0 +1,1785 @@
+<?xml version='1.0' encoding='utf-8'?>
+<releases>
+  <release id="1">
+    <artists>
+      <artist>
+        <id>1</id>
+        <name>The Persuader</name>
+      </artist>
+    </artists>
+    <title>Stockholm</title>
+    <labels>
+      <label name="Svek" catno="SK032" id="5" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="2" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>1999-03-00</released>
+    <master_id is_main_release="true">1660109</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Östermalm</title>
+        <duration>4:45</duration>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Vasastaden</title>
+        <duration>6:11</duration>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Kungsholmen</title>
+        <duration>2:49</duration>
+      </track>
+      <track>
+        <position>C1</position>
+        <title>Södermalm</title>
+        <duration>5:38</duration>
+      </track>
+      <track>
+        <position>C2</position>
+        <title>Norrmalm</title>
+        <duration>4:52</duration>
+      </track>
+      <track>
+        <position>D</position>
+        <title>Gamla Stan</title>
+        <duration>5:16</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="A-side runout" value="MPO SK 032 A1 G PHRUPMASTERGENERAL T2T LONDON" />
+      <identifier type="Matrix / Runout" description="B-side runout" value="MPO SK 032 B1" />
+      <identifier type="Matrix / Runout" description="C-side runout" value="MPO SK 032 C1" />
+      <identifier type="Matrix / Runout" description="D-side runout" value="MPO SK 032 D1" />
+    </identifiers>
+  </release>
+  <release id="2">
+    <artists>
+      <artist>
+        <id>2</id>
+        <name>Mr. James Barth &amp; A.D.</name>
+      </artist>
+    </artists>
+    <title>Knockin' Boots (Vol 2 Of 2)</title>
+    <labels>
+      <label name="Svek" catno="SK 026" id="5" />
+      <label name="Svek" catno="SK026" id="5" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Broken Beat</style>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <released>1998-06-00</released>
+    <master_id is_main_release="true">713738</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>A Sea Apart</title>
+        <duration>5:08</duration>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Dutchmaster</title>
+        <duration>4:21</duration>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Inner City Lullaby</title>
+        <duration>4:22</duration>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Yeah Kid!</title>
+        <duration>4:46</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Side A runout etching" value="MPO SK026-A -J.T.S.-" />
+      <identifier type="Matrix / Runout" description="Side B runout etching" value="MPO SK026-B -J.T.S.-" />
+    </identifiers>
+  </release>
+  <release id="6">
+    <artists>
+      <artist>
+        <id>2</id>
+        <name>Mr. James Barth &amp; A.D.</name>
+      </artist>
+    </artists>
+    <title>Knockin' Boots (Vol 1 Of 2)</title>
+    <labels>
+      <label name="Svek" catno="SK025" id="5" />
+      <label name="Svek" catno="SK 025" id="5" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <released>1998-05-00</released>
+    <master_id is_main_release="true">713737</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>It's All James</title>
+        <duration>5:29</duration>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Above The Skyline</title>
+        <duration>5:01</duration>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Suckin' Neck</title>
+        <duration>5:04</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Side A, etched" value="SK 025-A -J.T.S.- MPO" />
+      <identifier type="Matrix / Runout" description="Side B, etched" value="SK 025-B -J.T.S.- MPO" />
+    </identifiers>
+  </release>
+  <release id="7">
+    <artists>
+      <artist>
+        <id>28</id>
+        <name>Moonchildren</name>
+      </artist>
+    </artists>
+    <title>Moonchildren EP</title>
+    <labels>
+      <label name="Deep4Life" catno="D4L12002" id="9" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="Clear">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>2000-02-00</released>
+    <master_id is_main_release="true">267770</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Ran Away</title>
+        <duration>6:45</duration>
+      </track>
+      <track>
+        <position>AA1</position>
+        <title>Silent Crying</title>
+        <duration>6:28</duration>
+      </track>
+      <track>
+        <position>AA2</position>
+        <title>No Other</title>
+        <duration>5:18</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Side A, etched" value="D4L-12002-A Ki 3503.1 (2)" />
+      <identifier type="Matrix / Runout" description="Side AA, etched" value="D4L-12002-AA KH 3503.2 (2)" />
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="8">
+    <artists>
+      <artist>
+        <id>29</id>
+        <name>Sweet Abraham</name>
+      </artist>
+    </artists>
+    <title>Spreading Outward EP</title>
+    <labels>
+      <label name="Deep4Life" catno="D4L12004" id="9" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">48282</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Diaspora</title>
+        <duration>7:15</duration>
+      </track>
+      <track>
+        <position>AA1</position>
+        <title>Wallflower</title>
+        <duration>7:25</duration>
+      </track>
+      <track>
+        <position>AA2</position>
+        <title>Days Since Past</title>
+        <duration>6:28</duration>
+      </track>
+    </tracklist>
+  </release>
+  <release id="9">
+    <artists>
+      <artist>
+        <id>33</id>
+        <name>Blue Six</name>
+      </artist>
+    </artists>
+    <title>Pure</title>
+    <labels>
+      <label name="Naked Music Recordings" catno="NM008" id="10" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">595959</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Pure (Mig's Petalpusher Vocal)</title>
+        <duration>7:02</duration>
+        <extraartists>
+          <artist>
+            <id>9571</id>
+            <name>Jay-J</name>
+            <role>Engineer</role>
+          </artist>
+          <artist>
+            <id>669</id>
+            <name>Petalpusher</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Pure (Jay's Original Vocal)</title>
+        <duration>4:30</duration>
+        <extraartists>
+          <artist>
+            <id>209463</id>
+            <name>David Boonshoft</name>
+            <anv>D. Boonshoft</anv>
+            <role>Bass</role>
+          </artist>
+          <artist>
+            <id>352023</id>
+            <name>Mark Anthony Jones</name>
+            <anv>Mark Anthony 'thefunkiestmanalive' Jones</anv>
+            <role>Guitar, Backing Vocals</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Pure (Aquanote Tidal Mix)</title>
+        <duration>6:50</duration>
+        <extraartists>
+          <artist>
+            <id>38</id>
+            <name>Aquanote</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Pure (Jay's Undercover Dub)</title>
+        <duration>6:45</duration>
+        <extraartists>
+          <artist>
+            <id>32</id>
+            <name>Jay Denes</name>
+            <anv>J. Denes</anv>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Runout side A" value="NM-008 A1" />
+      <identifier type="Matrix / Runout" description="Runout side B" value="NM-008 B1" />
+      <identifier type="Rights Society" description="" value="BMI" />
+      <identifier type="Rights Society" description="" value="ASCAP" />
+    </identifiers>
+  </release>
+  <release id="10">
+    <artists>
+      <artist>
+        <id>36</id>
+        <name>Lovetronic</name>
+      </artist>
+    </artists>
+    <title>You Are Love</title>
+    <labels>
+      <label name="Naked Music Recordings" catno="NM003" id="10" />
+      <label name="Naked Music Recordings" catno="nm 003" id="10" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>1999-08-00</released>
+    <master_id is_main_release="true">160011</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>You Are Love (Jay's Afrotronic Vocal)</title>
+        <duration>7:46</duration>
+        <extraartists>
+          <artist>
+            <id>143102</id>
+            <name>Carlos Gomez</name>
+            <role>Percussion [Additional]</role>
+          </artist>
+          <artist>
+            <id>32</id>
+            <name>Jay Denes</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>You Are Love (After Hours Payback Session)</title>
+        <duration>7:30</duration>
+        <extraartists>
+          <artist>
+            <id>356735</id>
+            <name>Simon Bradshaw</name>
+            <anv>Si Brad</anv>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>You Are Love (Petalpusher Dub)</title>
+        <duration>7:46</duration>
+        <extraartists>
+          <artist>
+            <id>9571</id>
+            <name>Jay-J</name>
+            <role>Engineer</role>
+          </artist>
+          <artist>
+            <id>34</id>
+            <name>Miguel Migs</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>You Are Love (Original Vocal)</title>
+        <duration>8:05</duration>
+        <extraartists>
+          <artist>
+            <id>40</id>
+            <name>Dave Warrin</name>
+            <role>Written-By, Producer, Arranged By</role>
+          </artist>
+          <artist>
+            <id>32</id>
+            <name>Jay Denes</name>
+            <role>Written-By, Producer, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Side A, hand-etched runout" value="NM-003 A1 3226.1(3)" />
+      <identifier type="Matrix / Runout" description="Side B, hand-etched runout" value="NM-003 B1 3226.2(3)" />
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="11">
+    <artists>
+      <artist>
+        <id>33</id>
+        <name>Blue Six</name>
+      </artist>
+    </artists>
+    <title>Music And Wine</title>
+    <labels>
+      <label name="Naked Music Recordings" catno="NM002" id="10" />
+      <label name="Naked Music Recordings" catno="nm 002" id="10" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>1999</released>
+    <master_id is_main_release="true">104406</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Music And Wine (Mig's Petalpusher Vocal)</title>
+        <duration>8:20</duration>
+        <extraartists>
+          <artist>
+            <id>9571</id>
+            <name>Jay-J</name>
+            <role>Engineer</role>
+          </artist>
+          <artist>
+            <id>34</id>
+            <name>Miguel Migs</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Music And Wine (Original Funkaphonic Vocal)</title>
+        <duration>7:44</duration>
+        <extraartists>
+          <artist>
+            <id>32</id>
+            <name>Jay Denes</name>
+            <role>Written-By, Producer, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Music And Wine (Th'Attaboy Vocal)</title>
+        <duration>8:58</duration>
+        <extraartists>
+          <artist>
+            <id>35</id>
+            <name>Attaboy</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Music And Wine (Jay's Blue Silk Dub)</title>
+        <duration>6:00</duration>
+        <extraartists>
+          <artist>
+            <id>40</id>
+            <name>Dave Warrin</name>
+            <role>Keyboards [Additional], Strings [Additional]</role>
+          </artist>
+          <artist>
+            <id>32</id>
+            <name>Jay Denes</name>
+            <role>Remix, Arranged By</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Side A, hand-etched runout" value="NMØØ2-A 5113.1" />
+      <identifier type="Matrix / Runout" description="Side B, hand-etched runout" value="NM-ØØ2-B 5113.2" />
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="12">
+    <artists>
+      <artist>
+        <id>30</id>
+        <name>Groove Collective</name>
+      </artist>
+    </artists>
+    <title>Everything Is Changing</title>
+    <labels>
+      <label name="Naked Music Recordings" catno="NM004" id="10" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>1999-10-00</released>
+    <master_id is_main_release="true">542341</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Everything Is Changing (Swag Dub)</title>
+        <duration>8:44</duration>
+        <extraartists>
+          <artist>
+            <id>31</id>
+            <name>Swag</name>
+            <role>Remix</role>
+          </artist>
+          <artist>
+            <id>8783</id>
+            <name>Chris Duckenfield</name>
+            <role>Remix [Credited To], Producer [Addiotional]</role>
+          </artist>
+          <artist>
+            <id>11454</id>
+            <name>Richard Brown</name>
+            <role>Remix [Credited To], Producer [Addiotional]</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Everything Is Changing (Jay's Naked Edit)</title>
+        <duration>4:34</duration>
+        <extraartists>
+          <artist>
+            <id>32</id>
+            <name>Jay Denes</name>
+            <role>Remix, Producer [Additional]</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Everything Is Changing (Baby Mammoth Mix)</title>
+        <duration>7:30</duration>
+        <extraartists>
+          <artist>
+            <id>39</id>
+            <name>Baby Mammoth</name>
+            <role>Remix, Producer [Additional]</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Everything Is Changing (Album Version)</title>
+        <duration>5:49</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Side A" value="NM-004 A1RE1" />
+      <identifier type="Matrix / Runout" description="Side B" value="NM-004 B1" />
+    </identifiers>
+  </release>
+  <release id="13">
+    <artists>
+      <artist>
+        <id>28</id>
+        <name>Moonchildren</name>
+      </artist>
+    </artists>
+    <title>Beyond Love</title>
+    <labels>
+      <label name="Deep4Life" catno="D4L12007" id="9" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>2000-08-00</released>
+    <master_id is_main_release="true">623486</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Beyond Love</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>When Conscious Becomes Comfort</title>
+      </track>
+      <track>
+        <position>AA1</position>
+        <title>Heaven</title>
+      </track>
+      <track>
+        <position>AA2</position>
+        <title>Into The Storm</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Runout Side A" value="D4L12-007-A 3906.1 (2) M.M.M.J.R." />
+      <identifier type="Matrix / Runout" description="Runout Side B" value="D4L12-007-B 3906.2 (2) M.M.M.J.R." />
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="14">
+    <artists>
+      <artist>
+        <id>50</id>
+        <name>ADNY</name>
+      </artist>
+    </artists>
+    <title>Sincere, The Sky Be</title>
+    <labels>
+      <label name="Earthtones Recordings" catno="ET12-003" id="2" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>1999-04-00</released>
+    <master_id is_main_release="true">2760602</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>What If I Love</title>
+        <duration>5:42</duration>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Seems Like Yesterday</title>
+        <duration>5:20</duration>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Deeper</title>
+        <duration>5:18</duration>
+        <extraartists>
+          <artist>
+            <id>227631</id>
+            <name>Anjay Carney</name>
+            <role>Saxophone [Sax]</role>
+          </artist>
+          <artist>
+            <id>926345</id>
+            <name>John Stewart (5)</name>
+            <role>Vocals</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Sincere, The Sky Be</title>
+        <duration>4:53</duration>
+      </track>
+      <track>
+        <position>B3</position>
+        <title>City Spring</title>
+        <duration>1:33</duration>
+      </track>
+    </tracklist>
+  </release>
+  <release id="15">
+    <artists>
+      <artist>
+        <id>51</id>
+        <name>Lance Nuance</name>
+      </artist>
+    </artists>
+    <title>Leaving The City EP</title>
+    <labels>
+      <label name="Seasons Recordings" catno="SEA12-015" id="3" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>2000-05-00</released>
+    <master_id is_main_release="true">2260801</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Something Different</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Wind Over Rio</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Q Without The U</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Market</title>
+      </track>
+    </tracklist>
+  </release>
+  <release id="16">
+    <artists>
+      <artist>
+        <id>52</id>
+        <name>Dub-Tech Soundsystem</name>
+      </artist>
+    </artists>
+    <title>The Sideshow Bob EP</title>
+    <labels>
+      <label name="Intrinsic Design" catno="ID002-6" id="26" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">444223</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Aridium</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Sugar Rush</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Hawaiian Bells</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Mitt I Stan</title>
+      </track>
+    </tracklist>
+  </release>
+  <release id="17">
+    <artists>
+      <artist>
+        <id>53</id>
+        <name>Casey Hogan</name>
+        <anv>Casy Hogan</anv>
+      </artist>
+    </artists>
+    <title>Uncut</title>
+    <labels>
+      <label name="Intrinsic Design" catno="ID001-6" id="26" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+      <style>Breaks</style>
+    </styles>
+    <released>1999</released>
+    <master_id is_main_release="true">336353</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Manual</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Loop37 Stripped</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Uncut</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Uncut Beats</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Etched runout side A" value="08 - 04 - 2622 - 20 A ID - 001 - 6 - A EUROPA DISK DMM NY USA 385￣5￣8 dG" />
+      <identifier type="Matrix / Runout" description="Etched runout side B" value="08- 04- 2622 - 20 B ID - 0001￣ 6 B EUROPADISK DMM NY USA 385￣5￣8 dG" />
+    </identifiers>
+  </release>
+  <release id="18">
+    <artists>
+      <artist>
+        <id>79947</id>
+        <name>Entity</name>
+      </artist>
+    </artists>
+    <title>Galactic Schematix EP</title>
+    <labels>
+      <label name="Intrinsic Design" catno="ID003-6" id="26" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">254383</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Borealis</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Richochet</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Inverted</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Diskotek</title>
+      </track>
+    </tracklist>
+  </release>
+  <release id="19">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ RaSoul</name>
+      </artist>
+    </artists>
+    <title>True Science</title>
+    <labels>
+      <label name="Leaf Recordings" catno="LRCAN004" id="27" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>Repress</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Progressive House</style>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>2000-08-25</released>
+    <master_id is_main_release="false">93095</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>True Science</title>
+      </track>
+      <track>
+        <position>AA1</position>
+        <title>The Almighty Dub</title>
+      </track>
+      <track>
+        <position>AA2</position>
+        <title>Deep In The Bay (Nu Kiva)</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Rights Society" description="" value="ASCAP" />
+    </identifiers>
+  </release>
+  <release id="20">
+    <artists>
+      <artist>
+        <id>53</id>
+        <name>Casey Hogan</name>
+      </artist>
+    </artists>
+    <title>Switchstance EP</title>
+    <labels>
+      <label name="Immigrant" catno="IMM005" id="24" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Tech House</style>
+    </styles>
+    <released>2000-06-02</released>
+    <master_id is_main_release="true">1225778</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Priority</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>G4</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Gifts</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Victoria</title>
+      </track>
+    </tracklist>
+  </release>
+  <release id="21">
+    <artists>
+      <artist>
+        <id>56</id>
+        <name>E.B.E. (2)</name>
+        <anv>EBE</anv>
+      </artist>
+    </artists>
+    <title>Neural Response EP</title>
+    <labels>
+      <label name="Soma Quality Recordings" catno="SOMA 92" id="18" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>EP</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep Techno</style>
+      <style>IDM</style>
+      <style>Techno</style>
+    </styles>
+    <released>2000-01-24</released>
+    <master_id is_main_release="true">411046</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Serenity</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Sedated</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Descent</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Hubble</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Barcode" description="Scanned" value="7961220922684" />
+      <identifier type="Barcode" description="Text" value="7 961220 922684 &gt;" />
+      <identifier type="Matrix / Runout" description="Side A etched" value="MPO SOMA 92 A1 John D" />
+      <identifier type="Matrix / Runout" description="Side B etched" value="MPO SOMA 92 B1" />
+    </identifiers>
+  </release>
+  <release id="22">
+    <artists>
+      <artist>
+        <id>57</id>
+        <name>Chris Gray</name>
+      </artist>
+    </artists>
+    <title>Sweetness You Bring</title>
+    <labels>
+      <label name="Deep4Life" catno="D4L12005" id="9" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">1062744</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Sweetness You Bring</title>
+        <duration>7:17</duration>
+      </track>
+      <track>
+        <position>AA1</position>
+        <title>Ran Away (Classic Mix)</title>
+        <duration>6:08</duration>
+      </track>
+      <track>
+        <position>AA2</position>
+        <title>Brink Of Insanity</title>
+        <duration>6:14</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Rights Society" description="" value="BMI" />
+      <identifier type="Matrix / Runout" description="Runout Side A" value="D4LI2005-A Without you, i'm on the brink of insanity... 3784. 1 (2) M.M.M.J.R." />
+      <identifier type="Matrix / Runout" description="Runout Side B" value="D4LI2005-AA ... Your smile is my light ... 3784. 2 (2) M.M.M.J.R." />
+    </identifiers>
+  </release>
+  <release id="23">
+    <artists>
+      <artist>
+        <id>58</id>
+        <name>DaRand Land</name>
+      </artist>
+    </artists>
+    <title>Blessings</title>
+    <labels>
+      <label name="Deep4Life" catno="D4L12006" id="9" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>2000-05-00</released>
+    <master_id is_main_release="true">1108424</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Blessings</title>
+        <duration>5:00</duration>
+      </track>
+      <track>
+        <position>AA</position>
+        <title>Sonic Vision</title>
+        <duration>5:42</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="24">
+    <artists>
+      <artist>
+        <id>59</id>
+        <name>Kerri Chandler</name>
+      </artist>
+    </artists>
+    <title>Digitalsoul (Session One)</title>
+    <labels>
+      <label name="Large Records" catno="LAR-043" id="12" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>1999-00-00</released>
+    <master_id is_main_release="true">743102</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Andromeda</title>
+        <extraartists>
+          <artist>
+            <id>205709</id>
+            <name>Miri Ben-Ari</name>
+            <anv>Miri Benari</anv>
+            <role>Strings, Arranged By [Strings]</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>My Love, My Life</title>
+        <extraartists>
+          <artist>
+            <id>751445</id>
+            <name>Steven Woods</name>
+            <role>Guitar</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>I Know</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Digital Love Affair</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Barcode" description="Scanned" value="752743004318" />
+    </identifiers>
+  </release>
+  <release id="25">
+    <artists>
+      <artist>
+        <id>59</id>
+        <name>Kerri Chandler</name>
+      </artist>
+    </artists>
+    <title>Digitalsoul (Session Two)</title>
+    <labels>
+      <label name="Large Records" catno="LAR-053" id="12" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+          <description>Limited Edition</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">903113</master_id>
+    <tracklist>
+      <track>
+        <title>This Side</title>
+      </track>
+      <track>
+        <position>A1</position>
+        <title>Summer Love</title>
+        <duration>7:30</duration>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>I Found You (Flashback)</title>
+        <duration>7:32</duration>
+      </track>
+      <track>
+        <title>That Side</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Isis</title>
+        <duration>7:54</duration>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>What Is Digitalsoul?</title>
+        <duration>8:06</duration>
+        <extraartists>
+          <artist>
+            <id>473978</id>
+            <name>Jeff Craven</name>
+            <anv>JC</anv>
+            <role>Words By</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Barcode" description="" value="7 52743 00531 5" />
+      <identifier type="Matrix / Runout" description="Side A, etched" value="LAR-053 A fw DS" />
+      <identifier type="Matrix / Runout" description="Side B, etched" value="LAR-053 B fw DS" />
+      <identifier type="Rights Society" description="" value="ASCAP" />
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="26">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ Rasoul</name>
+      </artist>
+    </artists>
+    <title>Soul Searching Vol. 1</title>
+    <labels>
+      <label name="Large Records" catno="LAR-029" id="12" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>1998-01-30</released>
+    <master_id is_main_release="true">35067</master_id>
+    <tracklist>
+      <track>
+        <title>This Side</title>
+      </track>
+      <track>
+        <position>A</position>
+        <title>Let The Music</title>
+      </track>
+      <track>
+        <title>That Side</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Slingshot</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>San Francisco Nights</title>
+        <extraartists>
+          <artist>
+            <id>11233</id>
+            <name>Chris Lum</name>
+            <role>Producer</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Runout Etching This Side" value="LAR-029 A F/W RCE" />
+      <identifier type="Matrix / Runout" description="Runout Etching That Side" value="LAR-029 B" />
+      <identifier type="Rights Society" description="" value="ASCAP" />
+    </identifiers>
+  </release>
+  <release id="27">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ Rasoul</name>
+      </artist>
+    </artists>
+    <title>Soul Searching Vol. 2</title>
+    <labels>
+      <label name="Large Records" catno="LAR-034" id="12" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <released>1998-06-28</released>
+    <master_id is_main_release="true">1195313</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>You Feel That?</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>You Feel Those Beats?</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Pepper</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Untitled Deepness</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Runout Etching This Side" value="LAR-034 A F/W RCE" />
+      <identifier type="Matrix / Runout" description="Runout Etching That Side" value="LAR-034 B 4" />
+    </identifiers>
+  </release>
+  <release id="28">
+    <artists>
+      <artist>
+        <id>60</id>
+        <name>Pete Moss</name>
+      </artist>
+    </artists>
+    <title>Outward Bound EP</title>
+    <labels>
+      <label name="Recline" catno="RECLINE003" id="29" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+      <style>Tech House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">1715186</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Take No Mess</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Take No Mess (Edit)</title>
+      </track>
+      <track>
+        <position>B</position>
+        <title>Untitled</title>
+      </track>
+    </tracklist>
+  </release>
+  <release id="29">
+    <artists>
+      <artist>
+        <id>61</id>
+        <name>John Tejada &amp; Arian Leviste</name>
+      </artist>
+    </artists>
+    <title>6 Hits Of Sunshine</title>
+    <labels>
+      <label name="Palette Recordings" catno="PAL-11" id="30" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <released>2000</released>
+    <master_id is_main_release="true">3838908</master_id>
+    <tracklist>
+      <track>
+        <title>Top Side</title>
+      </track>
+      <track>
+        <position>A1</position>
+        <title>6 Hits Of Sunshine</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>A Present Of Presence</title>
+      </track>
+      <track>
+        <title>Bottom Side</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Pattern Translator</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Blue Is Bashful</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Rights Society" description="" value="BMI" />
+    </identifiers>
+  </release>
+  <release id="30">
+    <artists>
+      <artist>
+        <id>62</id>
+        <name>John Tejada</name>
+      </artist>
+    </artists>
+    <title>Song Forms &amp; Freedom EP</title>
+    <labels>
+      <label name="Mosaic" catno="MOSAIC026" id="31" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>EP</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Tech House</style>
+    </styles>
+    <released>2000-00-00</released>
+    <master_id is_main_release="true">689053</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Song Forms &amp; Freedom</title>
+        <duration>5:03</duration>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Dressed In Dreams</title>
+        <duration>5:04</duration>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>As Far As Fun</title>
+        <duration>5:05</duration>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Tangled</title>
+        <duration>4:50</duration>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Matrix / Runout" description="Run-in grooves between tracks A1 &amp; A2" value="DICKS GOT AN INFERIOR COCK COMPLEX AND SHE'S GOT HAIRY HAND AN 'ORL" />
+      <identifier type="Matrix / Runout" description="Run-out grooves on Side B" value="D.H. LAWRENCE OR MOULDY DICK - YOU CHOOSE" />
+    </identifiers>
+  </release>
+  <release id="31">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ Rasoul</name>
+      </artist>
+    </artists>
+    <title>Soul Searching Vol. 4</title>
+    <labels>
+      <label name="Large Records" catno="LAR-048" id="12" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="2" text="">
+        <descriptions>
+          <description>12"</description>
+          <description>33 ⅓ RPM</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <released>1999-11-19</released>
+    <master_id is_main_release="true">35085</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Dance 4 Life</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Tropical Moods</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Requiem</title>
+      </track>
+      <track>
+        <position>C</position>
+        <title>Soul Searching</title>
+        <extraartists>
+          <artist>
+            <id>13561</id>
+            <name>Shawn Benson</name>
+            <role>Vocals [Featuring]</role>
+          </artist>
+        </extraartists>
+      </track>
+      <track>
+        <position>D1</position>
+        <title>Da Phunk Won't Let U Down</title>
+      </track>
+      <track>
+        <position>D2</position>
+        <title>Wishing</title>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Barcode" description="Text" value="7 52743 00481 3" />
+      <identifier type="Barcode" description="String" value="752743004813" />
+      <identifier type="Matrix / Runout" description="Runout side A, etched" value="LAR∙048 A fw DS" />
+      <identifier type="Matrix / Runout" description="Runout side B, etched" value="LAR∙048 B fw DS" />
+      <identifier type="Matrix / Runout" description="Runout side C, etched" value="LAR∙048 C fw DS" />
+      <identifier type="Matrix / Runout" description="Runout side D, etched" value="LAR∙048 D fw DS" />
+      <identifier type="Rights Society" description="" value="ASCAP" />
+    </identifiers>
+  </release>
+  <release id="35">
+    <artists>
+      <artist>
+        <id>63</id>
+        <name>Solomonic Sound</name>
+      </artist>
+    </artists>
+    <title>Night Life</title>
+    <labels>
+      <label name="Worship Recordings" catno="WOR.04" id="32" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="Red Labels">
+        <descriptions>
+          <description>12"</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+      <style>Tech House</style>
+    </styles>
+    <released>1999-10-00</released>
+    <master_id is_main_release="true">3749109</master_id>
+    <tracklist>
+      <track>
+        <position>A</position>
+        <title>Night Life (Original Mix)</title>
+      </track>
+      <track>
+        <position>B1</position>
+        <title>Night Life (A.M. Dub)</title>
+      </track>
+      <track>
+        <position>B2</position>
+        <title>Night Life (Smoked Up By Pete Moss Mix)</title>
+        <extraartists>
+          <artist>
+            <id>60</id>
+            <name>Pete Moss</name>
+            <role>Remix</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+    <identifiers>
+      <identifier type="Rights Society" description="" value="BMI" />
+      <identifier type="Matrix / Runout" description="Runout side A" value="NIGHT LIFE - A  EUROPADISK DMM NY USA  38413  G" />
+      <identifier type="Matrix / Runout" description="Runout side B" value="NIGHT LIFE - B  EUROPADISK DMM NY USA  38413  G" />
+    </identifiers>
+  </release>
+  <release id="38">
+    <artists>
+      <artist>
+        <id>60</id>
+        <name>Pete Moss</name>
+      </artist>
+    </artists>
+    <title>Late Night Up North</title>
+    <labels>
+      <label name="Ovum Recordings" catno="OVM117" id="35" />
+    </labels>
+    <formats>
+      <format name="Vinyl" qty="1" text="">
+        <descriptions>
+          <description>12"</description>
+        </descriptions>
+      </format>
+    </formats>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Dub</style>
+      <style>Deep House</style>
+      <style>Tech House</style>
+    </styles>
+    <released>1999</released>
+    <master_id is_main_release="true">442131</master_id>
+    <tracklist>
+      <track>
+        <position>A1</position>
+        <title>Late Night Up North (Original Mix)</title>
+      </track>
+      <track>
+        <position>A2</position>
+        <title>Late Night Up North (Feel Free Dub)</title>
+      </track>
+      <track>
+        <position>B</position>
+        <title>Late Night Up North (Wink Interpretation)</title>
+        <extraartists>
+          <artist>
+            <id>3</id>
+            <name>Josh Wink</name>
+            <anv>Wink</anv>
+            <role>Remix, Producer [Additional]</role>
+          </artist>
+        </extraartists>
+      </track>
+    </tracklist>
+  </release>
+</releases>

@@ -91,6 +91,19 @@ Key: `redscroll-records-wallingford` · OSM: `node/12609227301` · Candidate sta
 
 Notes: OSM name/music tag mentions records or vinyl; not verified. Same name appears on multiple OSM objects; check for duplicate/relocated shop. Own-site check 2026-10-26 UTC: https://redscrollrecords.com/. Prefilled discogs_seller_name from this page. Own-site check 2026-10-26 UTC: https://redscrollrecords.com/contact. Prefilled phone from this page. Seller link found on own site; seller-profile location still needs human confirmation.
 
+### Willimantic Records — Willimantic
+
+Key: `willimantic-records-willimantic` · OSM: `node/8018607486` · Candidate status: **record shop**.
+
+- [ ] Confirm open/current location: 34 North Street.
+- [ ] Confirm it sells vinyl records; resolve instrument-only/closure/duplicate concerns.
+- [ ] Confirm hours: Mo-Sa 10:00-18:00; Su 11:00-17:00.
+- [ ] Confirm phone: +1 860 450 7000.
+- [ ] Confirm own website: http://willimanticrecords.com.
+- [x] Match Discogs seller name and profile location: **WillimanticRecords**, 34 North Street, Willimantic, CT 06226, from user-supplied profile screenshot. The website printed on the profile has not been visited or safety-checked.
+
+Notes: OSM name/music tag mentions records or vinyl; not verified. Website unavailable (gaierror); business closure NOT confirmed. Hours supplied by the user from a Google business-hours listing on 2026-10-25 US Eastern; not independently checked. Website failure alone does not confirm closure. User-supplied Discogs profile screenshot on 2026-10-25 US Eastern shows username WillimanticRecords, matching business name and 34 North Street address, a brick-and-mortar record/book shop description, and website http://willimanticrecords.com. Manual profile evidence, not an automated own-site seller-link finding. Old blog failure no longer determines classification. Current opening status, phone, vinyl sales and website safety remain unconfirmed; verified=false.
+
 ### Merlin's Record Rack — town not supplied
 
 Key: `merlin-s-record-rack` · OSM: `node/4139026693` · Candidate status: **record shop**.
@@ -311,16 +324,3 @@ Key: `tumbleweeds-music-more` · OSM: `node/8169569417` · Candidate status: **u
 - [ ] Confirm Discogs seller name **and seller-profile location**: no own-site seller link found; do not guess.
 
 Notes: OSM shop=music alone does not establish vinyl sales.
-
-### Willimantic Records — Willimantic
-
-Key: `willimantic-records-willimantic` · OSM: `node/8018607486` · Candidate status: **possibly closed**.
-
-- [ ] Confirm open/current location: 34 North Street.
-- [ ] Confirm it sells vinyl records; resolve instrument-only/closure/duplicate concerns.
-- [ ] Confirm hours: Mo-Sa 10:00-18:00; Su 11:00-17:00 (user-supplied Google listing; not independently checked).
-- [ ] Confirm phone: +1 860 450 7000.
-- [ ] Confirm own website: http://blog.willimanticrecords.com.
-- [ ] Confirm Discogs seller name **and seller-profile location**: no own-site seller link found; do not guess.
-
-Notes: OSM name/music tag mentions records or vinyl; not verified. Website unavailable (gaierror); business closure NOT confirmed. Hours supplied by the user from a Google business-hours listing on 2026-10-25 US Eastern; not independently checked.

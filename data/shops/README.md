@@ -91,3 +91,13 @@ They are stored as `Mo-Sa 10:00-18:00; Su 11:00-17:00`, with provenance in notes
 This was not a Google API lookup or scrape and does not verify the business.
 After rebuilding from the OSM cache, reapply this documented correction before
 reviewing the CSV; raw OSM has no hours for this row.
+
+The user subsequently supplied a Discogs profile screenshot showing
+**WillimanticRecords**, the matching 34 North Street address, a physical record/
+book shop description, and `http://willimanticrecords.com`. These manual facts
+replace the obsolete blog URL and the website-failure classification; they are
+not an automated own-site seller-link finding. Reapply seller name, website,
+`likely_status=record shop` and provenance notes after an OSM-only rebuild too.
+The profile match is recorded; opening status, phone, vinyl sales and website
+safety remain unconfirmed, so `verified=false` is retained. No unsafe site was
+visited and no marketplace inventory/counts were copied from the screenshot.

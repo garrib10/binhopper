@@ -318,9 +318,9 @@ Key: `willimantic-records-willimantic` · OSM: `node/8018607486` · Candidate st
 
 - [ ] Confirm open/current location: 34 North Street.
 - [ ] Confirm it sells vinyl records; resolve instrument-only/closure/duplicate concerns.
-- [ ] Confirm hours: not supplied.
+- [ ] Confirm hours: Mo-Sa 10:00-18:00; Su 11:00-17:00 (user-supplied Google listing; not independently checked).
 - [ ] Confirm phone: +1 860 450 7000.
 - [ ] Confirm own website: http://blog.willimanticrecords.com.
 - [ ] Confirm Discogs seller name **and seller-profile location**: no own-site seller link found; do not guess.
 
-Notes: OSM name/music tag mentions records or vinyl; not verified. Website unavailable (gaierror); business closure NOT confirmed.
+Notes: OSM name/music tag mentions records or vinyl; not verified. Website unavailable (gaierror); business closure NOT confirmed. Hours supplied by the user from a Google business-hours listing on 2026-10-25 US Eastern; not independently checked.

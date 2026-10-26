@@ -82,3 +82,12 @@ Keep key identity stable across future edits, including duplicate resolution.
 Hand-added shops without osm_id must say **not from OSM** in notes and cite their
 own source. Their factual fields are not claimed to originate from OSM. See
 [verification and loading](../../docs/shops/VERIFY.md) before importing anything.
+
+## User-supplied correction after discovery
+
+Willimantic Records hours were supplied by the user from its Google business-hours
+listing on 2026-10-25 US Eastern: Monday–Saturday 10AM–6PM, Sunday 11AM–5PM.
+They are stored as `Mo-Sa 10:00-18:00; Su 11:00-17:00`, with provenance in notes.
+This was not a Google API lookup or scrape and does not verify the business.
+After rebuilding from the OSM cache, reapply this documented correction before
+reviewing the CSV; raw OSM has no hours for this row.

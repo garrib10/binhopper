@@ -1,0 +1,4 @@
+shop_key,osm_id,name,address,town,lat,lng,phone,website,hours,discogs_seller_name,likely_status,verified,notes
+fixture-records-town,node/1,Fixture Records,,Town,41.5,-72.5,+1 203 555 0101,,,,record shop,true,
+pending-records-town,node/2,Fixture Records,,Town,41.5,-72.5,,,,,record shop,false,
+closed-records-town,node/3,Fixture Records,,Town,41.5,-72.5,,,,,possibly closed,false,

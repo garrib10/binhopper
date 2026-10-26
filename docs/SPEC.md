@@ -93,7 +93,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 1. Inputs: ZIP and radius (10 / 25 / 50 / 100 mi). Changing either refreshes the map and list.
 2. Distance = straight-line from the ZIP's center point to the store, in miles, rounded to one decimal.
-3. Only stores within the radius appear, sorted by stock freshness tier, then distance.
+3. Only active stores within the radius appear, sorted by stock freshness tier, then distance. Inactive stores also contribute no stock to search, browse, album or artist summaries.
 4. Each store shows name, distance, area, quantity, condition, price and a freshness label.
 5. Freshness: Discogs-sourced inventory is hidden at six hours since its last successful sync, even if a user verified it more recently. Manual and user-report stock verified in the last 24 h shows "Verified"; otherwise older than 7 days shows "May be out of date" with "Call to confirm." Two missing reports in 24 h show "Reported missing today". Discogs cards link their individual listing with "Data provided by Discogs."
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
@@ -139,7 +139,7 @@ Eleven tables cover v1 in MySQL 8: the ten below plus an album\_genres join tabl
 | artists | id, discogs\_artist\_id, name, bio, image\_url | albums |
 | albums (Discogs "master") | id, discogs\_master\_id, artist\_id, title, year, cover\_url, tracklist (JSON with side positions) | artists, pressings |
 | pressings (Discogs "release") | id, discogs\_release\_id, album\_id, label, catalog\_no, barcode, format, variant\_note, exclusive\_to | albums, stock\_listings |
-| stores | id, name, address, lat, lng, phone, website, hours, discogs\_seller\_name, source | stock\_listings, stock\_reports |
+| stores | shop\_key (unique), osm\_id (nullable, unique), active, verified\_at, id, name, address, lat, lng, phone, website, hours, discogs\_seller\_name, source | stock\_listings, stock\_reports |
 | stock\_listings | id, store\_id, pressing\_id, price, condition, quantity, source, last\_synced\_at, last\_verified\_at | stores, pressings |
 | stock\_reports | id, listing\_id, user\_id, result (present / missing / different\_price), reported\_price, created\_at | stock\_listings, users |
 | wishlist\_items | id, user\_id, album\_id, pressing\_id (nullable = any), max\_price, min\_condition, created\_at | users, albums, pressings |

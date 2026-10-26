@@ -39,7 +39,7 @@ def origin(session, zip, radius):
 
 
 def listing_terms(lp, new, used, under_30, now):
-    terms = [StockListing.quantity > 0, visible(Pressing, now), visible_inventory(now)]
+    terms = [StockListing.quantity > 0, Store.active.is_(True), visible(Pressing, now), visible_inventory(now)]
     if lp:
         terms.append(Pressing.format.ilike("%LP%"))
     if new != used:
@@ -50,7 +50,7 @@ def listing_terms(lp, new, used, under_30, now):
 
 
 def summary(session, album, center, radius, terms, now):
-    listings = session.scalars(select(StockListing).join(Pressing).where(
+    listings = session.scalars(select(StockListing).join(Pressing).join(Store).where(
         Pressing.album_id == album.id, *terms).options(joinedload(StockListing.store))).all()
     nearby, outside = [], []
     for listing in listings:

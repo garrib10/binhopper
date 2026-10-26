@@ -421,3 +421,6 @@ a {
   .stock-map-panel { position: sticky; top: var(--space-5); }
   .stock-map { height: 530px; }
 }
+
+.app-data-credit { max-width: 1240px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); }
+.app-data-credit a { display: inline-flex; align-items: center; min-height: var(--touch-target); }

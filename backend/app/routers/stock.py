@@ -43,7 +43,7 @@ def nearby_stock(
         select(StockListing)
         .join(StockListing.store)
         .join(StockListing.pressing)
-        .where(Pressing.album_id == album_id, StockListing.quantity > 0, visible_inventory(now),
+        .where(Pressing.album_id == album_id, StockListing.quantity > 0, Store.active.is_(True), visible_inventory(now),
                or_(Pressing.api_fetched_at.is_(None), Pressing.api_fetched_at > now - timedelta(hours=6)))
         .options(joinedload(StockListing.store), joinedload(StockListing.pressing))
     )

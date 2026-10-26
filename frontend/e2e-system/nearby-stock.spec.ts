@@ -99,3 +99,9 @@ test('AC-05 fictional manual stock retains its stale warning without a marketpla
   await expect(page.getByText('May be out of date: call to confirm')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toHaveCount(0);
 });
+
+test('AC-01 shop locations retain visible OpenStreetMap attribution', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: '4 stores have it' })).toBeVisible();
+  const credit = page.getByRole('contentinfo').getByRole('link', { name: 'OpenStreetMap contributors' });
+  await expect(credit).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
+});

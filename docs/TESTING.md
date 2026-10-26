@@ -139,3 +139,14 @@ cases cover map pins refreshing with ZIP/radius, AC-03 widening/online fallback,
 AC-04 invalid ZIP, stale calls, and screenshots at 390/1440 in light/dark modes.
 `frontend/test/fixtures.ts` automatically intercepts external map/Discogs services
 for **both** browser suites. System tests retain the real app API and MySQL.
+
+### Shop directory (#47)
+
+`test_shop_directory.py` uses a small fictional CSV, generated JSON/PBF fixtures
+and MockTransport website responses: verified-only loading, override, stable-key
+upserts, absence/closure retirement, reactivation, invalid-file rollback,
+nullable OSM provenance, three OSM geometry kinds, robots/page limits, seller
+link evidence and private-address rejection. AC-01 tests exclude inactive shops
+from nearby stock and search/album/artist summaries and inventory scheduling.
+`test_migrations.py` checks legacy-key backfill. The system suite checks public
+OSM attribution at both widths. No tests/CI read data/raw or fetch real services.

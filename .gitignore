@@ -21,3 +21,6 @@ frontend/blob-report/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Locally cached discovery data and website responses
+/data/raw/

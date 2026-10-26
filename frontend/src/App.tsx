@@ -88,5 +88,6 @@ export function AppShell() {
       <Route path="/stock/:id/report" element={<Placeholder title="Report stock" />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+    <footer className="app-data-credit">Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</footer>
   </>;
 }

@@ -1,7 +1,8 @@
 # Verify the Connecticut shop directory
 
-Every candidate currently has `verified=false`. Classification is a lead, not a
-claim that a business is open or sells vinyl. Website evidence was checked on
+**Willimantic Records is verified from user confirmation on 2026-10-26 US Eastern;
+the other 18 candidates remain unverified.** Other candidates’ classifications
+are leads, not claims that they are open or sell vinyl. Website evidence was checked on
 2026-10-26 UTC; raw pages are cached locally, not committed. Confirm the seller
 profile's location yourself; finding its link on a shop's site is not location
 verification. Do not mark a row verified until all applicable checks below pass.
@@ -93,16 +94,21 @@ Notes: OSM name/music tag mentions records or vinyl; not verified. Same name app
 
 ### Willimantic Records — Willimantic
 
-Key: `willimantic-records-willimantic` · OSM: `node/8018607486` · Candidate status: **record shop**.
+Key: `willimantic-records-willimantic` · Status: **record shop, verified=true**.
+Verification source: user confirmation on 2026-10-26 US Eastern, plus the
+user-supplied Discogs profile screenshot.
 
-- [ ] Confirm open/current location: 34 North Street.
-- [ ] Confirm it sells vinyl records; resolve instrument-only/closure/duplicate concerns.
-- [ ] Confirm hours: Mo-Sa 10:00-18:00; Su 11:00-17:00.
-- [ ] Confirm phone: +1 860 450 7000.
-- [ ] Confirm own website: http://willimanticrecords.com.
-- [x] Match Discogs seller name and profile location: **WillimanticRecords**, 34 North Street, Willimantic, CT 06226, from user-supplied profile screenshot. The website printed on the profile has not been visited or safety-checked.
+- [x] Open/current location: **34 North Street, Willimantic, CT 06226** — user-confirmed.
+- [x] Sells vinyl records — user-confirmed.
+- [x] Current hours: **Monday–Saturday 10AM–6PM; Sunday 11AM–5PM** — user-confirmed.
+- [x] Current phone: **860-450-7000** — user-confirmed.
+- [x] Official website identified: **http://willimanticrecords.com**, published on the matching Discogs profile.
+- [x] Discogs seller and profile location match: **WillimanticRecords**, 34 North Street, Willimantic, CT 06226.
 
-Notes: OSM name/music tag mentions records or vinyl; not verified. Website unavailable (gaierror); business closure NOT confirmed. Hours supplied by the user from a Google business-hours listing on 2026-10-25 US Eastern; not independently checked. Website failure alone does not confirm closure. User-supplied Discogs profile screenshot on 2026-10-25 US Eastern shows username WillimanticRecords, matching business name and 34 North Street address, a brick-and-mortar record/book shop description, and website http://willimanticrecords.com. Manual profile evidence, not an automated own-site seller-link finding. Old blog failure no longer determines classification. Current opening status, phone, vinyl sales and website safety remain unconfirmed; verified=false.
+Website access note: the user reported a browser security warning. The site was
+not visited or certified safe. This access issue is separate from the confirmed
+shop identity and operating details; it does not keep business verification open.
+The obsolete blog lookup failure is not evidence that the shop is closed.
 
 ### Merlin's Record Rack — town not supplied
 

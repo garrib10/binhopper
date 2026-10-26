@@ -88,7 +88,8 @@ own source. Their factual fields are not claimed to originate from OSM. See
 Willimantic Records hours were supplied by the user from its Google business-hours
 listing on 2026-10-25 US Eastern: Monday–Saturday 10AM–6PM, Sunday 11AM–5PM.
 They are stored as `Mo-Sa 10:00-18:00; Su 11:00-17:00`, with provenance in notes.
-This was not a Google API lookup or scrape and does not verify the business.
+This was not a Google API lookup or scrape. The user subsequently confirmed the
+business details as described below.
 After rebuilding from the OSM cache, reapply this documented correction before
 reviewing the CSV; raw OSM has no hours for this row.
 
@@ -98,6 +99,10 @@ book shop description, and `http://willimanticrecords.com`. These manual facts
 replace the obsolete blog URL and the website-failure classification; they are
 not an automated own-site seller-link finding. Reapply seller name, website,
 `likely_status=record shop` and provenance notes after an OSM-only rebuild too.
-The profile match is recorded; opening status, phone, vinyl sales and website
-safety remain unconfirmed, so `verified=false` is retained. No unsafe site was
+The user confirmed on 2026-10-26 US Eastern that the shop is open, sells vinyl,
+and that the address, phone and hours are current. **Willimantic is now
+`verified=true`; all other rows remain false.** Reapply this user-confirmed
+verification and its provenance after an OSM-only rebuild. Website identity is
+established by the matching profile; the reported website access warning remains
+separate, and website safety has not been certified. No unsafe site was
 visited and no marketplace inventory/counts were copied from the screenshot.

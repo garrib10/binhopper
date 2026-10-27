@@ -21,6 +21,7 @@
     "src",
     "proxy.ts",
     "proxy.test.ts",
+    "test",
     "e2e",
     "vite.config.ts",
     "playwright.config.ts",

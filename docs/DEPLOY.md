@@ -33,8 +33,10 @@ full setup; until launch, apply only the staging parts:
 
   Exit 1 means build; exit 0 means skip. This also skips other preview branches. Skipped builds
   show as Canceled and still count toward build quotas. Remove the command at launch. Set `API_ORIGIN` for **Preview → branch `staging`** to the Railway staging
-  URL. Leave Production unset until launch.
-- **GitHub:** set `API_URL` / `APP_URL` on the `staging` environment only. The Deploy workflow
+  URL. Leave Production unset until launch. Keep **Deployment Protection** on, so staging stays
+  private, and create a **Protection Bypass for Automation** secret for the CI checks (§2 step 5).
+- **GitHub:** set `API_URL` / `APP_URL` (variables) and `VERCEL_AUTOMATION_BYPASS_SECRET` (secret) on
+  the `staging` environment only. The Deploy workflow
   skips its check with a notice where these are unset, as on production before launch.
 - **Don't promote `staging` → `main` until v1 is done.** Then follow
   [Going live](#going-live-v1-launch).
@@ -100,10 +102,19 @@ that promotion. Do not weaken the verifier to accept a stale SHA.
    (the `git-staging` alias), and, at launch, the production project URL. Copy the actual
    generated aliases; do not guess their names or use a per-commit preview URL. Put the staging
    alias in the staging `APP_URL`, and the production URL in production's.
-5. In Deployment Protection, make the staging preview reachable by unattended GET requests
-   without a Vercel login challenge. This setup uses public fictional staging data and
-   public URL variables, with no bypass secret. Confirm access in a signed-out browser.
-   Requests to `/api` go through the same protection as the app.
+5. Keep **Deployment Protection → Vercel Authentication** on, so the staging preview stays private.
+   It covers the app and its `/api` proxy. For the automated checks, open **Protection Bypass for
+   Automation** in the same settings, create a secret (e.g. "GitHub staging checks"), and store it
+   as the GitHub `staging` environment **secret** `VERCEL_AUTOMATION_BYPASS_SECRET` (section 3).
+   The Deploy check and the staging system tests send it as the `x-vercel-protection-bypass`
+   header, **only to `APP_URL`**, never to the Railway API or any other host
+   (`check_deploy.py`, `frontend/test/vercel-bypass.ts`).
+   - **People:** share staging with **Share** on the deployment. On Hobby, you can have only one
+     "Anyone with the link" share link per account, and it belongs to one deployment, so move it
+     after each promotion. Alternatively, invite people with a Vercel account to the deployment.
+   - **Rotating the secret:** regenerate it in Vercel, update the GitHub secret, then redeploy staging.
+     Deleting it makes the checks fail at the protection wall until a new one is stored.
+   - Production domains aren't covered by standard protection, so production needs no secret.
 6. Redeploy after changing Vercel environment variables: they only apply to new deployments
    (and Vite embeds `VITE_` map variables at build time). The committed SPA rewrite serves
    `index.html` for non-file routes except `/api/*`, while existing static files keep their
@@ -127,6 +138,7 @@ Under Settings → Environments, create/open `staging` and `production`. Set **V
 Vercel's `API_ORIGIN` and GitHub's `API_URL` must point to the same Railway API in each
 environment. The deploy check fails if the app's `/api` proxy reports a different commit.
 All origins include `https://`, no `/api`.
+Staging also needs one environment **secret**, `VERCEL_AUTOMATION_BYPASS_SECRET` (§2 step 5).
 Real deployment URLs and credentials belong in dashboards, not this guide.
 
 Keep yourself as a required reviewer on GitHub's `production` environment. Restrict staging
@@ -187,10 +199,12 @@ For a manual staging-only rerun (from frontend, Node 24 and Playwright installed
 
 ```bash
 SYSTEM_TARGET=staging APP_URL="$STAGING_APP_URL" API_URL="$STAGING_API_URL" \
-  EXPECTED_COMMIT="$STAGING_COMMIT" npm run e2e:system
+  EXPECTED_COMMIT="$STAGING_COMMIT" VERCEL_AUTOMATION_BYPASS_SECRET="$BYPASS_SECRET" \
+  npm run e2e:system
 ```
 
-Use actual staging origins and its promotion SHA in those local variables. No database
+Use actual staging origins and its promotion SHA in those local variables, and the bypass secret
+from Vercel (don't paste it into shell history; read it from a password manager). No database
 credentials are needed. CI uploads a Playwright report on failure; link the run in sign-off.
 
 ## Going live (v1 launch)
@@ -268,6 +282,8 @@ verify the API/catalog and frontend, and document the incident and corrected pro
 - [Vercel Ignored Build Step](https://vercel.com/docs/project-configuration/project-settings#ignored-build-step)
 - [Vercel environment variables](https://vercel.com/docs/environment-variables)
 - [Vercel deployment protection](https://vercel.com/docs/deployment-protection)
+- [Vercel Protection Bypass for Automation](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
+  and [Shareable Links](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/sharable-links)
 - [GitHub workflow_run semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
 - [Better Stack HTTP monitors](https://betterstack.com/docs/uptime/uptime-monitor/)
 

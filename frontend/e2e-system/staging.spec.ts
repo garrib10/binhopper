@@ -1,9 +1,12 @@
 import { expect, test } from '../test/fixtures';
 import type { NearbyStockResponse } from '../src/api';
+import { bypassHeaders } from '../test/vercel-bypass';
 
 // These checks use only GET requests. They tolerate sample data aging between deploys
 // by comparing the UI with the live API rather than assuming frozen freshness tiers.
 const api = process.env.API_URL?.replace(/\/$/, '');
+// The browser only calls the app's own origin: Vercel proxies /api to the API (#117).
+const app = process.env.APP_URL ? new URL(process.env.APP_URL).origin : '';
 
 test('staging API is the expected deployment', async ({ request }) => {
   const response = await request.get(`${api}/api/health`);
@@ -11,12 +14,17 @@ test('staging API is the expected deployment', async ({ request }) => {
   const health = await response.json();
   expect(health.status).toBe('ok');
   if (process.env.EXPECTED_COMMIT) expect(health.commit).toBe(process.env.EXPECTED_COMMIT);
+
+  // The same deployment answers through the app's /api proxy.
+  const proxied = await request.get(`${app}/api/health`, { headers: bypassHeaders(`${app}/api/health`) });
+  expect(proxied.status()).toBe(200);
+  expect((await proxied.json()).commit).toBe(health.commit);
 });
 
 for (const radius of [10, 25] as const) {
   test(`live nearby stock at ${radius} mi matches the API`, async ({ page }) => { // AC-01
     const response = page.waitForResponse((res) =>
-      res.url().startsWith(`${api}/api/albums/1/stock?`) &&
+      res.url().startsWith(`${app}/api/albums/1/stock?`) &&
       new URL(res.url()).searchParams.get('radius') === String(radius),
     );
     await page.goto('/albums/1/stores');
@@ -37,7 +45,7 @@ test('invalid ZIP stays in the browser without an API request', async ({ page })
   await expect(page.getByRole('heading', { level: 3 }).first()).toBeVisible();
   const calls: string[] = [];
   page.on('request', (req) => {
-    if (req.url().startsWith(`${api}/api/`)) calls.push(req.url());
+    if (new URL(req.url()).pathname.startsWith('/api/')) calls.push(req.url());
   });
   await page.getByLabel('ZIP code').fill('1001');
   await page.getByLabel('ZIP code').press('Enter');

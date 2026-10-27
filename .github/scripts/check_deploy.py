@@ -16,13 +16,20 @@ def endpoint(name: str) -> str:
     return value
 
 
-def wait_for_commit(health_url: str, commit: str, deadline: float, interval: float, label: str) -> None:
+def app_headers(environ=os.environ) -> dict[str, str]:
+    """Vercel Protection Bypass for Automation; sent to the Vercel app only, never the API."""
+    secret = environ.get("VERCEL_AUTOMATION_BYPASS_SECRET", "")
+    return {"x-vercel-protection-bypass": secret} if secret else {}
+
+
+def wait_for_commit(health_url: str, commit: str, deadline: float, interval: float, label: str,
+                    headers: dict[str, str] | None = None) -> None:
     while True:
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise TimeoutError(f"{label} did not report expected commit {commit} in time")
         try:
-            request = Request(health_url, headers={"Cache-Control": "no-cache"})
+            request = Request(health_url, headers={"Cache-Control": "no-cache", **(headers or {})})
             with urlopen(request, timeout=min(20, remaining)) as response:
                 body = json.load(response)
                 if (response.status == 200 and isinstance(body, dict)
@@ -34,12 +41,13 @@ def wait_for_commit(health_url: str, commit: str, deadline: float, interval: flo
 
 
 def check(api_url: str, app_url: str, commit: str, *, timeout: float = 600,
-          interval: float = 10) -> None:
+          interval: float = 10, app_auth: dict[str, str] | None = None) -> None:
     deadline = time.monotonic() + timeout
     wait_for_commit(f"{api_url}/api/health", commit, deadline, interval, "API")
     # The browser only talks to the app origin; Vercel's proxy must reach the same API.
-    wait_for_commit(f"{app_url}/api/health", commit, deadline, interval, "API through the Vercel /api proxy")
-    with urlopen(app_url, timeout=20) as response:
+    wait_for_commit(f"{app_url}/api/health", commit, deadline, interval,
+                    "API through the Vercel /api proxy", app_auth)
+    with urlopen(Request(app_url, headers=app_auth or {}), timeout=20) as response:
         if response.status != 200:
             raise RuntimeError(f"Frontend returned HTTP {response.status}, expected 200")
     print(f"Verified API commit {commit} directly and through the app's /api proxy, and frontend HTTP 200")
@@ -51,7 +59,7 @@ def main(environ=os.environ) -> None:
         print("::notice title=Deploy check skipped::API_URL and APP_URL are not set for this "
               "GitHub environment, so there is no deployment to verify yet.")
         return
-    check(endpoint("API_URL"), endpoint("APP_URL"), environ["GITHUB_SHA"])
+    check(endpoint("API_URL"), endpoint("APP_URL"), environ["GITHUB_SHA"], app_auth=app_headers(environ))
 
 
 if __name__ == "__main__":

@@ -1,7 +1,10 @@
 import { test as base, expect } from '@playwright/test';
+import { bypassHeaders } from './vercel-bypass';
 
 // Applies to mocked and real-backend suites. The app API remains real in system
 // tests; only third-party map/Discogs traffic is intercepted, including navigation.
+// Against protected staging, requests to the Vercel app (pages, assets and its /api
+// proxy) carry the protection-bypass secret; no other host ever receives it.
 export const test = base.extend<{ externalServices: void }>({
   externalServices: [async ({ page }, use) => {
     await page.route('**/*', async route => {
@@ -11,7 +14,11 @@ export const test = base.extend<{ externalServices: void }>({
           '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eee9dd"/><path d="M0 70H256M80 0V256M0 180H256M190 0V256" stroke="#d4ccbc" stroke-width="8"/></svg>' });
       } else if (/(^|\.)(discogs\.com|openstreetmap\.org|stadiamaps\.com|maptiler\.com|geoapify\.com)$/.test(url.hostname)) {
         await route.abort();
-      } else await route.fallback();
+      } else {
+        const bypass = bypassHeaders(route.request().url());
+        await route.fallback(Object.keys(bypass).length
+          ? { headers: { ...route.request().headers(), ...bypass } } : undefined);
+      }
     });
     await use();
   }, { auto: true }],

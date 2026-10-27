@@ -83,7 +83,10 @@ def main(environ=os.environ) -> None:
         print("::notice title=Deploy check skipped::API_URL and APP_URL are not set for this "
               "GitHub environment, so there is no deployment to verify yet.")
         return
-    check(endpoint("API_URL"), endpoint("APP_URL"), environ["GITHUB_SHA"], app_auth=app_headers(environ))
+    # Not GITHUB_SHA: GitHub ignores workflow overrides of GITHUB_* variables, and for a
+    # workflow_run trigger its own value is the default branch's commit, not the promotion.
+    check(endpoint("API_URL"), endpoint("APP_URL"), environ["EXPECTED_COMMIT"],
+          app_auth=app_headers(environ))
 
 
 if __name__ == "__main__":

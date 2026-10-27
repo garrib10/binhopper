@@ -161,8 +161,9 @@ dated sources; see [VERIFY.md](../../docs/shops/VERIFY.md).
 The user answered the batch-1 questions by checking the shops and their Discogs pages.
 Twelve more rows were verified, bringing the total to **25 verified shops, 18 with a Discogs
 seller**. Little Lost Records is now `closed` (online-only as Odd Cabinet). Semilla
-Cafe + Studio was removed from the CSV (see below). Johnny's and Revolution
-no longer list a website (a parked domain and an unconfirmed redirect). Each row's notes carry
+Cafe + Studio was removed from the CSV (see below). Johnny's no longer
+lists a website (parked domain). Revolution keeps therevct.com, which the user confirmed redirects to
+the shop's GitHub Pages site. Each row's notes carry
 the dated sources. Owner names were removed from earlier notes: this directory doesn't record
 private individuals' names.
 

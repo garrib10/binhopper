@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 
 from app import models  # noqa: F401  (registers every table on Base.metadata)
 from app.config import settings
-from app.db import Base
+from app.db import Base, connect_with_retry
 
 config = context.config
 if config.config_file_name is not None:
@@ -22,7 +22,7 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     engine = create_engine(settings.database_url)
-    with engine.connect() as connection:
+    with connect_with_retry(engine) as connection:  # staging MySQL may be waking from sleep
         context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()

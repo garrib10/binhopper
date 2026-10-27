@@ -11,8 +11,7 @@ export interface AlbumDetail extends AlbumSummary {
     exclusive_kind: 'artist' | 'retailer' | null; exclusive_to: string | null }[];
 }
 export async function getCatalog<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const base = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-  const response = await fetch(`${base}/api${path}`, { signal });
+  const response = await fetch(`/api${path}`, { signal });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new ApiError(response.status, typeof body.detail === 'string' ? body.detail : 'Unable to load this record');

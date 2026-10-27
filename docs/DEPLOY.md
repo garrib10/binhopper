@@ -5,30 +5,66 @@ Use provider domains for v1. Source flow is [develop → staging → main](BRANC
 Dashboard setup below is manual (#78, #80); committing configuration does not create services.
 Never put database credentials or API keys in Git or a `VITE_` variable.
 
+Decisions ([launch.md](decisions/launch.md#5-hosting-api-proxy-cost-and-pre-launch-mode)):
+
+- **API proxied through Vercel (Option A), chosen 2026-10-25; custom domain (Option B) decided
+  before launch.** The browser only talks to the app's own origin. `frontend/proxy.ts` (Vercel
+  Routing Middleware, registered in `frontend/vercel.json` for `/api/:path*`) forwards each `/api`
+  request to that environment's Railway API, so sign-in cookies (#38) stay first-party. The
+  frontend always calls plain `/api`: Vite proxies it locally, and Vercel proxies it when deployed.
+- **Binhopper stays free for users; no paid tiers.**
+
+## 0. Pre-launch hosting mode (until v1 ships)
+
+Decided 2026-10-27. Keep costs near zero while the MVP is unfinished. Sections 1–3 describe the
+full setup; until launch, apply only the staging parts:
+
+- **Railway:** first set a **usage limit** in the workspace's billing settings. Then create
+  **only** the `staging` environment, watching the `staging` branch. Don't create a production
+  environment until launch. Add MySQL and the `api` service only when you're ready to test.
+  Enable **app sleeping (serverless)** on the API. Keep the `worker` service off, except while
+  testing the Discogs sync.
+- **Vercel:** Production Branch stays `main`, but hold back production builds under
+  Settings → Git → **Ignored Build Step**, so that only the `staging` branch builds:
+
+  ```bash
+  if [ "$VERCEL_GIT_COMMIT_REF" = "staging" ]; then exit 1; else exit 0; fi
+  ```
+
+  Exit 1 means build; exit 0 means skip. This also skips other preview branches. Skipped builds
+  show as Canceled and still count toward build quotas. Remove the command at launch. Set `API_ORIGIN` for **Preview → branch `staging`** to the Railway staging
+  URL. Leave Production unset until launch.
+- **GitHub:** set `API_URL` / `APP_URL` on the `staging` environment only. The Deploy workflow
+  skips its check with a notice where these are unset, as on production before launch.
+- **Don't promote `staging` → `main` until v1 is done.** Then follow
+  [Going live](#going-live-v1-launch).
+
 ## 1. Railway dashboard (#78)
 
-1. Create the Binhopper project on Hobby. Keep the existing `production` environment;
-   create a persistent `staging` environment. Each must have its **own** MySQL service
-   named `MySQL`, persistent volume, and credentials. Do not point both APIs at one database.
+1. Create the Binhopper project on Hobby with a persistent `staging` environment. At launch, add
+   `production` (pre-launch: staging only, section 0). Each environment must have its **own**
+   MySQL service named `MySQL`, persistent volume, and credentials. Do not point both APIs at one database.
 2. In each environment add an `api` service connected to `garrib10/binhopper`. Set source
    branch to `staging` in staging and `main` in production. Root Directory: `/backend`.
    Config File Path: `/backend/railway.json` (absolute from repository root).
-3. Accept the GitHub app permissions and turn **Wait for CI** on in both API services.
+3. Accept the GitHub app permissions and turn **Wait for CI** on in each API service.
    The committed config selects Railpack, watches `backend/**`, binds uvicorn to `$PORT`,
    migrates with `alembic upgrade head`, checks `/api/health`, and restarts on failure.
 4. Set each API's `DATABASE_URL` to the Railway reference `${{MySQL.MYSQL_URL}}` using
    that environment's MySQL service. The backend converts the `mysql://` driver prefix
    to `mysql+pymysql://`; keep the remaining connection string intact.
 5. Generate a public HTTPS domain on each API (Networking → Public Networking → Generate
-   Domain). Record the staging and production origins privately; no `/api` suffix.
-6. After obtaining the Vercel URLs in section 2, set `CORS_ORIGINS` separately on each API:
-   a **JSON array** containing that environment's exact frontend HTTPS origin(s), no paths
-   or trailing slash. Production permits its production Vercel URL; staging permits its
-   stable **staging branch** Vercel URL. Do not use `*`, comma-separated text or a Python list.
+   Domain). Record each origin privately, with no `/api` suffix. It becomes that environment's
+   Vercel `API_ORIGIN` and GitHub `API_URL`.
+6. Leave `CORS_ORIGINS` unset on Railway. Browsers reach the API through the app's own origin,
+   so no cross-origin requests happen; the default only allows local Vite dev. The API takes the
+   visitor's IP and `https` scheme from `X-Forwarded-For` / `X-Forwarded-Proto` set by Vercel's
+   proxy (for rate limits and secure cookies). `FORWARDED_ALLOW_IPS` defaults to `*` because
+   Railway's edge connects from changing private IPs; don't change it unless you know the peers.
 7. Confirm staging uses the `environments.staging` override: migrations followed by
    `python -m scripts.seed_sample`. This fictional sample seed is safe to repeat.
    Production must use only `alembic upgrade head` and must never run sample/test seeds.
-8. Enable MySQL volume backups in both environments; take a manual backup before schema
+8. Enable MySQL volume backups in each environment; take a manual backup before schema
    changes and rehearse restore on staging. Check backup availability/retention in your plan.
 
 Railway supplies `PORT` and `RAILWAY_GIT_COMMIT_SHA`. Do not hardcode them. The health
@@ -49,36 +85,48 @@ that promotion. Do not weaken the verifier to accept a stale SHA.
    Root Directory: `frontend`; framework preset: Vite; install: `npm ci`;
    build: `npm run build`; output: `dist`; Node: 24.x.
 2. Set Production Branch to `main` in project Git settings. The `staging` branch is a
-   Preview deployment; do not make staging the production branch.
-3. Add `VITE_API_BASE_URL` for **Production**, pointing to the production Railway API
-   origin. Add the same name for **Preview → specific branch `staging`**, pointing to
-   the staging API origin. Do not apply the production API to all previews.
+   Preview deployment; do not make staging the production branch. Pre-launch, add the
+   Ignored Build Step from section 0.
+3. Add the server-side variable `API_ORIGIN` (not a `VITE_` variable, so it never reaches the
+   browser bundle) for **Preview → specific branch `staging`**, set to the staging Railway API
+   origin. At launch, add it for **Production** with the production Railway API origin. Do not
+   apply one API to all previews. `frontend/proxy.ts` forwards `/api/*` (method, path, query,
+   body and headers including `Cookie`) to that origin and returns the API's status, headers
+   (including `Set-Cookie`) and body unchanged. CDN caching of proxied responses is off
+   (`x-vercel-enable-rewrite-caching: 0` in `vercel.json`). If `API_ORIGIN` is missing or isn't an
+   `http(s)` URL, `/api` returns 503 `{"detail":"API not configured"}`, and the app shows
+   "Can't reach Binhopper right now."
 4. Get the stable **branch-specific staging URL** from the staging deployment's Domains
-   (the `git-staging` alias), and the production project URL. Copy the actual generated
-   aliases; do not guess their names or use a per-commit preview URL. Put the staging
-   alias in staging `CORS_ORIGINS` and staging `APP_URL`; use the production URL for production.
+   (the `git-staging` alias), and, at launch, the production project URL. Copy the actual
+   generated aliases; do not guess their names or use a per-commit preview URL. Put the staging
+   alias in the staging `APP_URL`, and the production URL in production's.
 5. In Deployment Protection, make the staging preview reachable by unattended GET requests
    without a Vercel login challenge. This setup uses public fictional staging data and
    public URL variables, with no bypass secret. Confirm access in a signed-out browser.
-6. Redeploy after changing Vercel environment variables: Vite embeds them at build time.
-   The committed SPA rewrite serves `index.html` for non-file routes, while existing static
-   files keep their normal filesystem handling. Verify a direct route reload and asset requests.
+   Requests to `/api` go through the same protection as the app.
+6. Redeploy after changing Vercel environment variables: they only apply to new deployments
+   (and Vite embeds `VITE_` map variables at build time). The committed SPA rewrite serves
+   `index.html` for non-file routes except `/api/*`, while existing static files keep their
+   normal filesystem handling, and the proxy never runs for them. Verify a direct route reload,
+   asset requests, and `<app>/api/health`.
 
-Other preview branches have no staging API access unless deliberately configured later.
-An empty `VITE_API_BASE_URL` preserves the local Vite `/api` proxy. It is not a hosted API.
+Other preview branches don't build pre-launch. If one is built later, its `/api` returns the 503
+until `API_ORIGIN` is deliberately configured for it. Local dev is unchanged: `npm run dev`
+proxies `/api` to `http://127.0.0.1:8000` (vite.config.ts), and no proxy middleware runs locally.
 
 ## 3. GitHub environment variables and gates
 
 Under Settings → Environments, create/open `staging` and `production`. Set **Variables**
-(not repository secrets):
+(not repository secrets). Pre-launch, set them on `staging` only:
 
-| Setting | staging | production |
+| Setting | staging | production (at launch) |
 | --- | --- | --- |
 | `API_URL` | Staging Railway API origin | Production Railway API origin |
 | `APP_URL` | Stable staging Vercel branch origin | Production Vercel project origin |
 
-The frontend's Vercel setting is `VITE_API_BASE_URL`; GitHub's check setting is `API_URL`.
-They must point to the same API per environment. All origins include `https://`, no `/api`.
+Vercel's `API_ORIGIN` and GitHub's `API_URL` must point to the same Railway API in each
+environment. The deploy check fails if the app's `/api` proxy reports a different commit.
+All origins include `https://`, no `/api`.
 Real deployment URLs and credentials belong in dashboards, not this guide.
 
 Keep yourself as a required reviewer on GitHub's `production` environment. Restrict staging
@@ -88,9 +136,15 @@ and verifying the promoted SHA. A branch policy allowing only `staging`/`main` w
 allow `develop` as well. Keep existing branch protection and required CI checks.
 
 **Execution order:** push promotion → CI → Deploy → Staging system (staging only).
-Deploy retains frontend build/backend import checks, waits up to 10 minutes for the exact
-promoted SHA at `API_URL/api/health`, then requires `APP_URL` HTTP 200. Missing configuration
-or an old SHA fails the check. Production never runs the staging system suite.
+Deploy retains frontend build/backend import checks, then:
+
+1. Waits up to 10 minutes for the exact promoted SHA at `API_URL/api/health`.
+2. Requires the same SHA at `APP_URL/api/health`, through the Vercel proxy.
+3. Requires `APP_URL` to return HTTP 200.
+
+An old SHA fails the check. If **neither** variable is set for the environment, as on production
+before launch, the check is skipped with a GitHub notice. If only one is set, it fails.
+Production never runs the staging system suite.
 
 Deploy runs after successful CI rather than on push to avoid a cycle with Railway's
 Wait for CI, which waits for all check suites on the promoted commit. A `workflow_run`
@@ -106,23 +160,24 @@ by the merge to `main` and provider CI gates, not by GitHub environment approval
 1. Review and merge the independent PRs into develop in this order: #101 (#79), #102 (#81),
    #103 (#82), #104 (#67), then the deployment-guide (#83) and release-sign-off (#75) PRs.
    No PR is stacked; the workflow dependencies become available after merging in this order.
-2. Complete Railway, Vercel and GitHub settings above. Initial provider builds may fail while
-   configuration or source files are missing; finish setup and retry after promotion.
+2. Complete the Railway, Vercel and GitHub settings above for **staging** (pre-launch, staging only:
+   section 0). Initial provider builds may fail while configuration or source files are missing;
+   finish setup and retry after promotion.
 3. Create a release sign-off issue for this develop → staging promotion. Actions → Promote
    → staging opens the promotion PR. Check its CI and merge using **Create a merge commit**.
    If the workflow-created PR has no CI, close/reopen it or configure PROMOTE_TOKEN as
    described in [BRANCHING.md](BRANCHING.md).
 4. Wait for staging CI, Railway migrations/sample seed, and Vercel Preview. Check both
-   providers built the promotion commit. Deploy must show the same API SHA and HTTP 200.
+   providers built the promotion commit. Deploy must show the same API SHA directly and through
+   `APP_URL/api/health`, plus HTTP 200.
 5. Wait for **Staging system**: eight read-only Playwright cases at 390 and 1440 px use
    real APP_URL/API_URL without local servers. Link the run and Deploy run in sign-off.
    Do not run local seed commands or write tests against production.
 6. Manually inspect staging at 390/1440 px in light/dark mode using
    [TESTING.md](TESTING.md#manual-and-exploratory-checklist). Record unavailable future
    features as known issues; do not represent the unfinished MVP as launch complete.
-7. Record go/no-go. Only after go, use Promote → main, check CI, and merge staging → main
-   with a merge commit. Approve production verification when prompted. Confirm production
-   API SHA, frontend HTTP 200, CORS, no fictional sample rows and monitoring.
+7. Record go/no-go for staging. **Don't promote to `main` before v1 is done.** At launch, follow
+   [Going live](#going-live-v1-launch), which ends with Promote → main.
 
 Current nearby-stock UI uses sample album ID 1. Staging sample data supports it; production
 requires a deliberately imported real catalog/store dataset before it is useful. Neither
@@ -137,6 +192,28 @@ SYSTEM_TARGET=staging APP_URL="$STAGING_APP_URL" API_URL="$STAGING_API_URL" \
 
 Use actual staging origins and its promotion SHA in those local variables. No database
 credentials are needed. CI uploads a Playwright report on failure; link the run in sign-off.
+
+## Going live (v1 launch)
+
+Do these in order only when v1 is done and the release sign-off says go:
+
+1. **Railway:** create the `production` environment with its own `MySQL` and `api` service
+   (section 1: source branch `main`, Wait for CI, `DATABASE_URL` reference, public domain, backups).
+   Production runs only `alembic upgrade head`, never sample seeds. Decide whether production keeps
+   app sleeping. Add the `worker` service when shop stock should sync (Discogs worker section),
+   and raise the usage limit to match.
+2. **Vercel:** set `API_ORIGIN` for **Production** to the production Railway API origin. If the
+   custom domain (Option B) was chosen, add it now and use it in the URLs below.
+3. **Vercel:** remove the **Ignored Build Step** command (Settings → Git), so `main` builds production.
+4. **GitHub:** set `API_URL` and `APP_URL` on the `production` environment, so the Deploy check
+   runs instead of skipping.
+5. **Shops:** load the verified shop directory into production:
+   `python -m scripts.load_shops ../data/shops/connecticut.csv` through `railway run` (see
+   [VERIFY.md](shops/VERIFY.md#staging-and-production-railway)), after a database backup.
+6. **Promote:** use Promote → main, check CI, and merge staging → main with a merge commit.
+   Approve production verification when prompted. Confirm the production API SHA directly and
+   through `<app>/api/health`, frontend HTTP 200, sign-in cookies set on the app's own origin,
+   no fictional sample rows, and monitoring (section 5).
 
 ## 5. Better Stack dashboard
 
@@ -153,15 +230,15 @@ Stack token belongs in the app or frontend.
 
 **Frontend:** in Vercel Deployments select the known-good production deployment and use
 Instant Rollback where available, or redeploy that known-good commit to production using
-its original production settings. Verify its API origin, direct route reload, light/dark
-UI and assets. For staging, restore the stable staging branch alias to a known-good preview
+its original production settings. Verify its `API_ORIGIN`, `<app>/api/health`, direct route reload,
+light/dark UI and assets. For staging, restore the stable staging branch alias to a known-good preview
 using available deployment controls; ensure it still uses the staging API. A provider
 rollback changes serving state, not Git; follow with a reviewed correction through the
 normal branch flow so the next autodeploy does not undo the recovery.
 
 **API:** in the correct Railway environment → api → Deployments, open a previous successful
 compatible deployment's menu → Rollback. Check the restored custom variables as well as
-its image, database reference, CORS and health commit. Rollback is limited by provider
+its image, database reference and health commit. Rollback is limited by provider
 retention. It does not roll back MySQL. The normal deploy verifier should fail if you rerun
 it expecting a newer SHA while deliberately serving the older rollback SHA; record that
 recovery SHA rather than weakening the gate.
@@ -182,6 +259,13 @@ verify the API/catalog and frontend, and document the incident and corrected pro
 - [Railway Wait for CI](https://docs.railway.com/deployments/github-autodeploys)
 - [Railway rollback and redeploy](https://docs.railway.com/deployments/deployment-actions)
 - [Vercel Vite SPA configuration](https://vercel.com/docs/frameworks/frontend/vite)
+- [Vercel Routing Middleware](https://vercel.com/docs/routing-middleware) and its
+  [JS reference](https://vercel.com/docs/routing-middleware/js-reference) (`proxy` property, `rewrite()`)
+- [Vercel rewrites to external origins](https://vercel.com/docs/routing/rewrites#rewrites-to-external-origins)
+  (forwarded headers, CDN caching)
+- [Railway usage limits (cost control)](https://docs.railway.com/pricing/cost-control) and
+  [app sleeping (serverless)](https://docs.railway.com/deployments/serverless)
+- [Vercel Ignored Build Step](https://vercel.com/docs/project-configuration/project-settings#ignored-build-step)
 - [Vercel environment variables](https://vercel.com/docs/environment-variables)
 - [Vercel deployment protection](https://vercel.com/docs/deployment-protection)
 - [GitHub workflow_run semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)

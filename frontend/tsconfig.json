@@ -19,6 +19,8 @@
   },
   "include": [
     "src",
+    "proxy.ts",
+    "proxy.test.ts",
     "e2e",
     "vite.config.ts",
     "playwright.config.ts",

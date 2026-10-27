@@ -9,8 +9,7 @@ export interface SearchResult {
   albums: SearchAlbum[]; artists: { id: number; name: string; image_url: string | null }[];
 }
 export async function fetchSearch(path: string, params: URLSearchParams, signal?: AbortSignal): Promise<SearchResult> {
-  const base = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-  const response = await fetch(`${base}/api/${path}?${params}`, { signal });
+  const response = await fetch(`/api/${path}?${params}`, { signal });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new ApiError(response.status, typeof body.detail === 'string' ? body.detail : 'Unable to search right now');

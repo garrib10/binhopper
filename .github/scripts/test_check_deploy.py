@@ -3,6 +3,7 @@
 import io
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 
@@ -103,7 +104,7 @@ class DeployCheckTests(unittest.TestCase):
         self.assertEqual(app_headers({'VERCEL_AUTOMATION_BYPASS_SECRET': ''}), {})
 
     def test_main_passes_the_secret_from_the_environment(self):
-        env = {'GITHUB_SHA': 'new', 'API_URL': 'https://api.test', 'APP_URL': 'https://app.test',
+        env = {'EXPECTED_COMMIT': 'new', 'API_URL': 'https://api.test', 'APP_URL': 'https://app.test',
                'VERCEL_AUTOMATION_BYPASS_SECRET': 's3cret'}
         with patch.dict('os.environ', env, clear=True), patch('check_deploy.check') as run:
             main()
@@ -111,14 +112,30 @@ class DeployCheckTests(unittest.TestCase):
 
     def test_skips_with_notice_when_environment_has_no_urls(self):
         out = io.StringIO()
-        with patch.dict('os.environ', {'GITHUB_SHA': 'new'}, clear=True), \
+        with patch.dict('os.environ', {'EXPECTED_COMMIT': 'new'}, clear=True), \
                 patch('check_deploy.check') as run, redirect_stdout(out):
             main()
         run.assert_not_called()
         self.assertIn('::notice title=Deploy check skipped::', out.getvalue())
 
+    def test_main_verifies_the_promoted_commit_not_github_sha(self):
+        # On workflow_run, GitHub's GITHUB_SHA is the default branch's commit (develop).
+        env = {'EXPECTED_COMMIT': 'promoted', 'GITHUB_SHA': 'develop-head',
+               'API_URL': 'https://api.test', 'APP_URL': 'https://app.test'}
+        with patch.dict('os.environ', env, clear=True), patch('check_deploy.check') as run:
+            main()
+        self.assertEqual(run.call_args.args[2], 'promoted')
+
+    def test_workflows_never_set_github_variables(self):
+        # GitHub silently ignores env overrides of GITHUB_*; the 2026-10-27 staging Deploy
+        # waited for develop's commit because of one.
+        workflows = Path(__file__).resolve().parents[1] / 'workflows'
+        for workflow in workflows.glob('*.yml'):
+            with self.subTest(workflow.name):
+                self.assertNotRegex(workflow.read_text(), r'(?m)^\s+GITHUB_\w+\s*:')
+
     def test_one_url_without_the_other_still_fails(self):
-        env = {'GITHUB_SHA': 'new', 'API_URL': 'https://api.test'}
+        env = {'EXPECTED_COMMIT': 'new', 'API_URL': 'https://api.test'}
         with patch.dict('os.environ', env, clear=True), self.assertRaisesRegex(ValueError, 'APP_URL'):
             main()
 

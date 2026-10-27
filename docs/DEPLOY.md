@@ -63,6 +63,8 @@ full setup; until launch, apply only the staging parts:
    visitor's IP and `https` scheme from `X-Forwarded-For` / `X-Forwarded-Proto` set by Vercel's
    proxy (for rate limits and secure cookies). `FORWARDED_ALLOW_IPS` defaults to `*` because
    Railway's edge connects from changing private IPs; don't change it unless you know the peers.
+   Set the API's **`ORIGIN_SECRET`** as described in [Origin secret](#origin-secret-only-the-vercel-proxy-reaches-the-api),
+   so direct calls to the Railway URL can't fake those headers.
 7. Confirm staging uses the `environments.staging` override: migrations followed by
    `python -m scripts.seed_sample`. This fictional sample seed is safe to repeat.
    Production must use only `alembic upgrade head` and must never run sample/test seeds.
@@ -152,7 +154,10 @@ Deploy retains frontend build/backend import checks, then:
 
 1. Waits up to 10 minutes for the exact promoted SHA at `API_URL/api/health`.
 2. Requires the same SHA at `APP_URL/api/health`, through the Vercel proxy.
-3. Requires `APP_URL` to return HTTP 200.
+3. Requires HTTP 200 from `APP_URL/api/search`, a protected endpoint, through the proxy. A 403
+   fails right away with "set the same ORIGIN_SECRET on Vercel and Railway"; `/api/health` is
+   exempt from that check, so it can't catch a mismatch.
+4. Requires `APP_URL` to return HTTP 200.
 
 An old SHA fails the check. If **neither** variable is set for the environment, as on production
 before launch, the check is skipped with a GitHub notice. If only one is set, it fails.
@@ -217,7 +222,9 @@ Do these in order only when v1 is done and the release sign-off says go:
    app sleeping. Add the `worker` service when shop stock should sync (Discogs worker section),
    and raise the usage limit to match.
 2. **Vercel:** set `API_ORIGIN` for **Production** to the production Railway API origin. If the
-   custom domain (Option B) was chosen, add it now and use it in the URLs below.
+   custom domain (Option B) was chosen, add it now and use it in the URLs below. Generate a new
+   production **`ORIGIN_SECRET`** (never reuse staging's) and set it on Vercel Production first,
+   then on the production `api` service ([Origin secret](#origin-secret-only-the-vercel-proxy-reaches-the-api)).
 3. **Vercel:** remove the **Ignored Build Step** command (Settings → Git), so `main` builds production.
 4. **GitHub:** set `API_URL` and `APP_URL` on the `production` environment, so the Deploy check
    runs instead of skipping.
@@ -228,6 +235,33 @@ Do these in order only when v1 is done and the release sign-off says go:
    Approve production verification when prompted. Confirm the production API SHA directly and
    through `<app>/api/health`, frontend HTTP 200, sign-in cookies set on the app's own origin,
    no fictional sample rows, and monitoring (section 5).
+
+## Origin secret: only the Vercel proxy reaches the API
+
+Since #122, the API rejects `/api` requests (403 `{"detail":"Forbidden"}`) that don't carry the
+`X-Origin-Secret` header. Vercel's `/api` proxy (`frontend/proxy.ts`) adds that header from its
+`ORIGIN_SECRET` variable, replacing any value a client sent. Anyone calling the Railway URL
+directly is refused, so they can't fake `X-Forwarded-For` past rate limits (#38). `/api/health`
+stays open for Railway's health check and the Deploy check. With no `ORIGIN_SECRET`, as in local
+dev and tests, nothing is checked.
+
+**Set up, per environment (staging now, production at launch):**
+
+1. Generate a value on your own machine and keep it in a password manager, never in Git:
+   `openssl rand -hex 32`.
+2. **Vercel first:** add `ORIGIN_SECRET` (type **Secret**) for that environment only: Preview →
+   branch `staging`, or Production. Redeploy that environment. Sending the header before Railway
+   checks it is harmless.
+3. **Then Railway:** add `ORIGIN_SECRET` with the same value to that environment's `api`
+   service, and apply. From then on, direct calls get 403.
+4. Check: `curl -i <API_URL>/api/search` returns **403**, `curl -i <API_URL>/api/health`
+   returns **200**, and the next Deploy run passes its proxied `/api/search` step.
+
+Doing step 3 before step 2 makes every `/api` request through the app return 403 until Vercel
+redeploys. The Deploy check reports exactly that.
+
+**Rotating:** generate a new value. Set Railway's `ORIGIN_SECRET` to `new,old` and apply, which
+accepts both. Set Vercel's to `new` and redeploy. Then set Railway's to `new` alone and apply.
 
 ## 5. Better Stack dashboard
 

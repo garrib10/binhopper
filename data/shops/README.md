@@ -161,7 +161,7 @@ dated sources; see [VERIFY.md](../../docs/shops/VERIFY.md).
 The user answered the batch-1 questions by checking the shops and their Discogs pages.
 Twelve more rows were verified, bringing the total to **25 verified shops, 18 with a Discogs
 seller**. Little Lost Records is now `closed` (online-only as Odd Cabinet). Semilla
-Cafe + Studio is `unknown`/unverified because it doesn't sell vinyl. Johnny's and Revolution
+Cafe + Studio was removed from the CSV (see below). Johnny's and Revolution
 no longer list a website (a parked domain and an unconfirmed redirect). Each row's notes carry
 the dated sources. Owner names were removed from earlier notes: this directory doesn't record
 private individuals' names.
@@ -181,3 +181,11 @@ checked by the user on 2026-10-27.
 
 Replay Records, Little Lost Records and Paul's Boutique Records keep their `closed` rows in
 the CSV with an empty `discogs_seller_name`, so they stay inactive.
+
+## Removed candidates (not record shops; do not re-add)
+
+| Former shop_key | Business | Why removed |
+| --- | --- | --- |
+| `semilla-cafe-studio-hartford` | Semilla Cafe + Studio, 1283 Main Street, Hartford | A cafe and studio that doesn't sell vinyl (user-confirmed 2026-10-27). It was never verified or loaded as a shop. A 2024 report of a record section in the cafe isn't current. |
+
+Don't reuse these keys for another business.

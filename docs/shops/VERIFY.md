@@ -1,6 +1,6 @@
 # Verify the Connecticut shop directory
 
-The authoritative CSV contains **46 rows: 25 verified and 21 unverified**.
+The authoritative CSV contains **45 rows: 25 verified and 20 unverified**.
 The 20-row user research supplied on **2026-10-26** is settled. Existing shop keys
 and OSM IDs are preserved; the four requested permanent closures and Census
 coordinates for Records The Good Kind are explicit amendments. The 26 newly
@@ -17,8 +17,8 @@ unknown, instruments-only and previously verified rows were not changed.
 **Verification batch 2 (user checks and research 2026-10-27, #47):** the user answered the
 batch-1 questions. 12 more rows were verified, bringing the total to 25 verified shops,
 18 of them with a Discogs seller. Little Lost Records is now `closed`, because its storefront
-closed and the business is online-only as Odd Cabinet. Semilla Cafe is `unknown` and
-`verified=false`, because it is a cafe that doesn't sell vinyl. Seller fields changed for
+closed and the business is online-only as Odd Cabinet. Semilla Cafe + Studio was
+removed from the CSV, because it is a cafe that doesn't sell vinyl, not a record shop. Seller fields changed for
 Retro Spin (restored) and Merle's (accepted by user judgment), and the websites for
 Johnny's (parked domain) and Revolution (unconfirmed redirect) were cleared. Owner names
 in earlier notes were removed, because the directory doesn't record private individuals'
@@ -481,16 +481,6 @@ Excluded from the verified record-shop directory: closed. Reason and provenance 
 - [ ] Reassess only if new evidence contradicts the documented closure, relocation or non-record-shop classification.
 
 Evidence / sources (research 2026-10-26): Web research 2026-10-26: Patch 2024-03-05: store expected to close late May 2024. Sam Ash liquidated all stores by July 2024 (Wikipedia). Instrument retailer.
-
-### Semilla Cafe + Studio — Hartford
-
-Key: `semilla-cafe-studio-hartford` · OSM: `none (not from OSM)` · Status: **unknown** · verified=false.
-
-Excluded from the verified record-shop directory: not a record shop (cafe and studio; does not sell vinyl, user-confirmed 2026-10-27). Reason and provenance below.
-- [ ] Reassess only if new evidence contradicts the documented closure, relocation or non-record-shop classification.
-- Do not re-add this business as an active shop; online-only sellers are listed in data/shops/README.md.
-
-Evidence / sources (research 2026-10-26 and 2026-10-27): not from OSM; researched 2026-10-26. Event co-organizer reports a permanent vinyl section at cafe in 2024; 2026 local reporting confirms cafe address. Verify ongoing record sales, phone/hours and official site. Sources: https://www.cafeteria.fm/home/semilla-cafe-opens-a-record-store; https://www.reportinghartford.com/post/inside-semilla-cafe-studio-hartford-s-neighborhood-living-room. Unverified candidate; confirm current business details and seller profile location before activation. coordinates: US Census geocoder, 2026-10-26; https://geocoding.geo.census.gov/geocoder/locations/onelineaddress; matched 1283 MAIN ST, HARTFORD, CT, 06103. research 2026-10-26 (verify batch 1): NOT VERIFIED: no evidence of record sales in the last 12 months. Cafe is open (official Instagram https://www.instagram.com/semillahtfd/ posts 2026-09-16 to 2026-10-24; Reporting Hartford 2026-05-27 article) but neither, nor own site https://semilla.cafe/, mentions records; record section evidence dates to 2024 (https://www.cafeteria.fm/home/semilla-cafe-opens-a-record-store). Listing phone (860) 263-7043 (https://www.chamberofcommerce.com/business-directory/connecticut/hartford/coffee-shop/2015996419-semilla-cafe-studio), unconfirmed, not entered. Website https://semilla.cafe/ found (not entered until record sales confirmed). Discogs: none. research 2026-10-27 (batch 2, user check): NOT A RECORD SHOP, user-confirmed: cafe and studio, does not sell vinyl. Do not re-add as a record shop.
 
 ### Shaboo Productions — Willimantic
 

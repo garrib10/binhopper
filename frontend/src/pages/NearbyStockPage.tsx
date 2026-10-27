@@ -155,7 +155,6 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
         {onlineError && <p className="muted">Online sellers are unavailable right now.</p>}
       </section>
       </div>
-      <p className="osm-credit">Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</p>
     </main>
   );
 }

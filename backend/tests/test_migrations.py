@@ -40,3 +40,19 @@ def test_downgrade_base_removes_every_table(tmp_path, monkeypatch):
     engine, cfg = upgraded_engine(tmp_path, monkeypatch)
     command.downgrade(cfg, "base")
     assert set(inspect(engine).get_table_names()) <= {"alembic_version"}
+
+
+def test_AC_01_directory_migration_backfills_existing_store_keys(tmp_path, monkeypatch):
+    from sqlalchemy import text
+    url = f"sqlite:///{tmp_path / 'legacy.db'}"
+    monkeypatch.setattr(settings, 'database_url', url)
+    cfg = Config(str(BACKEND / 'alembic.ini'))
+    cfg.set_main_option('script_location', str(BACKEND / 'migrations'))
+    command.upgrade(cfg, 'c49001')
+    engine = create_engine(url)
+    with engine.begin() as conn:
+        identifier = conn.execute(text("INSERT INTO stores (name, lat, lng, source) VALUES ('Legacy fixture', 41, -72, 'manual')")).lastrowid
+    command.upgrade(cfg, 'head')
+    with engine.connect() as conn:
+        row = conn.execute(text('SELECT id,shop_key,active,verified_at FROM stores')).one()
+        assert row == (identifier, f'legacy-{identifier}', 1, None)

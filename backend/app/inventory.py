@@ -73,7 +73,7 @@ def drain_inventory(queue, now=utcnow):
             StockListing.last_synced_at <= now() - timedelta(hours=6))
     ).values(quantity=0, price=0, condition="Unavailable"))
     stores = queue.session.scalars(select(Store).where(
-        Store.discogs_seller_name.is_not(None), Store.discogs_seller_name != ""
+        Store.active.is_(True), Store.discogs_seller_name.is_not(None), Store.discogs_seller_name != ""
     ).order_by(Store.id)).all()
     # Spread new shops over the coming four hours, retaining schedules on restart.
     new = [store for store in stores if store.inventory_next_sync is None]

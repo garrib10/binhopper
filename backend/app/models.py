@@ -7,6 +7,7 @@ in SQL, then checks exact distance in Python (see app/geo.py).
 """
 
 from datetime import UTC, datetime
+from uuid import uuid4
 
 from sqlalchemy import (
     JSON,
@@ -143,6 +144,10 @@ class Store(Base):
     discogs_seller_name: Mapped[str | None] = mapped_column(String(120), unique=True)
     source: Mapped[str] = mapped_column(String(30), default="manual")  # manual | places
     inventory_next_sync: Mapped[datetime | None] = mapped_column(DateTime, index=True)
+    shop_key: Mapped[str] = mapped_column(String(255), unique=True, default=lambda: "unmapped-" + uuid4().hex)
+    osm_id: Mapped[str | None] = mapped_column(String(40), unique=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1")
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime)
 
 
 class StockListing(Base):

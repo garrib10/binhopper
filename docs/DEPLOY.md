@@ -52,6 +52,10 @@ full setup; until launch, apply only the staging parts:
 3. Accept the GitHub app permissions and turn **Wait for CI** on in each API service.
    The committed config selects Railpack, watches `backend/**`, binds uvicorn to `$PORT`,
    migrates with `alembic upgrade head`, checks `/api/health`, and restarts on failure.
+   Railpack installs packages only from **`backend/requirements.txt`** (it skips a
+   `pyproject.toml` without a lock file) and takes Python from `backend/.python-version`
+   (3.12, as in CI). Add new runtime dependencies to both `pyproject.toml` and
+   `requirements.txt`; `tests/test_hosting.py` fails if they differ.
 4. Set each API's `DATABASE_URL` to the Railway reference `${{MySQL.MYSQL_URL}}` using
    that environment's MySQL service. The backend converts the `mysql://` driver prefix
    to `mysql+pymysql://`; keep the remaining connection string intact.

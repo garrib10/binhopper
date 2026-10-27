@@ -1,0 +1,13 @@
+# Runtime dependencies for Railway's Railpack build, which installs from this file and
+# does not read pyproject.toml without a lock file. Keep in sync with
+# [project].dependencies in pyproject.toml (tests/test_hosting.py checks this).
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30
+sqlalchemy>=2.0,<2.2
+pymysql>=1.1
+cryptography>=42
+alembic>=1.13
+apscheduler>=3.11,<4
+httpx>=0.27
+pydantic>=2.7
+pydantic-settings>=2.3

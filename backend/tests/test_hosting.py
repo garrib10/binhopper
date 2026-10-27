@@ -4,9 +4,11 @@ import tomllib
 from pathlib import Path
 
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import create_engine, func, select
+from sqlalchemy.exc import OperationalError
 
 from app.config import Settings
+from app.db import connect_with_retry
 from app.models import Album, StockListing, Store, ZipCode
 from scripts.seed_sample import load
 
@@ -62,3 +64,47 @@ def test_alembic_finds_app_without_the_package_installed():
     config = configparser.ConfigParser()
     config.read(BACKEND / "alembic.ini")
     assert config["alembic"]["prepend_sys_path"] == "."
+
+
+class FakeEngine:
+    """Refuses the first `failures` connections, like a sleeping MySQL waking up."""
+
+    def __init__(self, failures):
+        self.failures, self.attempts = failures, 0
+
+    def connect(self):
+        self.attempts += 1
+        if self.attempts <= self.failures:
+            raise OperationalError("connect", None, Exception("(2003, 'Connection refused')"))
+        return "connection"
+
+
+class FakeClock:
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+
+def test_migrations_wait_for_a_waking_database():
+    engine, clock = FakeEngine(failures=3), FakeClock()
+    assert connect_with_retry(engine, timeout=120, interval=3, sleep=clock.sleep, clock=clock) == "connection"
+    assert engine.attempts == 4
+    assert clock.now == 9
+
+
+def test_migrations_give_up_after_the_timeout():
+    engine, clock = FakeEngine(failures=1000), FakeClock()
+    with pytest.raises(OperationalError):
+        connect_with_retry(engine, timeout=120, interval=3, sleep=clock.sleep, clock=clock)
+    assert clock.now <= 120
+    assert engine.attempts == 41
+
+
+def test_migrations_connect_at_once_when_the_database_is_up():
+    with connect_with_retry(create_engine("sqlite://"), sleep=pytest.fail) as connection:
+        assert connection.exec_driver_sql("select 1").scalar() == 1

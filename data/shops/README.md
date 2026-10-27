@@ -142,3 +142,51 @@ promotes new rows. Merle's is user-verified as a physical shop but its seller
 business details were confirmed by the user; its website access warning remains
 separate and the unsafe site was not visited. See [VERIFY.md](../../docs/shops/VERIFY.md)
 for sourced checklists and local/staging/production loading instructions.
+
+## Verification batch 1 — 2026-10-26
+
+The 22 unverified `record shop` rows were checked by hand (shop sites and official
+social pages, plus business listings seen through web search; no Places API or bulk
+listing copies). Eight became `verified=true`: Vinyl Street Co., The Nevermind Shop,
+CBug's Records, Gerosa Records, Revolution Records, both Newbury Comics branches and
+Retro Spin Shop. The rest stay unverified with the missing evidence in notes. Seller
+`RetroSpinShop` was cleared (profile shows no business details) and `Fullhausrecords`
+was added (profile shows the shop name and address). Full Haus and Clocktower now
+have Census coordinates from the `Public_AR_Census2020` benchmark, since
+`Public_AR_Current` did not match their exact street address. Each row's notes carry the
+dated sources; see [VERIFY.md](../../docs/shops/VERIFY.md).
+
+## Verification batch 2 — 2026-10-27
+
+The user answered the batch-1 questions by checking the shops and their Discogs pages.
+Twelve more rows were verified, bringing the total to **25 verified shops, 18 with a Discogs
+seller**. Little Lost Records is now `closed` (online-only as Odd Cabinet). Semilla
+Cafe + Studio was removed from the CSV (see below). Johnny's no longer
+lists a website (parked domain). Revolution keeps therevct.com, which the user confirmed redirects to
+the shop's GitHub Pages site. Each row's notes carry
+the dated sources. Owner names were removed from earlier notes: this directory doesn't record
+private individuals' names.
+
+## Online-only Connecticut sellers (no storefront; not active shops)
+
+These sellers have no public storefront. They are candidates for a future "local sellers
+who ship" feature and **must not be re-added as shops** in `connecticut.csv`. They were
+checked by the user on 2026-10-27.
+
+| Seller | Business | Storefront | Discogs |
+| --- | --- | --- | --- |
+| EmporiumCT | Emporium (Connecticut) | Closed 2025 | https://www.discogs.com/seller/EmporiumCT/profile |
+| replayrecordsct | Replay Records, Hamden | Closed August 2025 | https://www.discogs.com/record-stores/store/replayrecordsct/ |
+| oddcabinet | Odd Cabinet, formerly Little Lost Records, Stafford Springs | Closed 2026 | https://www.discogs.com/seller/oddcabinet/profile |
+| — | Paul's Boutique Records, Vernon | Closed August 2025; sells online and through live streams | — |
+
+Replay Records, Little Lost Records and Paul's Boutique Records keep their `closed` rows in
+the CSV with an empty `discogs_seller_name`, so they stay inactive.
+
+## Removed candidates (not record shops; do not re-add)
+
+| Former shop_key | Business | Why removed |
+| --- | --- | --- |
+| `semilla-cafe-studio-hartford` | Semilla Cafe + Studio, 1283 Main Street, Hartford | A cafe and studio that doesn't sell vinyl (user-confirmed 2026-10-27). It was never verified or loaded as a shop. A 2024 report of a record section in the cafe isn't current. |
+
+Don't reuse these keys for another business.

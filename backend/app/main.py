@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.config import settings
+from app.origin_secret import OriginSecretMiddleware
 from app.routers import stock
 from app.routers.search import router as search_router
 from app.routers.albums import router as albums_router
@@ -22,6 +23,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Direct calls to the Railway URL (not through Vercel's proxy) get 403 on /api (#122).
+app.add_middleware(OriginSecretMiddleware)
 # Requests arrive via Vercel's /api proxy and Railway's edge: take the visitor's IP
 # and https scheme from X-Forwarded-For / X-Forwarded-Proto (for rate limits and
 # secure cookies). Added last, so it runs before every other middleware.

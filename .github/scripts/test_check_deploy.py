@@ -4,7 +4,7 @@ import io
 import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 
 from check_deploy import app_headers, check, endpoint, main
 
@@ -17,6 +17,14 @@ def health(commit):
     return Response(('{"status":"ok","commit":"%s"}' % commit).encode())
 
 
+def search():
+    return Response(b'{"albums":[],"artists":[]}')
+
+
+def forbidden():
+    return HTTPError('https://app.test/api/search', 403, 'Forbidden', {}, io.BytesIO(b'{"detail":"Forbidden"}'))
+
+
 def urls(fetch):
     return [getattr(call.args[0], 'full_url', call.args[0]) for call in fetch.call_args_list]
 
@@ -24,20 +32,34 @@ def urls(fetch):
 class DeployCheckTests(unittest.TestCase):
     def test_waits_for_api_then_proxy_then_frontend(self):
         replies = [URLError("restarting"), Response(b'not json'), health('old'), health('new'),
-                   health('new'), Response(b'html')]
+                   health('new'), search(), Response(b'html')]
         with patch('check_deploy.urlopen', side_effect=replies) as fetch, \
                 patch('check_deploy.time.sleep'):
             check('https://api.test', 'https://app.test', 'new')
         self.assertEqual(urls(fetch), ['https://api.test/api/health'] * 4 + [
-            'https://app.test/api/health', 'https://app.test'])
+            'https://app.test/api/health', 'https://app.test/api/search', 'https://app.test'])
 
     def test_proxy_must_reach_the_same_commit(self):
         # e.g. Vercel's API_ORIGIN still points at another Railway environment.
-        replies = [health('new'), health('old'), health('new'), Response(b'html')]
+        replies = [health('new'), health('old'), health('new'), search(), Response(b'html')]
         with patch('check_deploy.urlopen', side_effect=replies) as fetch, \
                 patch('check_deploy.time.sleep'):
             check('https://api.test', 'https://app.test', 'new')
         self.assertEqual(urls(fetch)[1:3], ['https://app.test/api/health'] * 2)
+
+    def test_origin_secret_mismatch_fails_fast_with_a_clear_message(self):
+        # /api/health is exempt from the origin check (#122), so only a protected call catches it.
+        with patch('check_deploy.urlopen', side_effect=[health('new'), health('new'), forbidden()]) as fetch, \
+                patch('check_deploy.time.sleep'), self.assertRaisesRegex(RuntimeError, 'ORIGIN_SECRET'):
+            check('https://api.test', 'https://app.test', 'new')
+        self.assertEqual(fetch.call_count, 3)
+
+    def test_proxied_api_retries_while_waking(self):
+        replies = [health('new'), health('new'), HTTPError('u', 502, 'Bad Gateway', {}, io.BytesIO(b'')),
+                   URLError('reset'), search(), Response(b'html')]
+        with patch('check_deploy.urlopen', side_effect=replies) as fetch, patch('check_deploy.time.sleep'):
+            check('https://api.test', 'https://app.test', 'new')
+        self.assertEqual(urls(fetch)[2:5], ['https://app.test/api/search'] * 3)
 
     def test_proxy_timeout_never_checks_frontend(self):
         with patch('check_deploy.time.monotonic', side_effect=[0, 1, 601]), \
@@ -56,7 +78,7 @@ class DeployCheckTests(unittest.TestCase):
     def test_frontend_failure_is_not_green(self):
         failed = Response(b'failed')
         failed.status = 503
-        with patch('check_deploy.urlopen', side_effect=[health('new'), health('new'), failed]), \
+        with patch('check_deploy.urlopen', side_effect=[health('new'), health('new'), search(), failed]), \
                 self.assertRaises(RuntimeError):
             check('https://api.test', 'https://app.test', 'new')
 
@@ -65,7 +87,7 @@ class DeployCheckTests(unittest.TestCase):
             endpoint('API_URL')
 
     def test_bypass_secret_goes_to_the_vercel_app_only(self):
-        replies = [health('new'), health('new'), Response(b'html')]
+        replies = [health('new'), health('new'), search(), Response(b'html')]
         auth = app_headers({'VERCEL_AUTOMATION_BYPASS_SECRET': 's3cret'})
         with patch('check_deploy.urlopen', side_effect=replies) as fetch:
             check('https://api.test', 'https://app.test', 'new', app_auth=auth)
@@ -73,6 +95,7 @@ class DeployCheckTests(unittest.TestCase):
                 for call in fetch.call_args_list]
         self.assertEqual(sent, [('https://api.test/api/health', None),
                                 ('https://app.test/api/health', 's3cret'),
+                                ('https://app.test/api/search', 's3cret'),
                                 ('https://app.test', 's3cret')])
 
     def test_no_bypass_header_without_a_secret(self):

@@ -3,7 +3,7 @@
 import json
 import os
 import time
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
@@ -40,6 +40,28 @@ def wait_for_commit(health_url: str, commit: str, deadline: float, interval: flo
         time.sleep(min(interval, max(0, deadline - time.monotonic())))
 
 
+def wait_for_proxied_api(app_url: str, deadline: float, interval: float,
+                         headers: dict[str, str] | None = None) -> None:
+    """A protected endpoint through the proxy: 403 means Vercel's and Railway's
+    ORIGIN_SECRET don't match (#122). /api/health is exempt, so it can't catch that."""
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("The app's /api proxy did not answer /api/search with HTTP 200 in time")
+        try:
+            request = Request(f"{app_url}/api/search", headers={"Cache-Control": "no-cache", **(headers or {})})
+            with urlopen(request, timeout=min(20, remaining)) as response:
+                if response.status == 200:
+                    return
+        except HTTPError as error:
+            if error.code == 403:
+                raise RuntimeError("The API rejected the app's /api proxy (HTTP 403): set the same "
+                                   "ORIGIN_SECRET on Vercel and Railway for this environment") from error
+        except (URLError, OSError, ValueError):
+            pass  # Waking or restarting; retry until the deadline.
+        time.sleep(min(interval, max(0, deadline - time.monotonic())))
+
+
 def check(api_url: str, app_url: str, commit: str, *, timeout: float = 600,
           interval: float = 10, app_auth: dict[str, str] | None = None) -> None:
     deadline = time.monotonic() + timeout
@@ -47,10 +69,12 @@ def check(api_url: str, app_url: str, commit: str, *, timeout: float = 600,
     # The browser only talks to the app origin; Vercel's proxy must reach the same API.
     wait_for_commit(f"{app_url}/api/health", commit, deadline, interval,
                     "API through the Vercel /api proxy", app_auth)
+    wait_for_proxied_api(app_url, deadline, interval, app_auth)
     with urlopen(Request(app_url, headers=app_auth or {}), timeout=20) as response:
         if response.status != 200:
             raise RuntimeError(f"Frontend returned HTTP {response.status}, expected 200")
-    print(f"Verified API commit {commit} directly and through the app's /api proxy, and frontend HTTP 200")
+    print(f"Verified API commit {commit} directly and through the app's /api proxy, "
+          "the proxy is accepted by the API, and frontend HTTP 200")
 
 
 def main(environ=os.environ) -> None:

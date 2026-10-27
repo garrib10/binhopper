@@ -70,7 +70,10 @@ jobs:
       - name: Test deployment verifier
         run: python -m unittest discover -s .github/scripts -p 'test_*.py'
 
-      - name: Verify deployed API commit and frontend
+      # Waits for the promoted commit at API_URL, then at APP_URL/api/health through
+      # Vercel's /api proxy, then checks the frontend. Pre-launch, production has no
+      # API_URL/APP_URL yet, so the script skips with a notice instead of failing.
+      - name: Verify deployed API, the app's /api proxy and frontend
         timeout-minutes: 11
         env:
           API_URL: ${{ vars.API_URL }}

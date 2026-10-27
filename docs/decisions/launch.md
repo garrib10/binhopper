@@ -1,4 +1,4 @@
-# Launch decisions: Discogs terms, places provider, name, coverage
+# Launch decisions: Discogs terms, places provider, name, coverage, hosting
 
 Status: **decided** for #46 (researched and approved 2026-10-24). The custom domain and USPTO search
 wait until before the public launch.
@@ -10,7 +10,9 @@ needs a much faster refresh than "once a day". Google Places doesn't fit the pla
 map or the permanent `stores` table; for 20–40 hand-mapped shops, use OpenStreetMap or Foursquare's
 open dataset plus manual checks. The app is open US-wide, with shop mapping starting in one area
 (Connecticut first). The custom domain is deferred: launch on the Vercel and Railway
-addresses (`binhopper.com` is already registered).
+addresses (`binhopper.com` is already registered). The browser reaches the API through a Vercel
+`/api` proxy so sign-in cookies stay first-party, Binhopper stays free for users, and until v1 ships
+only a staging environment is hosted (section 5).
 
 ## 1. Discogs API terms: caching data and images
 
@@ -46,8 +48,8 @@ own schedule, which the API copy is not.
    re-host them. Fall back to a placeholder.
 4. **Notices:** add the app-wide notice to the terms/about page (#85) and "Data provided by Discogs"
    with a followed link wherever Discogs data appears.
-5. **Business model:** stay free for users at launch. Any paid tier needs Discogs' written
-   permission first.
+5. **Business model:** Binhopper stays free for users; no paid tiers (decided 2026-10-27, see
+   section 5). A paid tier would need Discogs' written permission first.
 6. **Ask Discogs:** email Discogs API support to confirm the 6-hour rule applies to shop inventory
    shown inside a third-party app, and whether a longer window is possible.
 
@@ -132,6 +134,34 @@ the next region. The comparison that led here:
 
 Connecticut won on shops you can visit, testers you know and real suburban distances; New York is
 next door for the second region; Chicago comes later, once adding a region is routine.
+
+## 5. Hosting: API proxy, cost and pre-launch mode
+
+**Decision (2026-10-25): API proxied through Vercel (Option A); custom domain (Option B) decided
+before launch.** The app (`*.vercel.app`) and the API (`*.up.railway.app`) are different sites.
+Safari and other browsers block cross-site cookies, so sign-in sessions (#38) would fail if the
+browser called Railway directly. Vercel Routing Middleware (`frontend/proxy.ts`) forwards every
+`/api` request from the app's own origin to that environment's Railway API (`API_ORIGIN`). That
+keeps cookies first-party at no cost. Option B, putting the app and API on one custom domain
+(e.g. `binhopper.com` and `api.binhopper.com`), would also work, but it is decided before launch
+together with the domain and trademark checks (section 3). Implemented in #117; setup is in
+[DEPLOY.md](../DEPLOY.md).
+
+**Decision (2026-10-27): Binhopper stays free for users; no paid tiers.**
+
+**Decision (2026-10-27): pre-launch hosting mode until v1 ships.** Keep hosting costs near zero
+while the MVP is unfinished:
+
+- **Railway:** create only the `staging` environment (watching the `staging` branch); there is no
+  production environment until launch. Add MySQL and the API only when ready to test, keep the
+  worker off except when testing the Discogs sync, enable app sleeping (serverless) on the API, and
+  set a usage limit in billing settings first.
+- **Vercel:** the production branch stays `main`, but an Ignored Build Step holds back production
+  builds so only the `staging` branch builds. `API_ORIGIN` is set for Preview scoped to `staging`
+  only; Production stays unset until launch.
+- **GitHub:** `API_URL`/`APP_URL` are set on the `staging` environment only. The deploy check
+  skips with a notice where they are unset.
+- Don't promote `staging` → `main` until v1 is done. DEPLOY.md has the "Going live" checklist.
 
 ## SPEC.md changes
 

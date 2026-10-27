@@ -100,6 +100,13 @@ describe('NearbyStockPage', () => {
       expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
     });
 
+    it('treats the deployed proxy\'s "API not configured" 503 as unreachable', async () => {
+      mockError(503, { detail: 'API not configured' });
+      render(page);
+      expect(await screen.findByRole('alert')).toHaveTextContent("Can't reach Binhopper right now.");
+      expect(screen.queryByText('API not configured')).not.toBeInTheDocument();
+    });
+
     it('Try again fetches the stores again', async () => {
       const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new TypeError('Failed to fetch'));
       fetchSpy.mockResolvedValueOnce(

@@ -10,7 +10,11 @@ class Settings(BaseSettings):
     database_url: str = "mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper"
     discogs_token: str = ""
     discogs_user_agent: str = "Binhopper/0.1 (catalog-gap-worker; github.com/garrib10/binhopper)"
+    # Only local dev needs CORS: deployed, the app calls /api on its own origin via Vercel.
     cors_origins: list[str] = ["http://localhost:5173"]
+    # Peers allowed to set X-Forwarded-For/-Proto (uvicorn syntax: "*" or comma-separated
+    # IPs/CIDRs). Railway's edge connects from changing private IPs, hence "*".
+    forwarded_allow_ips: str = "*"
     # Manually verified artist-ID → official shop URL; never guessed from a name.
     artist_store_urls: dict[int, HttpUrl] = Field(default_factory=dict)
 

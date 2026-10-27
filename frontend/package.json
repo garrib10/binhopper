@@ -14,6 +14,7 @@
     "e2e:system": "playwright test -c playwright.system.config.ts"
   },
   "dependencies": {
+    "@vercel/functions": "3.9.11",
     "leaflet": "^1.9.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -35,5 +36,8 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "zod": "4.6.6"
   }
 }

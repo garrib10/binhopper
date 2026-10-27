@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.config import settings
 from app.routers import stock
@@ -21,6 +22,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Requests arrive via Vercel's /api proxy and Railway's edge: take the visitor's IP
+# and https scheme from X-Forwarded-For / X-Forwarded-Proto (for rate limits and
+# secure cookies). Added last, so it runs before every other middleware.
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=settings.forwarded_allow_ips)
 
 app.include_router(stock.router)
 app.include_router(search_router)

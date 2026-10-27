@@ -155,3 +155,29 @@ was added (profile shows the shop name and address). Full Haus and Clocktower no
 have Census coordinates from the `Public_AR_Census2020` benchmark, since
 `Public_AR_Current` did not match their exact street address. Each row's notes carry the
 dated sources; see [VERIFY.md](../../docs/shops/VERIFY.md).
+
+## Verification batch 2 — 2026-10-27
+
+The user answered the batch-1 questions by checking the shops and their Discogs pages.
+Twelve more rows were verified, bringing the total to **25 verified shops, 18 with a Discogs
+seller**. Little Lost Records is now `closed` (online-only as Odd Cabinet). Semilla
+Cafe + Studio is `unknown`/unverified because it doesn't sell vinyl. Johnny's and Revolution
+no longer list a website (a parked domain and an unconfirmed redirect). Each row's notes carry
+the dated sources. Owner names were removed from earlier notes: this directory doesn't record
+private individuals' names.
+
+## Online-only Connecticut sellers (no storefront; not active shops)
+
+These sellers have no public storefront. They are candidates for a future "local sellers
+who ship" feature and **must not be re-added as shops** in `connecticut.csv`. They were
+checked by the user on 2026-10-27.
+
+| Seller | Business | Storefront | Discogs |
+| --- | --- | --- | --- |
+| EmporiumCT | Emporium (Connecticut) | Closed 2025 | https://www.discogs.com/seller/EmporiumCT/profile |
+| replayrecordsct | Replay Records, Hamden | Closed August 2025 | https://www.discogs.com/record-stores/store/replayrecordsct/ |
+| oddcabinet | Odd Cabinet, formerly Little Lost Records, Stafford Springs | Closed 2026 | https://www.discogs.com/seller/oddcabinet/profile |
+| — | Paul's Boutique Records, Vernon | Closed August 2025; sells online and through live streams | — |
+
+Replay Records, Little Lost Records and Paul's Boutique Records keep their `closed` rows in
+the CSV with an empty `discogs_seller_name`, so they stay inactive.

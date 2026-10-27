@@ -1,0 +1,533 @@
+<?xml version='1.0' encoding='utf-8'?>
+<masters>
+  <master id="35067">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ Rasoul</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>1998</year>
+    <title>Soul Searching Vol. 1</title>
+  </master>
+  <master id="35085">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ Rasoul</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>Soul Searching Vol. 4</title>
+  </master>
+  <master id="48282">
+    <artists>
+      <artist>
+        <id>29</id>
+        <name>Sweet Abraham</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Spreading Outward EP</title>
+  </master>
+  <master id="93095">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ RaSoul</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+      <style>Progressive House</style>
+    </styles>
+    <year>1999</year>
+    <title>True Science</title>
+  </master>
+  <master id="104406">
+    <artists>
+      <artist>
+        <id>33</id>
+        <name>Blue Six</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>Music And Wine</title>
+  </master>
+  <master id="160011">
+    <artists>
+      <artist>
+        <id>36</id>
+        <name>Lovetronic</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>You Are Love</title>
+  </master>
+  <master id="254383">
+    <artists>
+      <artist>
+        <id>79947</id>
+        <name>Entity</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <year>2000</year>
+    <title>Galactic Schematix EP</title>
+  </master>
+  <master id="267770">
+    <artists>
+      <artist>
+        <id>28</id>
+        <name>Moonchildren</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Moonchildren EP</title>
+  </master>
+  <master id="336353">
+    <artists>
+      <artist>
+        <id>53</id>
+        <name>Casey Hogan</name>
+        <anv>Casy Hogan</anv>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+      <style>Breaks</style>
+    </styles>
+    <year>1999</year>
+    <title>Uncut</title>
+  </master>
+  <master id="411046">
+    <artists>
+      <artist>
+        <id>56</id>
+        <name>E.B.E. (2)</name>
+        <anv>EBE</anv>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep Techno</style>
+      <style>IDM</style>
+      <style>Techno</style>
+    </styles>
+    <year>2000</year>
+    <title>Neural Response EP</title>
+  </master>
+  <master id="442131">
+    <artists>
+      <artist>
+        <id>60</id>
+        <name>Pete Moss</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Dub</style>
+      <style>Deep House</style>
+      <style>Tech House</style>
+    </styles>
+    <year>1999</year>
+    <title>Late Night Up North</title>
+  </master>
+  <master id="444223">
+    <artists>
+      <artist>
+        <id>52</id>
+        <name>Dub-Tech Soundsystem</name>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <year>2000</year>
+    <title>The Sideshow Bob EP</title>
+  </master>
+  <master id="542341">
+    <artists>
+      <artist>
+        <id>30</id>
+        <name>Groove Collective</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>Everything Is Changing</title>
+  </master>
+  <master id="595959">
+    <artists>
+      <artist>
+        <id>33</id>
+        <name>Blue Six</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Pure</title>
+  </master>
+  <master id="623486">
+    <artists>
+      <artist>
+        <id>28</id>
+        <name>Moonchildren</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Beyond Love</title>
+  </master>
+  <master id="689053">
+    <artists>
+      <artist>
+        <id>62</id>
+        <name>John Tejada</name>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Tech House</style>
+    </styles>
+    <year>2000</year>
+    <title>Song Forms &amp; Freedom EP</title>
+  </master>
+  <master id="713737">
+    <artists>
+      <artist>
+        <id>2</id>
+        <name>Mr. James Barth &amp; A.D.</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <year>1998</year>
+    <title>Knockin' Boots (Vol 1 Of 2)</title>
+  </master>
+  <master id="713738">
+    <artists>
+      <artist>
+        <id>2</id>
+        <name>Mr. James Barth &amp; A.D.</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Broken Beat</style>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <year>1998</year>
+    <title>Knockin' Boots (Vol 2 Of 2)</title>
+  </master>
+  <master id="743102">
+    <artists>
+      <artist>
+        <id>59</id>
+        <name>Kerri Chandler</name>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>Digitalsoul (Session One)</title>
+  </master>
+  <master id="903113">
+    <artists>
+      <artist>
+        <id>59</id>
+        <name>Kerri Chandler</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Digitalsoul (Session Two)</title>
+  </master>
+  <master id="1062744">
+    <artists>
+      <artist>
+        <id>57</id>
+        <name>Chris Gray</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Sweetness You Bring</title>
+  </master>
+  <master id="1108424">
+    <artists>
+      <artist>
+        <id>58</id>
+        <name>DaRand Land</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Blessings</title>
+  </master>
+  <master id="1195313">
+    <artists>
+      <artist>
+        <id>55</id>
+        <name>DJ Rasoul</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>1998</year>
+    <title>Soul Searching Vol. 2</title>
+  </master>
+  <master id="1225778">
+    <artists>
+      <artist>
+        <id>53</id>
+        <name>Casey Hogan</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Tech House</style>
+    </styles>
+    <year>2000</year>
+    <title>Switchstance EP</title>
+  </master>
+  <master id="1660109">
+    <artists>
+      <artist>
+        <id>1</id>
+        <name>The Persuader</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>Stockholm</title>
+  </master>
+  <master id="1715186">
+    <artists>
+      <artist>
+        <id>60</id>
+        <name>Pete Moss</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+      <style>Tech House</style>
+    </styles>
+    <year>2000</year>
+    <title>Outward Bound EP</title>
+  </master>
+  <master id="2260801">
+    <artists>
+      <artist>
+        <id>51</id>
+        <name>Lance Nuance</name>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>2000</year>
+    <title>Leaving The City EP</title>
+  </master>
+  <master id="2760602">
+    <artists>
+      <artist>
+        <id>50</id>
+        <name>ADNY</name>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>House</style>
+      <style>Deep House</style>
+    </styles>
+    <year>1999</year>
+    <title>Sincere, The Sky Be</title>
+  </master>
+  <master id="3749109">
+    <artists>
+      <artist>
+        <id>63</id>
+        <name>Solomonic Sound</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Deep House</style>
+      <style>Tech House</style>
+    </styles>
+    <year>1999</year>
+    <title>Night Life</title>
+  </master>
+  <master id="3838908">
+    <artists>
+      <artist>
+        <id>61</id>
+        <name>John Tejada &amp; Arian Leviste</name>
+        <join>,</join>
+      </artist>
+    </artists>
+    <genres>
+      <genre>Electronic</genre>
+    </genres>
+    <styles>
+      <style>Techno</style>
+      <style>Tech House</style>
+    </styles>
+    <year>2000</year>
+    <title>6 Hits Of Sunshine</title>
+  </master>
+</masters>

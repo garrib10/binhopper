@@ -1,17 +1,20 @@
 """Database tables (SPEC.md › Data model).
 
 Times are stored as naive UTC datetimes. Store locations are plain lat/lng
-columns with a composite index: the nearby search filters by a bounding box
+columns (DOUBLE: MySQL's FLOAT keeps only ~7 digits, enough to push a store
+at exactly 25.0 mi outside a 25 mi radius) with a composite index: the nearby search filters by a bounding box
 in SQL, then checks exact distance in Python (see app/geo.py).
 """
 
 from datetime import UTC, datetime
+from uuid import uuid4
 
 from sqlalchemy import (
     JSON,
     Boolean,
+    BigInteger,
     DateTime,
-    Float,
+    Double,
     ForeignKey,
     Index,
     Integer,
@@ -20,6 +23,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
+from sqlalchemy.dialects.mysql import DATETIME as MYSQL_DATETIME
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -66,6 +70,9 @@ class Artist(Base):
     discogs_artist_id: Mapped[int | None] = mapped_column(Integer, unique=True)
     name: Mapped[str] = mapped_column(String(255), index=True)
     bio: Mapped[str | None] = mapped_column(Text)
+    origin: Mapped[str | None] = mapped_column(String(120))
+    image_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    api_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
     image_url: Mapped[str | None] = mapped_column(String(500))
 
 
@@ -80,6 +87,9 @@ class Album(Base):
     title: Mapped[str] = mapped_column(String(255), index=True)
     year: Mapped[int | None] = mapped_column(Integer, index=True)
     cover_url: Mapped[str | None] = mapped_column(String(500))
+    cover_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    api_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    release_type: Mapped[str] = mapped_column(String(20), default="Studio", server_default="Studio")
     # [{"position": "A1", "title": "Second Hand News"}, ...]
     tracklist: Mapped[list[dict]] = mapped_column(JSON, default=list)
     cached_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
@@ -106,7 +116,9 @@ class Pressing(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     discogs_release_id: Mapped[int | None] = mapped_column(Integer, unique=True)
     album_id: Mapped[int] = mapped_column(ForeignKey("albums.id"), index=True)
-    label: Mapped[str | None] = mapped_column(String(255))
+    api_fetched_at: Mapped[datetime | None] = mapped_column(DateTime)
+    exclusive_kind: Mapped[str | None] = mapped_column(String(20))
+    label: Mapped[str | None] = mapped_column(String(255), index=True)
     catalog_no: Mapped[str | None] = mapped_column(String(100))
     barcode: Mapped[str | None] = mapped_column(String(32), index=True)
     format: Mapped[str] = mapped_column(String(60), default="LP")
@@ -124,13 +136,18 @@ class Store(Base):
     name: Mapped[str] = mapped_column(String(255))
     area: Mapped[str | None] = mapped_column(String(120))  # neighborhood or town shown in lists
     address: Mapped[str | None] = mapped_column(String(255))
-    lat: Mapped[float] = mapped_column(Float)
-    lng: Mapped[float] = mapped_column(Float)
+    lat: Mapped[float] = mapped_column(Double)
+    lng: Mapped[float] = mapped_column(Double)
     phone: Mapped[str | None] = mapped_column(String(40))
     website: Mapped[str | None] = mapped_column(String(500))
     hours: Mapped[dict | None] = mapped_column(JSON)
     discogs_seller_name: Mapped[str | None] = mapped_column(String(120), unique=True)
     source: Mapped[str] = mapped_column(String(30), default="manual")  # manual | places
+    inventory_next_sync: Mapped[datetime | None] = mapped_column(DateTime, index=True)
+    shop_key: Mapped[str] = mapped_column(String(255), unique=True, default=lambda: "unmapped-" + uuid4().hex)
+    osm_id: Mapped[str | None] = mapped_column(String(40), unique=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1")
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime)
 
 
 class StockListing(Base):
@@ -145,6 +162,7 @@ class StockListing(Base):
     source: Mapped[str] = mapped_column(String(30), default="discogs")  # discogs | manual | report
     last_synced_at: Mapped[datetime | None] = mapped_column(DateTime)
     last_verified_at: Mapped[datetime | None] = mapped_column(DateTime)
+    discogs_listing_id: Mapped[int | None] = mapped_column(BigInteger, unique=True)
 
     store: Mapped[Store] = relationship()
     pressing: Mapped[Pressing] = relationship()
@@ -198,5 +216,23 @@ class ZipCode(Base):
     __tablename__ = "zip_codes"
 
     zip: Mapped[str] = mapped_column(String(5), primary_key=True)
-    lat: Mapped[float] = mapped_column(Float)
-    lng: Mapped[float] = mapped_column(Float)
+    lat: Mapped[float] = mapped_column(Double)
+    lng: Mapped[float] = mapped_column(Double)
+
+
+class CatalogJob(Base):
+    """Durable API-gap/image refresh queue, consumed only by the separate worker."""
+    __tablename__ = "catalog_jobs"
+    __table_args__ = (UniqueConstraint("kind", "discogs_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(10))
+    discogs_id: Mapped[int] = mapped_column(Integer)
+    next_fetch: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True)
+
+
+class DiscogsCall(Base):
+    """Persist reservations so a worker restart cannot reset its rolling quota."""
+    __tablename__ = "discogs_calls"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reserved_at: Mapped[datetime] = mapped_column(
+        DateTime().with_variant(MYSQL_DATETIME(fsp=6), "mysql"), index=True)

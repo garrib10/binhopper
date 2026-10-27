@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.db import get_session
 from app.freshness import SORT_TIER, classify
+from app.inventory import visible_inventory
 from app.geo import ALLOWED_RADII_MI, bounding_box, display_miles, haversine_mi, within_radius
 from app.models import Album, Pressing, StockListing, StockReport, Store, ZipCode, utcnow
 from app.schemas import NearbyStockResponse, NearbyStore
@@ -31,7 +32,8 @@ def nearby_stock(
 ) -> NearbyStockResponse:
     if radius not in ALLOWED_RADII_MI:
         raise HTTPException(422, f"radius must be one of {list(ALLOWED_RADII_MI)}")
-    if session.get(Album, album_id) is None:
+    album = session.get(Album, album_id)
+    if album is None or (album.api_fetched_at is not None and now - album.api_fetched_at >= timedelta(hours=6)):
         raise HTTPException(404, "Album not found")
     origin = session.get(ZipCode, zip)
     if origin is None:
@@ -41,7 +43,8 @@ def nearby_stock(
         select(StockListing)
         .join(StockListing.store)
         .join(StockListing.pressing)
-        .where(Pressing.album_id == album_id, StockListing.quantity > 0)
+        .where(Pressing.album_id == album_id, StockListing.quantity > 0, Store.active.is_(True), visible_inventory(now),
+               or_(Pressing.api_fetched_at.is_(None), Pressing.api_fetched_at > now - timedelta(hours=6)))
         .options(joinedload(StockListing.store), joinedload(StockListing.pressing))
     )
 
@@ -70,12 +73,18 @@ def nearby_stock(
                 store_id=listing.store.id,
                 store_name=listing.store.name,
                 area=listing.store.area,
+                lat=listing.store.lat,
+                lng=listing.store.lng,
+                phone=listing.store.phone,
                 distance_mi=display_miles(d),
                 pressing_id=listing.pressing.id,
                 pressing_note=listing.pressing.variant_note,
                 price=float(listing.price),
                 condition=listing.condition,
                 quantity=listing.quantity,
+                source=listing.source,
+                discogs_url=(f"https://www.discogs.com/sell/item/{listing.discogs_listing_id}"
+                             if listing.source == "discogs" and listing.discogs_listing_id else None),
                 freshness=fresh,
                 last_updated_at=max(
                     (t for t in (listing.last_synced_at, listing.last_verified_at) if t),
@@ -98,6 +107,8 @@ def nearby_stock(
         album_id=album_id,
         zip=zip,
         radius_mi=radius,
+        center_lat=origin.lat,
+        center_lng=origin.lng,
         stores=stores,
         nearest_outside_mi=nearest_outside,
     )

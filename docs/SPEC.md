@@ -15,7 +15,7 @@ Version 1 helps vinyl collectors find a record they want in a shop near them, th
 - A useful free product comes first. No paywalls or ads on core features; monetization is decided after launch.
 - Private by default. Profiles, collections and wishlists start as "Only me"; location is used only when needed.
 - Honest stock data. Every listing shows how fresh it is, and users can confirm or flag it.
-- Launch in one metro area first and cover it well, rather than thin coverage everywhere.
+- Open to anyone in the US, but map shops one area at a time and cover each well (Connecticut first), rather than thin coverage everywhere.
 
 **Name:** Binhopper. "Spindle" in the mockups is the old placeholder. Design reference: `design/mockups/` (original light theme plus Night Session dark mode).
 
@@ -93,12 +93,12 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 1. Inputs: ZIP and radius (10 / 25 / 50 / 100 mi). Changing either refreshes the map and list.
 2. Distance = straight-line from the ZIP's center point to the store, in miles, rounded to one decimal.
-3. Only stores within the radius appear, sorted by stock freshness tier, then distance.
+3. Only active stores within the radius appear, sorted by stock freshness tier, then distance. Inactive stores also contribute no stock to search, browse, album or artist summaries.
 4. Each store shows name, distance, area, quantity, condition, price and a freshness label.
-5. Freshness: verified in the last 24 h = "Verified"; synced in the last 72 h = normal; older than 7 days = "May be out of date" warning with "Call to confirm."
+5. Freshness: Discogs-sourced inventory is hidden at six hours since its last successful sync, even if a user verified it more recently. Manual and user-report stock verified in the last 24 h shows "Verified"; otherwise older than 7 days shows "May be out of date" with "Call to confirm." Two missing reports in 24 h show "Reported missing today". Discogs cards link their individual listing with "Data provided by Discogs."
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
-7. No stores in radius → show the nearest copy's distance and offer the next radius up, an alert, and online sellers.
-8. Below the store list: "Can't make it? Buy online" with official artist store, retailer exclusives, and resellers (Discogs, eBay, Amazon). These open the seller's site.
+7. No stores in radius → show the nearest copy's distance and offer the next radius up and online sellers. Alerts stay hidden until v1.1.
+8. Below the store list: "Can't make it? Buy online" with search links for Discogs marketplace, eBay, Amazon and Urban Outfitters. Include the official artist store only when its verified HTTPS URL is configured. No scraped prices or availability claims.
 
 ### Locate, hold, buy
 
@@ -139,7 +139,7 @@ Eleven tables cover v1 in MySQL 8: the ten below plus an album\_genres join tabl
 | artists | id, discogs\_artist\_id, name, bio, image\_url | albums |
 | albums (Discogs "master") | id, discogs\_master\_id, artist\_id, title, year, cover\_url, tracklist (JSON with side positions) | artists, pressings |
 | pressings (Discogs "release") | id, discogs\_release\_id, album\_id, label, catalog\_no, barcode, format, variant\_note, exclusive\_to | albums, stock\_listings |
-| stores | id, name, address, lat, lng, phone, website, hours, discogs\_seller\_name, source | stock\_listings, stock\_reports |
+| stores | shop\_key (unique), osm\_id (nullable, unique), active, verified\_at, id, name, address, lat, lng, phone, website, hours, discogs\_seller\_name, source | stock\_listings, stock\_reports |
 | stock\_listings | id, store\_id, pressing\_id, price, condition, quantity, source, last\_synced\_at, last\_verified\_at | stores, pressings |
 | stock\_reports | id, listing\_id, user\_id, result (present / missing / different\_price), reported\_price, created\_at | stock\_listings, users |
 | wishlist\_items | id, user\_id, album\_id, pressing\_id (nullable = any), max\_price, min\_condition, created\_at | users, albums, pressings |
@@ -156,16 +156,16 @@ Launch data comes from Discogs (catalog and shop inventory), a places API (shop 
 | [Discogs API](https://www.discogs.com/developers) | Artists, albums, pressings, tracklists, cover art, exclusive variants | Database endpoints, cached in our tables | 60 requests/min authenticated, 25 unauthenticated; images need auth; check the API Terms of Use before caching |
 | Discogs seller inventory | What a shop has for sale, price, condition | `GET /users/{username}/inventory` for each shop's Discogs seller account | Paginated; only "For Sale" items visible; we keep a store → seller-name directory by hand |
 | Discogs data dumps | Bulk catalog seed | Monthly CC0 dumps loaded into the database | Free to use; reduces API calls |
-| Places API (Google Places or similar) | Shop names, addresses, coordinates, hours | Search "record store" in the launch metro, review results by hand | Pricing and terms per provider; store only what terms allow |
+| Places API (Google Places or similar) | Shop names, addresses, coordinates, hours | Search "record store" in the area being mapped, review results by hand | Pricing and terms per provider; store only what terms allow |
 | User stock reports | "On the shelf" / "missing" / "different price" | Report screen on store and stock pages | One report per user per listing per day |
 | Online sellers | Fallback links | Deep links to a search on the seller's site (artist store, retailer, eBay, Amazon) | No stock data or scraping; affiliate links later |
 | Spotify / Apple Music | Listen links | Album search link or ID match | Link out only |
 
 **Refresh rules**
 
-- Shop inventories sync once a day, staggered, plus on demand when a user opens that shop's listings and the last sync is more than 6 hours old.
+- Shop inventories from Discogs sync about every 4 hours, staggered in the separate worker. All pages must succeed before replacing a snapshot; missing listings get quantity 0. Only for-sale vinyl with known release IDs and USD prices is shown (v1 prices are USD). Unknown releases wait for a CC0 import. Discogs-sourced inventory is hidden at six hours since sync, regardless of user verification; expired prices, quantities and condition are scrubbed by the worker. Manual and user-reported stock keep the 7-day rule.
 - A global request queue keeps total Discogs calls under 60 per minute.
-- Catalog data refreshes when an album page is opened and the cached copy is more than 30 days old.
+- Catalog data comes from the monthly CC0 data dumps; API lookups fill gaps and are refreshed or replaced within 6 hours.
 - Freshness labels on listings use `last_verified_at` (user report) first, then `last_synced_at`.
 
 ## Tech architecture
@@ -250,21 +250,21 @@ The riskiest logic is the radius math, stock freshness and duplicate handling, s
 
 ## Open decisions and next steps
 
-The backend is decided; launch metro and places provider still need deciding, and the Discogs terms check can run alongside setup.
+All launch decisions are made (details and sources in `docs/decisions/launch.md`); only the custom domain and USPTO search wait until before the public launch.
 
 **Open decisions**
 
 - [ ] Backend language: decided, Python (FastAPI) with MySQL 8
-- [ ] Launch metro area (the mockups use New York, ZIP 10011)
-- [ ] Name: decided, Binhopper (still check the domain and a USPTO search before launch)
-- [ ] Places provider: Google Places or an alternative, after comparing pricing and terms
-- [ ] Read the Discogs API Terms of Use on caching catalog data and images
+- [x] Coverage: available US-wide; shop mapping starts in Connecticut (central ZIP 06037, Berlin) and expands region by region, New York next
+- [ ] Name: decided, Binhopper. Development stays local; hosting will use the default Vercel and Railway addresses. Pick a custom domain (binhopper.com is taken) and run a USPTO search before the public launch
+- [x] Places provider: none at launch. Shops are hand-mapped from OpenStreetMap and Foursquare Open Source Places and stored as manual; Google Places rules out non-Google maps and permanent storage
+- [x] Discogs terms: API content may not be shown more than 6 hours behind Discogs; catalog comes from the CC0 monthly dumps; shop inventory is restricted data; cover images are shown from Discogs' URLs, not re-hosted; show both required notices (see `docs/decisions/launch.md`)
 
 **Next steps**
 
 1. Settle the decisions above.
-2. Map 20–40 record shops in the launch metro and find which sell on Discogs.
+2. Map 20–40 record shops in Connecticut and find which sell on Discogs.
 3. Show the clickable mockups to about 5 collectors and note where they hesitate.
 4. Set up the repo: React front end, chosen backend, MySQL 8, CI running the tests above.
 5. Build in this order: catalog import and search → album page → nearby stock → wishlist → collection → account settings → Discogs import.
-6. Private beta with a handful of local collectors, then launch in the one metro.
+6. Private beta with a handful of Connecticut collectors, then launch US-wide with Connecticut shops mapped.

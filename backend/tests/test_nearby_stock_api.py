@@ -14,6 +14,7 @@ def add_store(session, pressing, name, miles, **listing):
     session.add(store)
     session.flush()
     row = StockListing(
+        source=listing.get("source", "manual"),
         store_id=store.id,
         pressing_id=pressing.id,
         price=listing.get("price", 25),
@@ -47,7 +48,7 @@ def get_stock(client, album_id, zip="10011", radius=25):
 
 
 def test_health(client):
-    assert client.get("/api/health").json() == {"status": "ok"}
+    assert client.get("/api/health").json()["status"] == "ok"
 
 
 def test_only_stores_in_radius_closest_first(client, session, pressing):  # AC-01
@@ -132,3 +133,14 @@ def test_verified_listing_sorts_before_closer_unverified(client, session, pressi
     session.commit()
     names = [s["store_name"] for s in get_stock(client, pressing.album_id).json()["stores"]]
     assert names == ["Verified", "Close"]
+
+
+def test_AC_01_map_uses_zip_center_and_store_coordinates(client, session, pressing):
+    listing = add_store(session, pressing, 'Mapped fixture', 3)
+    listing.store.phone = '+1 203 555 0101'
+    session.commit()
+    data = get_stock(client, pressing.album_id).json()
+    assert (data['center_lat'], data['center_lng']) == ZIP_10011
+    assert data['stores'][0]['lat'] == listing.store.lat
+    assert data['stores'][0]['lng'] == listing.store.lng
+    assert data['stores'][0]['phone'] == '+1 203 555 0101'

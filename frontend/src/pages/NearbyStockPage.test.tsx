@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import type { NearbyStockResponse } from '../api';
 import { NearbyStockPage } from './NearbyStockPage';
 
+vi.mock('../catalog', () => ({ getCatalog: vi.fn().mockResolvedValue({ album_title: 'Rumours', artist_name: 'Fleetwood Mac', sellers: [] }) }));
+
 function mockApi(body: Partial<NearbyStockResponse>) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(
@@ -96,6 +98,13 @@ describe('NearbyStockPage', () => {
       render(page);
       expect(await screen.findByRole('alert')).toHaveTextContent("Can't reach Binhopper right now.");
       expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    });
+
+    it('treats the deployed proxy\'s "API not configured" 503 as unreachable', async () => {
+      mockError(503, { detail: 'API not configured' });
+      render(page);
+      expect(await screen.findByRole('alert')).toHaveTextContent("Can't reach Binhopper right now.");
+      expect(screen.queryByText('API not configured')).not.toBeInTheDocument();
     });
 
     it('Try again fetches the stores again', async () => {

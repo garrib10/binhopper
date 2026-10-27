@@ -23,6 +23,9 @@ jobs:
       SYSTEM_TARGET: staging
       APP_URL: ${{ vars.APP_URL }}
       API_URL: ${{ vars.API_URL }}
+      # Staging stays behind Vercel Deployment Protection; the shared Playwright
+      # fixture sends this secret to APP_URL requests only (frontend/test/vercel-bypass.ts).
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     steps:
       # Deploy is workflow_run-triggered, so its own head_sha/head_branch refer
       # to the default branch. Its explicit run-name carries the promotion SHA.

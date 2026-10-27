@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 from urllib.error import URLError
 
-from check_deploy import check, endpoint, main
+from check_deploy import app_headers, check, endpoint, main
 
 
 class Response(io.BytesIO):
@@ -63,6 +63,28 @@ class DeployCheckTests(unittest.TestCase):
     def test_missing_environment_variable_is_actionable(self):
         with patch.dict('os.environ', {}, clear=True), self.assertRaisesRegex(ValueError, 'API_URL'):
             endpoint('API_URL')
+
+    def test_bypass_secret_goes_to_the_vercel_app_only(self):
+        replies = [health('new'), health('new'), Response(b'html')]
+        auth = app_headers({'VERCEL_AUTOMATION_BYPASS_SECRET': 's3cret'})
+        with patch('check_deploy.urlopen', side_effect=replies) as fetch:
+            check('https://api.test', 'https://app.test', 'new', app_auth=auth)
+        sent = [(call.args[0].full_url, call.args[0].get_header('X-vercel-protection-bypass'))
+                for call in fetch.call_args_list]
+        self.assertEqual(sent, [('https://api.test/api/health', None),
+                                ('https://app.test/api/health', 's3cret'),
+                                ('https://app.test', 's3cret')])
+
+    def test_no_bypass_header_without_a_secret(self):
+        self.assertEqual(app_headers({}), {})
+        self.assertEqual(app_headers({'VERCEL_AUTOMATION_BYPASS_SECRET': ''}), {})
+
+    def test_main_passes_the_secret_from_the_environment(self):
+        env = {'GITHUB_SHA': 'new', 'API_URL': 'https://api.test', 'APP_URL': 'https://app.test',
+               'VERCEL_AUTOMATION_BYPASS_SECRET': 's3cret'}
+        with patch.dict('os.environ', env, clear=True), patch('check_deploy.check') as run:
+            main()
+        self.assertEqual(run.call_args.kwargs['app_auth'], {'x-vercel-protection-bypass': 's3cret'})
 
     def test_skips_with_notice_when_environment_has_no_urls(self):
         out = io.StringIO()

@@ -80,5 +80,6 @@ jobs:
           APP_URL: ${{ vars.APP_URL }}
           # Vercel Protection Bypass for Automation (environment secret); sent to APP_URL only.
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          GITHUB_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # The promoted commit. Not GITHUB_SHA: GitHub ignores overrides of GITHUB_* variables.
+          EXPECTED_COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: python .github/scripts/check_deploy.py

@@ -1,3 +1,8 @@
+import configparser
+import re
+import tomllib
+from pathlib import Path
+
 import pytest
 from sqlalchemy import func, select
 
@@ -33,3 +38,27 @@ def test_sample_seed_repeat_with_existing_zip(session):
     assert before == [1, 4, 4, 1]
     assert load(session) is False
     assert counts() == before
+
+
+BACKEND = Path(__file__).resolve().parents[1]
+
+
+def test_railway_requirements_match_pyproject():
+    # Railpack installs from requirements.txt only; a missing or stale copy means
+    # Railway builds an image without alembic/uvicorn and the deploy fails.
+    pyproject = tomllib.loads((BACKEND / "pyproject.toml").read_text())
+    lines = (BACKEND / "requirements.txt").read_text().splitlines()
+    required = [line.strip() for line in lines if line.strip() and not line.startswith("#")]
+    assert required == pyproject["project"]["dependencies"]
+
+
+def test_railway_python_version_matches_ci():
+    version = (BACKEND / ".python-version").read_text().strip()
+    ci = (BACKEND.parent / ".github" / "workflows" / "ci.yml").read_text()
+    assert set(re.findall(r'python-version: "([\d.]+)"', ci)) == {version}
+
+
+def test_alembic_finds_app_without_the_package_installed():
+    config = configparser.ConfigParser()
+    config.read(BACKEND / "alembic.ini")
+    assert config["alembic"]["prepend_sys_path"] == "."

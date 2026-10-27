@@ -142,3 +142,16 @@ promotes new rows. Merle's is user-verified as a physical shop but its seller
 business details were confirmed by the user; its website access warning remains
 separate and the unsafe site was not visited. See [VERIFY.md](../../docs/shops/VERIFY.md)
 for sourced checklists and local/staging/production loading instructions.
+
+## Verification batch 1 — 2026-10-26
+
+The 22 unverified `record shop` rows were checked by hand (shop sites and official
+social pages, plus business listings seen through web search; no Places API or bulk
+listing copies). Eight became `verified=true`: Vinyl Street Co., The Nevermind Shop,
+CBug's Records, Gerosa Records, Revolution Records, both Newbury Comics branches and
+Retro Spin Shop. The rest stay unverified with the missing evidence in notes. Seller
+`RetroSpinShop` was cleared (profile shows no business details) and `Fullhausrecords`
+was added (profile shows the shop name and address). Full Haus and Clocktower now
+have Census coordinates from the `Public_AR_Census2020` benchmark, since
+`Public_AR_Current` did not match their exact street address. Each row's notes carry the
+dated sources; see [VERIFY.md](../../docs/shops/VERIFY.md).

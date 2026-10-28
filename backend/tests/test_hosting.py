@@ -108,3 +108,12 @@ def test_migrations_give_up_after_the_timeout():
 def test_migrations_connect_at_once_when_the_database_is_up():
     with connect_with_retry(create_engine("sqlite://"), sleep=pytest.fail) as connection:
         assert connection.exec_driver_sql("select 1").scalar() == 1
+
+
+def test_railway_settings_live_in_the_dashboard():
+    # #121: Config as Code is deprecated (unread after 2026-12-01); a stray file would
+    # silently compete with the dashboard settings listed in docs/DEPLOY.md section 1.
+    repo = BACKEND.parent
+    found = [p for name in ("railway.json", "railway.toml", "railway.*.json", "railway-*.json")
+             for p in repo.rglob(name) if "node_modules" not in p.parts and ".venv" not in p.parts]
+    assert found == []

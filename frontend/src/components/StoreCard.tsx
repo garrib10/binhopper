@@ -1,4 +1,4 @@
-import type { Freshness, NearbyStore } from '../api';
+import type { Freshness, NearbyStore, OtherShop } from '../api';
 
 const FRESHNESS_LABEL: Record<Freshness, string | null> = {
   verified: 'Verified on the shelf',
@@ -14,9 +14,23 @@ interface Props {
   index: number;
 }
 
+/** Call and Directions, shared by stock cards and call-to-check cards. */
+function ShopActions({ name, phone, lat, lng, callLabel }: {
+  name: string; phone?: string | null; lat?: number; lng?: number; callLabel: string;
+}) {
+  const digits = phone?.replace(/[^+\d]/g, '');
+  return (
+    <div className="store-card__actions">
+      {digits && <a className="button" href={`tel:${digits}`}>{callLabel}</a>}
+      {Number.isFinite(lat) && Number.isFinite(lng) &&
+        <a className="button" href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
+          aria-label={`Directions to ${name}`}>Directions</a>}
+    </div>
+  );
+}
+
 export function StoreCard({ store, index }: Props) {
   const label = FRESHNESS_LABEL[store.freshness];
-  const phone = store.phone?.replace(/[^+\d]/g, '');
   return (
     <li className={`store-card store-card--${store.freshness}`}>
       <div className="store-card__row">
@@ -41,13 +55,22 @@ export function StoreCard({ store, index }: Props) {
         </div>
         <span className="store-card__price">{price.format(store.price)}</span>
       </div>
-      <div className="store-card__actions">
-        {phone && <a className="button" href={`tel:${phone}`}>
-          {store.freshness === 'out_of_date' ? 'Call to confirm' : 'Call shop'}</a>}
-        {Number.isFinite(store.lat) && Number.isFinite(store.lng) &&
-          <a className="button" href={`https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`}
-            aria-label={`Directions to ${store.store_name}`}>Directions</a>}
+      <ShopActions name={store.store_name} phone={store.phone} lat={store.lat} lng={store.lng}
+        callLabel={store.freshness === 'out_of_date' ? 'Call to confirm' : 'Call shop'} />
+    </li>
+  );
+}
+
+/** No-inventory variant (Nearby stock rule 9): no price, stock or freshness, just call and go. */
+export function OtherShopCard({ shop }: { shop: OtherShop }) {
+  return (
+    <li className="store-card store-card--no-inventory">
+      <div className="store-card__info">
+        <h3 className="store-card__name">{shop.name}</h3>
+        <p className="store-card__meta">{shop.distance_mi} mi{shop.area ? ` · ${shop.area}` : ''}</p>
+        <p className="store-card__freshness">No online inventory{shop.phone ? '' : ': stop by to check'}</p>
       </div>
+      <ShopActions name={shop.name} phone={shop.phone} lat={shop.lat} lng={shop.lng} callLabel="Call to check" />
     </li>
   );
 }

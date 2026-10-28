@@ -24,12 +24,24 @@ STORES = [
     ("Groove Merchant", "Montclair, NJ", 40.8259, -74.2090),
     ("Dead Wax Exchange", "White Plains", 41.0340, -73.7629),
 ]
+# No Discogs seller account and no listings: shows under "Other record shops nearby" (#138).
+CALL_TO_CHECK = dict(name="Side B Listening Room", area="Hoboken, NJ", lat=40.7440, lng=-74.0324,
+                     phone="(201) 555-0142", shop_key="sample-side-b-listening-room")
+
+
+def add_call_to_check_shop(s: Session) -> bool:
+    """Added on its own so databases seeded before #138 get it too."""
+    if s.scalar(select(Store.id).where(Store.shop_key == CALL_TO_CHECK["shop_key"])) is not None:
+        return False
+    s.add(Store(**CALL_TO_CHECK))
+    s.commit()
+    return True
 
 
 def load(s: Session) -> bool:
     now = utcnow()
     if s.scalar(select(Store.id).where(Store.name == STORES[0][0])) is not None:
-        return False
+        return add_call_to_check_shop(s)
     for z, lat, lng in ZIPS:
         if s.get(ZipCode, z) is None:
             s.add(ZipCode(zip=z, lat=lat, lng=lng))
@@ -81,6 +93,7 @@ def load(s: Session) -> bool:
         ]
     )
     s.commit()
+    add_call_to_check_shop(s)
     return True
 
 def main() -> None:

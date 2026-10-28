@@ -34,7 +34,7 @@ for (const radius of [10, 25] as const) {
     const body: NearbyStockResponse = await result.json();
     expect(body.stores.length).toBeGreaterThan(0); // Staging has the fictional sample seed.
     expect(body.stores.every((store) => store.distance_mi <= radius)).toBe(true);
-    await expect(page.getByRole('heading', { level: 3 })).toHaveText(
+    await expect(page.getByRole('list', { name: /stores? ha(s|ve) it/ }).getByRole('heading', { level: 3 })).toHaveText(
       body.stores.map((store) => store.store_name),
     );
   });

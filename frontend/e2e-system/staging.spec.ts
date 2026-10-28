@@ -52,3 +52,13 @@ test('invalid ZIP stays in the browser without an API request', async ({ page })
   await expect(page.getByRole('alert')).toHaveText('Enter a 5-digit ZIP code');
   expect(calls).toEqual([]);
 });
+
+// Read-only: staging never gets test accounts. Sign-in is answered through the proxy.
+test('sign-in is reachable and signed out by default', async ({ page, request }) => {
+  const me = await request.get(`${app}/api/auth/me`, { headers: bypassHeaders(`${app}/api/auth/me`) });
+  expect(me.status()).toBe(401);
+  expect(me.headers()['cache-control']).toBe('no-store');
+  await page.goto('/sign-in');
+  await expect(page.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Create an account' })).toBeVisible();
+});

@@ -424,3 +424,25 @@ a {
 
 .app-data-credit { max-width: 1240px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); }
 .app-data-credit a { display: inline-flex; align-items: center; min-height: var(--touch-target); }
+
+/* Sign-in screens (#38): no mockups, so they follow Onboarding's form pattern. */
+.profile-link--text { min-width: 0; padding: 0 var(--space-4); border-radius: var(--radius-pill); }
+.profile-link--pending { background: var(--color-surface-sunken); }
+.auth-page { max-width: 440px; gap: var(--space-4); padding-top: var(--space-8); }
+.auth-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.text-field { display: flex; flex-direction: column; gap: 6px; }
+.text-field label { font-size: var(--text-sm); font-weight: 600; }
+.text-field input { width: 100%; min-height: 48px; padding: 0 var(--space-3); border: 1.5px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); font: inherit; font-size: 16px; }
+.text-field input:focus-visible { outline: 2px solid var(--color-link); outline-offset: 1px; }
+.text-field__row { display: flex; gap: var(--space-2); align-items: center; }
+.text-field__row .text-button { padding: 0 var(--space-2); min-width: var(--touch-target); }
+.text-field__hint { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); }
+.button--block { display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; text-decoration: none; }
+.button--secondary { background: var(--color-surface); color: var(--color-text); border: 1.5px solid var(--color-border-strong); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.button:disabled { opacity: 0.7; cursor: progress; }
+.notice--ok { background: var(--color-ok-bg); color: var(--color-ok-text); }
+.notice .text-button { min-height: 0; margin-left: var(--space-1); color: inherit; text-decoration: underline; }
+.auth-links { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; margin: 0; }
+.auth-links a { display: inline-flex; align-items: center; min-height: var(--touch-target); color: var(--color-link); font-weight: 700; }
+.auth-divider { display: flex; align-items: center; gap: var(--space-3); margin: 0; color: var(--color-text-muted); font-size: var(--text-sm); }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; border-top: 1px solid var(--color-border); }

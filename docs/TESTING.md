@@ -19,7 +19,7 @@ system tests (#95) and the test-data seed (#96).
 | Integration | the same pytest suite on MySQL 8.4 | `TEST_DATABASE_URL` set (#94) | What SQLite hides: column precision, upserts, collation; migrations apply cleanly | `integration` (#94) |
 | E2E (mocked API) | Playwright, 390 px + 1440 px | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks | `e2e` |
 | System | Playwright, real API + seeded MySQL | `frontend/e2e-system/` (#95) | The whole stack together, nothing mocked | `system` (#95) |
-| Acceptance | all of the above | the table below | AC-01 to AC-16, each at the level SPEC.md names | all |
+| Acceptance | all of the above | the table below | AC-01 to AC-21, each at the level SPEC.md names | all |
 
 **What a feature owes:** pytest for every API rule; a Vitest test for each piece of UI behavior;
 a Playwright test at 390 px and 1440 px for each core flow; the AC id in each of those tests.
@@ -45,10 +45,14 @@ the feature issue that will add them.
 | AC-10 | Hand-off purchase moves wishlist → collection | E2E | — | #40 |
 | AC-11 | Discogs import skips existing releases | API | — | #44 |
 | AC-12 | Search waits for 2+ characters and a pause | Unit | — | #33 |
-| AC-13 | New account is private; others get 404 | API | — | #38, #42 |
+| AC-13 | New account is private; others get 404 | API | `test_auth_api.py`, `test_auth_google.py` (new accounts private) | #38 done; 404 half #39, #41, #42 |
 | AC-14 | "Match system" follows device dark mode | E2E | `e2e/nearby-stock.spec.ts`, `theme.test.ts` | #42 (settings screen) |
 | AC-15 | Account delete removes data and sign-in | API + E2E | — | #42 |
 | AC-16 | Never more than 60 Discogs calls per 60 s | Integration | — | #32, #70 |
+| AC-17, AC-18 | Shops without online inventory | — | — | #138, #37 |
+| AC-19 | Verify link signs in once, expires after 24 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts`, `e2e-system/auth.spec.ts` | done |
+| AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
+| AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |
 
 ## Test data
 
@@ -73,13 +77,17 @@ the moment it loads, and loading twice is a no-op.
 
 ## Mocking rules
 
-- **Discogs and Places are always mocked** in automated tests. No test may call a real outside
+- **Discogs, Places, Google and Resend are always mocked** in automated tests. No test may call a real outside
   API, and CI has no keys for them.
 - Backend: replace the client at its boundary (a fake client or `monkeypatch`), never by
   patching `httpx` globally. Rate-limit tests use a fake clock, not real waiting.
 - Frontend unit tests: stub `fetch` with `vi.spyOn(globalThis, 'fetch')`.
 - E2E (mocked): fake the API with `page.route`. The system tests mock nothing, so they must not
   reach outside services either.
+- Sign-in: pytest runs with `EMAIL_BACKEND=memory` (`conftest.py`) and fakes Google's token and
+  key endpoints with an httpx `MockTransport` (`test_auth_google.py`); the Resend backend is
+  tested the same way. The local system run uses `EMAIL_BACKEND=file` and reads the link from
+  the file. Tests also use cheap Argon2 settings so hashing stays fast.
 - The only real Discogs call is the nightly smoke test (#69): scheduled, read-only, never on PRs.
 
 ## CI gates
@@ -126,6 +134,8 @@ Run on staging before each release, at phone and desktop size, in light and dark
 - [ ] Screen reader spot check (VoiceOver): headings, buttons and alerts are announced
 - [ ] Slow network (DevTools "Slow 3G"): loading states show; nothing double-submits
 - [ ] API down (stop the backend): "Can't reach Binhopper right now." and Try again works
+- [ ] Sign-in: create an account, open the emailed link, sign out, sign in; forgot password → reset;
+  Continue with Google (staging: only your own email gets mail, only Google test users can sign in)
 - [ ] Privacy: a second account can't see the first account's collection or wishlist
 - [ ] Anything that felt confusing: file an issue
 

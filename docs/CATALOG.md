@@ -55,8 +55,9 @@ python -m app.worker
 ```
 
 In Railway add a **separate worker service** using the same backend source/root and environment
-MySQL reference as the API, with Config File Path `/backend/railway-worker.json` (not the API railway.json),
-start command `python -m app.worker`, no HTTP healthcheck and one replica. Use staging/main
+MySQL reference as the API, with its settings entered in the dashboard
+([DEPLOY.md › Discogs worker](DEPLOY.md#discogs-catalog-and-inventory-worker-90)):
+start command `python -m app.worker`, no pre-deploy command, no HTTP healthcheck and one replica. Use staging/main
 source branches and Wait for CI as on the API. Deploy/migrate the API first before initially
 starting the worker; the worker configuration intentionally does not run a competing Alembic
 migration or expose a public domain. Keep staging and production databases separate. Do not start it inside

@@ -1,8 +1,9 @@
 import { ApiError } from './api';
 import { sendJson } from './auth';
 
-export const GRADES = ['M', 'NM', 'VG+', 'VG', 'G+', 'G', 'P'] as const;
-export type Grade = (typeof GRADES)[number];
+import type { Grade } from './grades';
+
+export { GRADES, type Grade } from './grades';
 
 interface ShopPrice { store_name: string; distance_mi: number; price: number }
 

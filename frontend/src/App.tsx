@@ -16,6 +16,9 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { YouPage } from './pages/auth/YouPage';
 import { WishlistPage } from './pages/WishlistPage';
+import { CollectionPage } from './pages/CollectionPage';
+import { OwnedPage } from './pages/OwnedPage';
+import { AddCopyPage } from './pages/AddCopyPage';
 import { WishlistProvider } from './WishlistContext';
 
 export function App() { return <BrowserRouter><AuthProvider><WishlistProvider><AppShell /></WishlistProvider></AuthProvider></BrowserRouter>; }
@@ -106,8 +109,9 @@ export function AppShell() {
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />
       <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
       <Route path="/wishlist" element={signedIn(<WishlistPage />)} />
-      <Route path="/collection" element={signedIn(<Placeholder title="Collection" />)} />
-      <Route path="/collection/:id" element={signedIn(<Placeholder title="Your copy" />)} />
+      <Route path="/collection" element={signedIn(<CollectionPage />)} />
+      <Route path="/collection/add/:albumId" element={signedIn(<AddCopyPage />)} />
+      <Route path="/collection/:id" element={signedIn(<OwnedPage />)} />
       <Route path="/import" element={signedIn(<Placeholder title="Import from Discogs" />)} />
       <Route path="/you/*" element={signedIn(<YouPage />)} />
       <Route path="/sign-in" element={<SignInPage />} />

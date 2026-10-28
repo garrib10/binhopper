@@ -102,6 +102,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
 7. No stores in radius → show the nearest copy's distance and offer the next radius up and online sellers. Alerts stay hidden until v1.1.
 8. Below the store list: "Can't make it? Buy online" with search links for Discogs marketplace, eBay, Amazon and Urban Outfitters. Include the official artist store only when its verified HTTPS URL is configured. No scraped prices or availability claims.
+9. Below the stock list, above "Can't make it? Buy online": "Other record shops nearby — no online inventory. Call to check." It lists active shops within the radius that have no Discogs seller account and no listing for this album, sorted by distance, each with name, distance, area, phone (tap to call) and Directions. They never show a price or stock claim, never count toward "N stores have it" or search stock lines, and aren't pinned on the map. When a user reports the album there as on the shelf, the shop moves into the stock list as a user-reported listing under the freshness rules (rule 5).
 
 ### Locate, hold, buy
 
@@ -246,6 +247,8 @@ The riskiest logic is the radius math, stock freshness and duplicate handling, s
 | AC-14 | Settings | Given appearance "Match system" and a phone in dark mode, when the app opens, then the dark theme shows | E2E |
 | AC-15 | Account | Given a confirmed delete, then the user's data is gone and sign-in with the old credentials fails | API + E2E |
 | AC-16 | Rate limit | Given 100 sync jobs queued, when the worker runs, then Discogs calls never exceed 60 in any 60-second window | Integration |
+| AC-17 | Nearby stock | Given an active shop with no Discogs seller 12 mi from the ZIP and radius 25, when stock loads, then it appears under "Other record shops nearby" with call and directions, without a price, sorted by distance, and is not counted in the stock list | API + Unit + E2E |
+| AC-18 | Stock reports | Given a shop listed under "Other record shops nearby", when a signed-in user reports the album there as on the shelf, then the shop moves into the stock list as a user report labelled "Verified" for 24 h, then under the 7-day rule | API + E2E |
 | AC-19 | Account | Given a new email sign-up, when the emailed link is opened, then the account is verified and signed in; the same link fails a second time, and a link older than 24 h fails | API + E2E |
 | AC-20 | Account | Given an unknown email or a wrong password, then sign-in, sign-up, forgot-password and resend-verification respond identically (same status and body) | API |
 | AC-21 | Account | Given a password reset, then all the user's other sessions end and the reset link works once, within 1 h | API + E2E |

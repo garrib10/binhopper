@@ -126,3 +126,26 @@ for (const theme of ['Light', 'Dark']) {
     await page.screenshot({ path: test.info().outputPath(`inventory-${theme}.png`), fullPage: true });
   });
 }
+
+for (const theme of ['light', 'dark'] as const) {
+  test(`AC-17 shops without online inventory sit below the stock list (${theme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.route('**/api/albums/*/stock?*', (route) => route.fulfill({ json: {
+      album_id: 1, center_lat: 40.74, center_lng: -74, zip: '10011', radius_mi: 25, stores: STORES.slice(0, 2),
+      nearest_outside_mi: null,
+      other_shops: [{ store_id: 9, name: 'Side B Listening Room', area: 'Hoboken, NJ', distance_mi: 1.5,
+        phone: '(201) 555-0142', lat: 40.744, lng: -74.0324 }] } }));
+    await page.reload();
+    await expect(page.getByRole('heading', { name: '2 stores have it' })).toBeVisible();
+    const others = page.getByRole('list', { name: 'Other record shops nearby' });
+    await expect(others.getByRole('heading', { level: 3 })).toHaveText(['Side B Listening Room']);
+    await expect(page.getByText('No online inventory. Call to check.')).toBeVisible();
+    await expect(others.getByRole('link', { name: 'Call to check' })).toHaveAttribute('href', 'tel:2015550142');
+    await expect(others).not.toContainText('$');
+    await expect(page.locator('.shop-marker')).toHaveCount(2); // not on the map
+    for (const link of await others.getByRole('link').all()) {
+      expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    }
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+}

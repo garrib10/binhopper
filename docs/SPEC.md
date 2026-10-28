@@ -127,11 +127,11 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 ### Account settings ("You")
 
 1. Opened from the profile button in the header on every main screen, mobile and desktop.
-2. Mobile tabs: Profile, Settings, Privacy, Account. Desktop adds Notifications as a fifth tab.
-3. Profile: photo, username, favorite genres, connected accounts (Discogs, Spotify, Apple Music).
+2. Tabs: Profile, Settings, Privacy, Account (side tabs on desktop). Desktop's Notifications tab arrives with alerts in v1.1.
+3. Profile: initials avatar (photo upload comes later), username, favorite genres, connected accounts (Discogs in v1; Spotify and Apple Music listen links need no account).
 4. Settings: home ZIP, default radius, current-location toggle (off by default), appearance (Light, Dark, Match system; default Match system).
 5. Privacy: profile, collection and wishlist each set to Everyone or Only me (default Only me); a Friends option comes with the social features (Later). Export collection (CSV) and download all data.
-6. Account: email, sign-in method, password and security, help, sign out, delete account with confirmation.
+6. Account: email, sign-in method, password (reset by email), sign out, delete account with confirmation. Help pages, terms and privacy policy links arrive with the policies before launch.
 
 ## Data model
 
@@ -210,7 +210,7 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | GET, POST, PATCH, DELETE | /me/collection | Manage collection copies (POST answers 409 for an owned pressing unless `another_copy`; GET /me/collection/owned?album_id= for the album page) |
 | POST | /me/import/discogs | Start a Discogs import |
 | GET, PATCH | /me/settings | ZIP, radius, theme, privacy, genres |
-| GET | /me/export | Collection CSV / data download |
+| GET | /me/export, /me/data | Collection CSV; all your data as JSON |
 | DELETE | /me | Delete account and all data |
 
 ## Privacy, security and compliance

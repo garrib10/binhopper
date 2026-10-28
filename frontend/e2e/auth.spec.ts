@@ -68,7 +68,11 @@ test('AC-20 a wrong password shows one message; protected pages return after sig
   await page.getByLabel('Password', { exact: true }).fill('spin-the-b-side');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page.getByRole('heading', { name: 'Collection', exact: true })).toBeVisible();
+  await page.route('**/api/me/settings', (route) => route.fulfill({ json: { username: 'collector-abc123', email: 'collector@example.com',
+    sign_in_methods: ['password'], home_zip: null, default_radius_mi: 25, theme: 'system', use_current_location: false,
+    privacy_profile: 'private', privacy_collection: 'private', privacy_wishlist: 'private', favorite_genres: [], genres: ['Rock'] } }));
   await page.getByRole('link', { name: 'You: account and settings' }).click();
+  await page.getByRole('tab', { name: 'Account' }).click();
   await expect(page.getByText('collector@example.com')).toBeVisible();
 });
 

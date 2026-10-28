@@ -145,8 +145,9 @@ describe('Header and signed-in screens', () => {
   });
 
   it('shows "You" when signed in and signs out from the You page', async () => {
-    const fetch = api({ '/api/auth/me': { status: 200, body: account }, '/api/auth/sign-out': { status: 204 } });
-    render(<MemoryRouter initialEntries={['/you']}><AuthProvider><AppShell /></AuthProvider></MemoryRouter>);
+    const fetch = api({ '/api/auth/me': { status: 200, body: account }, '/api/auth/sign-out': { status: 204 },
+      '/api/me/settings': { status: 200, body: { username: 'collector-abc123', email: 'a@example.com', sign_in_methods: ['password'], home_zip: null, default_radius_mi: 25, theme: 'system', use_current_location: false, privacy_profile: 'private', privacy_collection: 'private', privacy_wishlist: 'private', favorite_genres: [], genres: ['Rock'] } } });
+    render(<MemoryRouter initialEntries={['/you/account']}><AuthProvider><AppShell /></AuthProvider></MemoryRouter>);
     expect(await screen.findByText('a@example.com')).toBeVisible();
     expect(screen.getByRole('link', { name: 'You: account and settings' })).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Sign out' }));

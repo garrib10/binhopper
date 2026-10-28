@@ -10,6 +10,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.db import get_session
+from app.grades import GRADES, grade_rank
 from app.geo import ALLOWED_RADII_MI, display_miles, haversine_mi, within_radius
 from app.inventory import visible_inventory
 from app.models import Album, Pressing, StockListing, Store, User, WishlistItem, ZipCode, utcnow
@@ -23,8 +24,6 @@ DB = Annotated[Session, Depends(get_session)]
 Me = Annotated[User, Depends(current_user)]
 Now = Annotated[datetime, Depends(get_now)]
 
-# Goldmine grades, worst to best. A "New" (sealed) copy counts as Mint.
-GRADES = ["P", "G", "G+", "VG", "VG+", "NM", "M"]
 
 
 class WishlistTarget(BaseModel):
@@ -37,12 +36,6 @@ class WishlistTarget(BaseModel):
 
 class NewItem(WishlistTarget):
     album_id: int
-
-
-def grade_rank(condition: str) -> int | None:
-    condition = condition.strip().upper()
-    return GRADES.index("M") if condition == "NEW" else (
-        GRADES.index(condition) if condition in GRADES else None)
 
 
 def check_target(db: Session, album_id: int, target: WishlistTarget) -> None:

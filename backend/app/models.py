@@ -266,6 +266,8 @@ class CollectionItem(Base):
     notes: Mapped[str | None] = mapped_column(Text)
     added_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
+    pressing: Mapped["Pressing"] = relationship()
+
 
 class ZipCode(Base):
     """ZIP code center points, loaded once at setup."""

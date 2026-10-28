@@ -116,6 +116,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 2. Each copy records pressing, media grade and sleeve grade (M, NM, VG+, VG, G+, G, P), price paid, where bought, notes.
 3. Adding a pressing you already own warns "You already own this pressing" and offers "Add as 2nd copy."
 4. Views: grid or list; sort by recently added, artist A–Z, genre, year.
+5. Estimated value waits for marketplace price data (v1.2). Until then the collection shows records, artists, wishlist and duplicate counts. The collection belongs to a signed-in account.
 
 ### Discogs import
 
@@ -205,7 +206,7 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | GET | /albums/{id}/online | Online seller links |
 | POST | /stock/{listingId}/reports | "On the shelf" / "missing" / price report |
 | GET, POST, PATCH, DELETE | /me/wishlist | Read, add, change, remove wishlist items (GET /me/wishlist/albums: hearted album ids) |
-| GET, POST, PATCH, DELETE | /me/collection | Manage collection copies |
+| GET, POST, PATCH, DELETE | /me/collection | Manage collection copies (POST answers 409 for an owned pressing unless `another_copy`; GET /me/collection/owned?album_id= for the album page) |
 | POST | /me/import/discogs | Start a Discogs import |
 | GET, PATCH | /me/settings | ZIP, radius, theme, privacy, genres |
 | GET | /me/export | Collection CSV / data download |

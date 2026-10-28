@@ -18,12 +18,12 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import delete, select, update
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.db import get_session
+from app.db import delete_where, get_session
 from app.google_oidc import GoogleOIDC, GoogleSignInError, get_google
 from app.mailer import send_email
 from app.models import AuthToken, OAuthState, User, UserSession, UserSettings
@@ -133,8 +133,8 @@ def new_user(db: Session, email: str, now: datetime, **fields) -> User:
 
 def issue_link(db: Session, user: User, purpose: str, now: datetime) -> str:
     """A single-use emailed link. Any older unused link for the same purpose stops working."""
-    db.execute(delete(AuthToken).where(AuthToken.user_id == user.id, AuthToken.purpose == purpose,
-                                       AuthToken.used_at.is_(None)))
+    delete_where(db, AuthToken, AuthToken.user_id == user.id, AuthToken.purpose == purpose,
+                 AuthToken.used_at.is_(None))
     token = new_token()
     db.add(AuthToken(user_id=user.id, purpose=purpose, token_hash=token_hash(token),
                      created_at=now, expires_at=now + TOKEN_LIFETIME[purpose]))
@@ -316,7 +316,7 @@ def reset_password(body: ResetBody, request: Request, response: Response, db: DB
     # Following the link proves the mailbox, so an unconfirmed account is now confirmed.
     user.email_verified_at = user.email_verified_at or now
     # Sign out everywhere (AC-21): someone who knew the old password loses access.
-    db.execute(delete(UserSession).where(UserSession.user_id == user.id))
+    delete_where(db, UserSession, UserSession.user_id == user.id)
     start_session(db, user, request, response, now)
     return me(user)
 
@@ -359,7 +359,7 @@ def google_start(request: Request, db: DB, now: Now,
                  return_to: Annotated[str | None, Query(max_length=500)] = None):
     if google is None:
         raise HTTPException(404, "Google sign-in isn't set up")
-    db.execute(delete(OAuthState).where(OAuthState.expires_at <= now))
+    delete_where(db, OAuthState, OAuthState.expires_at <= now)
     state, nonce, verifier = new_token(), new_token(), new_token()
     db.add(OAuthState(state_hash=token_hash(state), code_verifier=verifier, nonce=nonce,
                       return_to=safe_return_to(return_to), expires_at=now + OAUTH_LIFETIME))
@@ -386,8 +386,8 @@ def google_account(db: Session, claims: dict, now: datetime) -> User:
         # Someone may have signed up with this address without owning it. Google has
         # proven who owns it, so their password and any sessions stop working.
         user.password_hash = None
-        db.execute(delete(UserSession).where(UserSession.user_id == user.id))
-        db.execute(delete(AuthToken).where(AuthToken.user_id == user.id))
+        delete_where(db, UserSession, UserSession.user_id == user.id)
+        delete_where(db, AuthToken, AuthToken.user_id == user.id)
         user.email_verified_at = now
     user.google_sub = sub
     return user

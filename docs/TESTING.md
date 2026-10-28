@@ -49,7 +49,8 @@ the feature issue that will add them.
 | AC-14 | "Match system" follows device dark mode | E2E | `e2e/nearby-stock.spec.ts`, `theme.test.ts` | #42 (settings screen) |
 | AC-15 | Account delete removes data and sign-in | API + E2E | — | #42 |
 | AC-16 | Never more than 60 Discogs calls per 60 s | Integration | — | #32, #70 |
-| AC-17, AC-18 | Shops without online inventory | — | — | #138, #37 |
+| AC-17 | Shops without online inventory listed apart, by distance, no price | API + Unit + E2E | `test_nearby_stock_api.py`, `StoreCard.test.tsx`, `NearbyStockPage.test.tsx`, `e2e/nearby-stock.spec.ts`, `e2e-system/nearby-stock.spec.ts` | done |
+| AC-18 | A "present" report moves the shop into the stock list | API + E2E | — | #37 |
 | AC-19 | Verify link signs in once, expires after 24 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts`, `e2e-system/auth.spec.ts` | done |
 | AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
 | AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |

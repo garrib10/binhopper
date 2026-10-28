@@ -20,6 +20,17 @@ export interface NearbyStore {
   discogs_url?: string | null;
 }
 
+/** A shop in the radius with no online inventory: call to check (never a price). */
+export interface OtherShop {
+  store_id: number;
+  name: string;
+  area: string | null;
+  distance_mi: number;
+  phone: string | null;
+  lat: number;
+  lng: number;
+}
+
 export interface NearbyStockResponse {
   album_id: number;
   zip: string;
@@ -28,6 +39,7 @@ export interface NearbyStockResponse {
   center_lng?: number;
   stores: NearbyStore[];
   nearest_outside_mi: number | null;
+  other_shops?: OtherShop[];
 }
 
 export const RADII = [10, 25, 50, 100] as const;

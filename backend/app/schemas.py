@@ -25,6 +25,21 @@ class NearbyStore(BaseModel):
     discogs_url: str | None = None
 
 
+class OtherShop(BaseModel):
+    """A shop in the radius with no online inventory: call to check (Nearby stock rule 9).
+
+    Never carries a price, quantity or freshness: we don't know what's on its shelves.
+    """
+
+    store_id: int
+    name: str
+    area: str | None
+    distance_mi: float
+    phone: str | None
+    lat: float
+    lng: float
+
+
 class NearbyStockResponse(BaseModel):
     album_id: int
     zip: str
@@ -34,3 +49,4 @@ class NearbyStockResponse(BaseModel):
     stores: list[NearbyStore]
     # For the empty state: how far the closest copy outside the radius is.
     nearest_outside_mi: float | None
+    other_shops: list[OtherShop] = []

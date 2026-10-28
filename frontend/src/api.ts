@@ -62,7 +62,7 @@ export async function fetchNearbyStock(
 }
 
 /** FastAPI sends `detail` as a string, or for validation errors (422) as a list of `{ msg }`. */
-function errorDetail(body: { detail?: unknown }): string | null {
+export function errorDetail(body: { detail?: unknown }): string | null {
   const { detail } = body;
   if (typeof detail === 'string') return detail;
   if (Array.isArray(detail) && typeof detail[0]?.msg === 'string') return detail[0].msg;

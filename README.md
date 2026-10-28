@@ -69,6 +69,11 @@ npm run dev
 
 Open http://localhost:5173.
 
+**Signing in locally.** Create an account at http://localhost:5173/create-account. Locally no
+email is sent (`EMAIL_BACKEND=log`): the confirmation or reset email, with its link, is printed
+in the `uvicorn` terminal between `--- Email to …` lines. Open that link in the browser. Google
+sign-in shows only if you add Google keys to `backend/.env` (see docs/DEPLOY.md › Sign-in).
+
 ## Tests
 
 ```bash

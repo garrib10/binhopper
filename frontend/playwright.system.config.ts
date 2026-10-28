@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { SYSTEM_OUTBOX } from './test/system-outbox';
 
 /**
  * System tests: the built frontend (vite preview) against the real FastAPI app and a
@@ -25,7 +26,7 @@ export default defineConfig({
   testDir: './e2e-system',
   testMatch: remote
     ? ['**/staging.spec.ts', '**/album.spec.ts', '**/artist.spec.ts', '**/search.spec.ts']
-    : ['**/nearby-stock.spec.ts', '**/shell.spec.ts', '**/album.spec.ts', '**/artist.spec.ts', '**/search.spec.ts'],
+    : ['**/nearby-stock.spec.ts', '**/shell.spec.ts', '**/auth.spec.ts', '**/album.spec.ts', '**/artist.spec.ts', '**/search.spec.ts'],
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   use: {
@@ -43,6 +44,7 @@ export default defineConfig({
       url: `http://127.0.0.1:${API_PORT}/api/health`,
       reuseExistingServer: false,
       stdout: 'pipe',
+      env: { EMAIL_BACKEND: 'file', EMAIL_FILE_DIR: SYSTEM_OUTBOX, PUBLIC_APP_URL: `http://127.0.0.1:${APP_PORT}` },
     },
     {
       command: `npm run build && npx vite preview --host 127.0.0.1 --port ${APP_PORT} --strictPort`,

@@ -13,6 +13,7 @@ from app.db import get_session
 from app.geo import bounding_box, haversine_mi, within_radius
 from app.models import Album, AlbumGenre, Artist, Pressing, StockListing, Store, WishlistItem, ZipCode
 from app.inventory import visible_inventory
+from app.rate_limit import SEARCH, per_ip
 from app.routers.stock import get_now
 
 router = APIRouter(prefix="/api", tags=["catalog"])
@@ -126,7 +127,7 @@ def albums(session, now, center, radius, q=None, genre=None, decade=None, year=N
 
 
 
-@router.get('/search')
+@router.get('/search', dependencies=[per_ip(SEARCH)])
 def search(session: Annotated[Session, Depends(get_session)], now: Annotated[datetime, Depends(get_now)],
            q: Annotated[str, Query(max_length=200)] = '', type: Literal['albums', 'artists'] = 'albums',
            zip: Annotated[str, Query(pattern=r'^\d{5}$')] = '10011', radius: int = 25,
@@ -146,7 +147,7 @@ def search(session: Annotated[Session, Depends(get_session)], now: Annotated[dat
              used=used, under_30=under_30, in_stock_nearby=in_stock_nearby, limit=limit, offset=offset)}
 
 
-@router.get('/browse')
+@router.get('/browse', dependencies=[per_ip(SEARCH)])
 def browse(session: Annotated[Session, Depends(get_session)], now: Annotated[datetime, Depends(get_now)],
            genre: Annotated[str, Query(min_length=1, max_length=60)],
            decade: Annotated[int | None, Query(ge=1900, le=2100)] = None,

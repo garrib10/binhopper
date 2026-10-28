@@ -18,6 +18,8 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app import mailer, passwords
+from app.config import settings
 from app.db import Base, get_session
 from app.main import app
 from app.routers.stock import get_now
@@ -51,6 +53,18 @@ def session(request) -> Iterator[Session]:
     TestSession = sessionmaker(bind=engine, expire_on_commit=False)
     with TestSession() as s:
         yield s
+
+
+@pytest.fixture(autouse=True)
+def fast_auth(monkeypatch):
+    """Every test: cheap Argon2 parameters and emails kept in memory, never sent."""
+    from argon2 import PasswordHasher
+
+    cheap = PasswordHasher(time_cost=1, memory_cost=8, parallelism=1)
+    monkeypatch.setattr(passwords, "hasher", cheap)
+    monkeypatch.setattr(passwords, "DUMMY_HASH", cheap.hash("binhopper-no-such-account"))
+    monkeypatch.setattr(settings, "email_backend", "memory")
+    mailer.outbox.clear()
 
 
 @pytest.fixture

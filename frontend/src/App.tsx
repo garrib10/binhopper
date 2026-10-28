@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ThemePicker } from './components/ThemePicker';
 import { SearchPage } from './pages/SearchPage';
@@ -7,8 +7,16 @@ import { AlbumPage } from './pages/AlbumPage';
 import { NearbyStockPage } from './pages/NearbyStockPage';
 import { applyTheme, loadThemePreference, saveThemePreference, type ThemePreference } from './theme';
 import { loadLocation, saveLocation } from './location';
+import { AuthProvider, RequireAuth, useAuth } from './AuthContext';
+import { SignInPage } from './pages/auth/SignInPage';
+import { CreateAccountPage } from './pages/auth/CreateAccountPage';
+import { CheckEmailPage } from './pages/auth/CheckEmailPage';
+import { VerifyPage } from './pages/auth/VerifyPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
+import { YouPage } from './pages/auth/YouPage';
 
-export function App() { return <BrowserRouter><AppShell /></BrowserRouter>; }
+export function App() { return <BrowserRouter><AuthProvider><AppShell /></AuthProvider></BrowserRouter>; }
 
 export function Placeholder({ title }: { title: string }) {
   return <main id="content" className="page shell-page"><h1 className="display">{title}</h1>
@@ -35,6 +43,22 @@ function NotFound() {
   return <main id="content" className="page shell-page"><h1 className="display">Page not found</h1>
     <p>That record may have skipped. <Link to="/search">Back to search</Link>.</p></main>;
 }
+
+/** Signed out: "Sign in". Signed in: the "You" button (account and settings). */
+function ProfileLink() {
+  const { state } = useAuth();
+  const location = useLocation();
+  if (state.status === 'loading') return <span className="profile-link profile-link--pending" aria-hidden="true" />;
+  if (state.status === 'signed-out') {
+    const here = location.pathname + location.search;
+    const authScreen = /^\/(sign-in|create-account|check-email|verify|forgot-password|reset-password)/.test(location.pathname);
+    return <Link className="profile-link profile-link--text"
+      to={authScreen ? '/sign-in' : `/sign-in?return_to=${encodeURIComponent(here)}`}>Sign in</Link>;
+  }
+  return <NavLink className="profile-link" to="/you" aria-label="You: account and settings">You</NavLink>;
+}
+
+const signedIn = (element: ReactElement) => <RequireAuth>{element}</RequireAuth>;
 
 function SearchEntry() {
   const [params] = useSearchParams();
@@ -67,7 +91,7 @@ export function AppShell() {
         <NavLink to="/search">Search</NavLink><NavLink to="/wishlist">Wishlist</NavLink>
         <NavLink to="/albums/1/stores">Nearby</NavLink><NavLink to="/collection" end>Collection</NavLink>
       </nav>
-      <NavLink className="profile-link" to="/you" aria-label="You: account and settings">You</NavLink>
+      <ProfileLink />
       <ThemePicker value={theme} onChange={setTheme} />
     </div></header>
     <Routes>
@@ -79,11 +103,17 @@ export function AppShell() {
       <Route path="/albums/:id" element={<AlbumPage />} />
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />
       <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
-      <Route path="/wishlist" element={<Placeholder title="Wishlist" />} />
-      <Route path="/collection" element={<Placeholder title="Collection" />} />
-      <Route path="/collection/:id" element={<Placeholder title="Your copy" />} />
-      <Route path="/import" element={<Placeholder title="Import from Discogs" />} />
-      <Route path="/you/*" element={<Placeholder title="You" />} />
+      <Route path="/wishlist" element={signedIn(<Placeholder title="Wishlist" />)} />
+      <Route path="/collection" element={signedIn(<Placeholder title="Collection" />)} />
+      <Route path="/collection/:id" element={signedIn(<Placeholder title="Your copy" />)} />
+      <Route path="/import" element={signedIn(<Placeholder title="Import from Discogs" />)} />
+      <Route path="/you/*" element={signedIn(<YouPage />)} />
+      <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/create-account" element={<CreateAccountPage />} />
+      <Route path="/check-email" element={<CheckEmailPage />} />
+      <Route path="/verify" element={<VerifyPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/onboarding" element={<Placeholder title="Get started" />} />
       <Route path="/stock/:id/report" element={<Placeholder title="Report stock" />} />
       <Route path="*" element={<NotFound />} />

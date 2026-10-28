@@ -39,8 +39,13 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(40), unique=True)
     email: Mapped[str] = mapped_column(String(255), unique=True)
-    auth_provider: Mapped[str] = mapped_column(String(20), default="email")  # email | apple | google
+    auth_provider: Mapped[str] = mapped_column(String(20), default="email")  # email | google
+    # Argon2id; None for accounts that only sign in with Google.
     password_hash: Mapped[str | None] = mapped_column(String(255))
+    password_changed_at: Mapped[datetime | None] = mapped_column(DateTime)
+    # Email sign-ups confirm their address by link before the first sign-in.
+    email_verified_at: Mapped[datetime | None] = mapped_column(DateTime)
+    google_sub: Mapped[str | None] = mapped_column(String(255), unique=True)
     home_zip: Mapped[str | None] = mapped_column(String(5))
     default_radius_mi: Mapped[int] = mapped_column(Integer, default=25)
     theme: Mapped[str] = mapped_column(String(10), default="system")  # light | dark | system
@@ -61,6 +66,56 @@ class UserSettings(Base):
     favorite_genres: Mapped[list[str]] = mapped_column(JSON, default=list)
 
     user: Mapped[User] = relationship(back_populates="settings")
+
+
+class UserSession(Base):
+    """A signed-in browser. Only the SHA-256 of the cookie token is stored."""
+
+    __tablename__ = "sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class AuthToken(Base):
+    """Single-use emailed link: verify_email (24 h) or reset_password (1 h)."""
+
+    __tablename__ = "auth_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    purpose: Mapped[str] = mapped_column(String(20))
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    used_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class OAuthState(Base):
+    """A Google sign-in in progress (state, nonce and PKCE verifier), kept 10 minutes."""
+
+    __tablename__ = "oauth_states"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    state_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    code_verifier: Mapped[str] = mapped_column(String(128))
+    nonce: Mapped[str] = mapped_column(String(64))
+    return_to: Mapped[str] = mapped_column(String(500))
+    expires_at: Mapped[datetime] = mapped_column(DateTime, index=True)
+
+
+class RateLimitHit(Base):
+    """Fixed-window request counters, in the database so they survive restarts and sleep."""
+
+    __tablename__ = "rate_limit_hits"
+
+    bucket: Mapped[str] = mapped_column(String(120), primary_key=True)
+    window_start: Mapped[datetime] = mapped_column(DateTime, primary_key=True)
+    count: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class Artist(Base):

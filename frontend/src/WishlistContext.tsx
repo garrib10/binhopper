@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { addToWishlist, fetchWishlistedAlbums, removeAlbumFromWishlist } from './wishlist';
 
@@ -15,18 +15,27 @@ const WishlistContext = createContext<WishlistValue>({ has: () => false, toggle:
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const { state } = useAuth();
   const [ids, setIds] = useState<Set<number>>(new Set());
+  // Taps made while the saved hearts are still loading; the loaded list must not undo them.
+  const tapsWhileLoading = useRef<Map<number, boolean> | null>(null);
   const accountId = state.status === 'signed-in' ? state.account.id : null;
   useEffect(() => {
     setIds(new Set());
     if (accountId === null) return;
     let active = true;
-    fetchWishlistedAlbums().then((r) => { if (active) setIds(new Set(r.album_ids)); }).catch(() => {});
+    tapsWhileLoading.current = new Map();
+    fetchWishlistedAlbums().then((r) => {
+      if (!active) return;
+      const next = new Set(r.album_ids);
+      for (const [id, on] of tapsWhileLoading.current ?? []) { if (on) next.add(id); else next.delete(id); }
+      setIds(next);
+    }).catch(() => {}).finally(() => { if (active) tapsWhileLoading.current = null; });
     return () => { active = false; };
   }, [accountId]);
 
   const toggle = useCallback(async (albumId: number) => {
     const on = ids.has(albumId);
     const flip = (value: boolean) => setIds((current) => {
+      tapsWhileLoading.current?.set(albumId, value);
       const next = new Set(current);
       if (value) next.add(albumId); else next.delete(albumId);
       return next;

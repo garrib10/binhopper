@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
@@ -83,6 +83,23 @@ describe('Heart', () => {
     expect(await screen.findByRole('button', { name: 'Add Rumours to wishlist' })).toHaveAttribute('aria-pressed', 'false');
     const writes = fetch.mock.calls.filter(([, init]) => init?.method && init.method !== 'GET').map(([url, init]) => `${init!.method} ${url}`);
     expect(writes).toEqual(['POST /api/me/wishlist', 'DELETE /api/me/wishlist?album_id=1']);
+  });
+
+  it('AC-08 a tap made while saved hearts are still loading is kept', async () => {
+    let finishLoading: (r: Response) => void = () => {};
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+      const key = `${init?.method ?? 'GET'} ${String(input).split('?')[0]}`;
+      if (key === 'GET /api/auth/me') return new Response(JSON.stringify(account));
+      if (key === 'GET /api/me/wishlist/albums') return new Promise<Response>((resolve) => { finishLoading = resolve; });
+      return new Response(JSON.stringify({ id: 7 }), { status: 201 });
+    });
+    renderSignedIn(<HeartButton albumId={1} title="Rumours" />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Add Rumours to wishlist' }));
+    await act(async () => {
+      finishLoading(new Response(JSON.stringify({ album_ids: [] })));  // loaded before the save landed
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByRole('button', { name: /Rumours/ })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('goes back to the previous state if saving fails', async () => {

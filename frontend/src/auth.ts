@@ -13,9 +13,14 @@ export interface Account {
 export const CSRF_HEADER = { 'X-Binhopper-CSRF': '1' } as const;
 
 /** POST JSON to /api with the CSRF header. Session cookies ride along (same origin). */
-export async function postJson<T>(path: string, body?: unknown): Promise<T> {
+export function postJson<T>(path: string, body?: unknown): Promise<T> {
+  return sendJson<T>('POST', path, body);
+}
+
+/** Any request that changes something (POST/PATCH/DELETE), with the CSRF header. */
+export async function sendJson<T>(method: 'POST' | 'PATCH' | 'DELETE', path: string, body?: unknown): Promise<T> {
   const response = await fetch(`/api${path}`, {
-    method: 'POST',
+    method,
     credentials: 'same-origin',
     headers: { ...CSRF_HEADER, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
     body: body === undefined ? undefined : JSON.stringify(body),

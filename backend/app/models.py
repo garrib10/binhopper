@@ -248,6 +248,8 @@ class WishlistItem(Base):
     min_condition: Mapped[str | None] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
+    album: Mapped["Album"] = relationship()
+
 
 class CollectionItem(Base):
     """One copy a user owns. Owning the same pressing twice = two rows."""

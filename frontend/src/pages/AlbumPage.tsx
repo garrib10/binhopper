@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '../api';
 import { type AlbumDetail, getCatalog } from '../catalog';
 import { Cover } from '../components/AlbumTile';
+import { HeartButton } from '../components/HeartButton';
 import { loadLocation } from '../location';
 
 export function AlbumPage() {
@@ -31,6 +32,7 @@ export function AlbumPage() {
   return <main id="content" className="catalog-page album-page">
     <div className="album-primary"><div className="album-art"><Cover key={album.id} url={album.cover_url} title={album.title} /></div>
     <aside className="album-actions"><Link className="find-stores" to={`/albums/${album.id}/stores`}><strong>Find in stores</strong><span>{album.store_count} within {saved.radius} mi of {saved.zip}{album.lowest_price !== null ? ` · from $${album.lowest_price.toFixed(2)}` : ''}</span></Link>
+      <HeartButton albumId={album.id} title={album.title} labelled />
       <p className="eyebrow">Listen before you buy</p><div className="listen-links">
         <a href={`https://open.spotify.com/search/${query}`} target="_blank" rel="noopener noreferrer">Spotify</a>
         <a href={`https://music.apple.com/us/search?term=${query}`} target="_blank" rel="noopener noreferrer">Apple Music</a>

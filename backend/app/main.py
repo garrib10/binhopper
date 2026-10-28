@@ -9,6 +9,7 @@ from app.csrf import CSRFMiddleware
 from app.origin_secret import OriginSecretMiddleware
 from app.routers import stock
 from app.routers.auth import router as auth_router
+from app.routers.wishlist import router as wishlist_router
 from app.routers.search import router as search_router
 from app.routers.albums import router as albums_router
 from app.routers.artists import router as artists_router
@@ -47,6 +48,7 @@ app.add_middleware(OriginSecretMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=settings.forwarded_allow_ips)
 
 app.include_router(auth_router)
+app.include_router(wishlist_router)
 app.include_router(stock.router)
 app.include_router(search_router)
 app.include_router(albums_router)

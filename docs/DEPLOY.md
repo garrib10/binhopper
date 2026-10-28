@@ -24,8 +24,9 @@ full setup; until launch, apply only the staging parts:
   environment until launch. Add MySQL and the `api` service only when you're ready to test.
   Enable **app sleeping (serverless)** on the API. Keep the `worker` service off, except while
   testing the Discogs sync. A sleeping MySQL refuses the first connection while it wakes, so
-  migrations retry for up to 2 minutes (`connect_with_retry` in `app/db.py`); the deploy log
-  shows "Database not ready … retrying" meanwhile.
+  migrations retry for up to 2 minutes (`connect_with_retry` in `app/db.py`), and API requests
+  wait up to 20 seconds for it (`wait_for_server_on_connect`, #132). The logs show
+  "Database not ready … retrying" meanwhile; the first request after idle is just slower.
 - **Vercel:** Production Branch stays `main`, but hold back production builds under
   Settings → Git → **Ignored Build Step**, so that only the `staging` branch builds:
 

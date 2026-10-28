@@ -60,7 +60,8 @@ def test_resend_backend_posts_the_message():
 def test_a_failed_send_is_logged_without_the_address(caplog):
     # e.g. Resend's test sender refusing anyone but the account owner.
     send_email(*MESSAGE, transport=httpx.MockTransport(lambda r: httpx.Response(403)))
-    assert "failed" in caplog.text and "example.com" in caplog.text
+    [record] = caplog.records
+    assert record.args[:2] == ("example.com", "Confirm your email")  # the domain only
     assert "collector@" not in caplog.text
 
 

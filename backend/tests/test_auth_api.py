@@ -129,9 +129,18 @@ def test_password_rules(api, session, password, message):
     assert session.scalar(select(func.count()).select_from(User)) == 0
 
 
-def test_invalid_email_is_rejected(api):
-    response = api.post("/api/auth/register", json={"email": "not-an-email", "password": PASSWORD})
+@pytest.mark.parametrize("email", ["not-an-email", "a@b", "@example.com", "a@@example.com",
+                                   "a@example.", "a@.com", "a b@example.com"])
+def test_invalid_email_is_rejected(api, email):
+    response = api.post("/api/auth/register", json={"email": email, "password": PASSWORD})
     assert (response.status_code, response.json()["detail"]) == (422, "Enter a valid email address")
+
+
+def test_a_long_crafted_email_is_rejected_quickly(api):
+    # The shape CodeQL flagged for the old regex: "!@!." then many "!.".
+    response = api.post("/api/auth/register",
+                        json={"email": "!@!." + "!." * 150, "password": PASSWORD})
+    assert response.status_code == 422
 
 
 # --- Same answers whether or not an account exists -------------------------------------

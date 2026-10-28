@@ -9,7 +9,6 @@ Rules that keep accounts private:
 """
 
 import hmac
-import re
 import secrets
 import string
 from datetime import datetime, timedelta
@@ -68,7 +67,6 @@ FORGOT_IP = Limit("forgot-ip", 10, timedelta(hours=1))
 FORGOT_EMAIL = Limit("forgot-email", 3, timedelta(hours=1))
 TOKEN_IP = Limit("token-ip", 20, timedelta(minutes=15))
 
-EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 class EmailBody(BaseModel):
@@ -87,9 +85,17 @@ class ResetBody(TokenBody):
     password: str = Field(max_length=4096)
 
 
+def looks_like_email(email: str) -> bool:
+    """name@domain.tld, no spaces. Plain string checks: no regex to backtrack on."""
+    local, at, domain = email.partition("@")
+    return (bool(at and local) and "@" not in domain and "." in domain.strip(".")
+            and not domain.startswith(".") and not domain.endswith(".")
+            and not any(c.isspace() for c in email))
+
+
 def normalized(email: str) -> str:
     email = email.strip().lower()
-    if len(email) > 254 or not EMAIL_PATTERN.match(email):
+    if len(email) > 254 or not looks_like_email(email):
         raise HTTPException(422, "Enter a valid email address")
     return email
 

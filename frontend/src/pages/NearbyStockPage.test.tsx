@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import type { NearbyStockResponse } from '../api';
 import { NearbyStockPage } from './NearbyStockPage';
 
@@ -21,7 +22,7 @@ function mockError(status: number, body: unknown) {
   );
 }
 
-const page = <NearbyStockPage albumId={1} albumTitle="Rumours" artistName="Fleetwood Mac" />;
+const page = <MemoryRouter><NearbyStockPage albumId={1} albumTitle="Rumours" artistName="Fleetwood Mac" /></MemoryRouter>;
 
 describe('NearbyStockPage', () => {
   it('lists stores in the order the API returns', async () => {

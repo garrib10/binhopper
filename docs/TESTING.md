@@ -39,7 +39,7 @@ the feature issue that will add them.
 | AC-04 | Invalid or unknown ZIP: inline error, no request | Unit + E2E | `NearbyStockPage.test.tsx`, `test_nearby_stock_api.py`; `e2e-system/…` (#95) | done |
 | AC-05 | 8-day-old unverified listing warns | Unit | `test_freshness.py`, `test_nearby_stock_api.py` | done |
 | AC-06 | 2 missing reports in 24 h: flagged, sorts last | Unit + API | `test_freshness.py`, `test_nearby_stock_api.py` | done |
-| AC-07 | Second report the same day: 429 + message | API | — | #37 |
+| AC-07 | Second report the same day: 429 + message | API | `test_reports_api.py`, `ReportPage.test.tsx`, `e2e/reports.spec.ts` | done |
 | AC-08 | Heart twice adds then removes, survives reload | E2E | `e2e/wishlist.spec.ts`, `e2e-system/wishlist.spec.ts`, `WishlistPage.test.tsx`, `test_wishlist_api.py` | done |
 | AC-09 | Duplicate pressing warns, "Add as 2nd copy" | Unit + E2E | `test_collection_api.py`, `CollectionPage.test.tsx`, `e2e/collection.spec.ts`, `e2e-system/collection.spec.ts` | done |
 | AC-10 | Hand-off purchase moves wishlist → collection | E2E | — | #40 |
@@ -50,7 +50,7 @@ the feature issue that will add them.
 | AC-15 | Account delete removes data and sign-in | API + E2E | — | #42 |
 | AC-16 | Never more than 60 Discogs calls per 60 s | Integration | — | #32, #70 |
 | AC-17 | Shops without online inventory listed apart, by distance, no price | API + Unit + E2E | `test_nearby_stock_api.py`, `StoreCard.test.tsx`, `NearbyStockPage.test.tsx`, `e2e/nearby-stock.spec.ts`, `e2e-system/nearby-stock.spec.ts` | done |
-| AC-18 | A "present" report moves the shop into the stock list | API + E2E | — | #37 |
+| AC-18 | A "present" report moves the shop into the stock list | API + E2E | `test_reports_api.py`, `ReportPage.test.tsx`, `e2e/reports.spec.ts` (the system spec stays read-only: it shares the sample seed) | done |
 | AC-19 | Verify link signs in once, expires after 24 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts`, `e2e-system/auth.spec.ts` | done |
 | AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
 | AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |

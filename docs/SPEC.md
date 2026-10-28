@@ -163,7 +163,7 @@ Launch data comes from Discogs (catalog and shop inventory), a places API (shop 
 | Discogs seller inventory | What a shop has for sale, price, condition | `GET /users/{username}/inventory` for each shop's Discogs seller account | Paginated; only "For Sale" items visible; we keep a store → seller-name directory by hand |
 | Discogs data dumps | Bulk catalog seed | Monthly CC0 dumps loaded into the database | Free to use; reduces API calls |
 | Places API (Google Places or similar) | Shop names, addresses, coordinates, hours | Search "record store" in the area being mapped, review results by hand | Pricing and terms per provider; store only what terms allow |
-| User stock reports | "On the shelf" / "missing" / "different price" | Report screen on store and stock pages | One report per user per listing per day |
+| User stock reports | "On the shelf" / "missing" / "different price"; "I saw it here" at a shop with no online inventory | Report screen on store and stock pages (signed in) | One report per user per listing per day, and at most 30 reports per user per hour. "Different price" updates manual and user-reported listings, never Discogs listings. "I saw it here" asks for the pressing, new or used, and the sticker price, and becomes a user-reported listing |
 | Online sellers | Fallback links | Deep links to a search on the seller's site (artist store, retailer, eBay, Amazon) | No stock data or scraping; affiliate links later |
 | Spotify / Apple Music | Listen links | Album search link or ID match | Link out only |
 
@@ -204,7 +204,8 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | GET | /albums/{id} | Album page, tracklist, pressings |
 | GET | /albums/{id}/stock?zip=&radius= | Nearby stores with that album, sorted |
 | GET | /albums/{id}/online | Online seller links |
-| POST | /stock/{listingId}/reports | "On the shelf" / "missing" / price report |
+| GET, POST | /stock/{listingId}, /stock/{listingId}/reports | Report screen data; "On the shelf" / "missing" / price report |
+| GET, POST | /stores/{storeId}/sighting, /stores/{storeId}/sightings | "I saw it here" at a shop with no online inventory |
 | GET, POST, PATCH, DELETE | /me/wishlist | Read, add, change, remove wishlist items (GET /me/wishlist/albums: hearted album ids) |
 | GET, POST, PATCH, DELETE | /me/collection | Manage collection copies (POST answers 409 for an owned pressing unless `another_copy`; GET /me/collection/owned?album_id= for the album page) |
 | POST | /me/import/discogs | Start a Discogs import |

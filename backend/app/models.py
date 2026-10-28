@@ -235,6 +235,8 @@ class StockReport(Base):
     reported_price: Mapped[float | None] = mapped_column(Numeric(8, 2))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True)
 
+    listing: Mapped["StockListing"] = relationship()
+
 
 class WishlistItem(Base):
     __tablename__ = "wishlist_items"

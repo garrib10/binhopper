@@ -19,6 +19,8 @@ import { WishlistPage } from './pages/WishlistPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { OwnedPage } from './pages/OwnedPage';
 import { AddCopyPage } from './pages/AddCopyPage';
+import { ReportPage } from './pages/ReportPage';
+import { SightingPage } from './pages/SightingPage';
 import { WishlistProvider } from './WishlistContext';
 
 export function App() { return <BrowserRouter><AuthProvider><WishlistProvider><AppShell /></WishlistProvider></AuthProvider></BrowserRouter>; }
@@ -121,7 +123,8 @@ export function AppShell() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/onboarding" element={<Placeholder title="Get started" />} />
-      <Route path="/stock/:id/report" element={<Placeholder title="Report stock" />} />
+      <Route path="/stock/:id/report" element={signedIn(<ReportPage />)} />
+      <Route path="/stores/:id/report" element={signedIn(<SightingPage />)} />
       <Route path="*" element={<NotFound />} />
     </Routes>
     <footer className="app-data-credit">Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</footer>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import type { Freshness, NearbyStore, OtherShop } from '../api';
 
 const FRESHNESS_LABEL: Record<Freshness, string | null> = {
@@ -57,12 +58,14 @@ export function StoreCard({ store, index }: Props) {
       </div>
       <ShopActions name={store.store_name} phone={store.phone} lat={store.lat} lng={store.lng}
         callLabel={store.freshness === 'out_of_date' ? 'Call to confirm' : 'Call shop'} />
+      <Link className="store-card__report" to={`/stock/${store.listing_id}/report`}
+        aria-label={`Report stock: ${store.store_name}`}>Report stock</Link>
     </li>
   );
 }
 
 /** No-inventory variant (Nearby stock rule 9): no price, stock or freshness, just call and go. */
-export function OtherShopCard({ shop }: { shop: OtherShop }) {
+export function OtherShopCard({ shop, albumId }: { shop: OtherShop; albumId: number }) {
   return (
     <li className="store-card store-card--no-inventory">
       <div className="store-card__info">
@@ -71,6 +74,8 @@ export function OtherShopCard({ shop }: { shop: OtherShop }) {
         <p className="store-card__freshness">No online inventory{shop.phone ? '' : ': stop by to check'}</p>
       </div>
       <ShopActions name={shop.name} phone={shop.phone} lat={shop.lat} lng={shop.lng} callLabel="Call to check" />
+      <Link className="store-card__report" to={`/stores/${shop.store_id}/report?album=${albumId}`}
+        aria-label={`I saw it here: ${shop.name}`}>I saw it here</Link>
     </li>
   );
 }

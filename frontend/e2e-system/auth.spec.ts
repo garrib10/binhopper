@@ -3,7 +3,7 @@ import { latestEmail, linkPath, PASSWORD, signUp } from '../test/system-account'
 
 test('AC-19 AC-21 real sign-up, emailed link, sign out, sign in, reset', async ({ page }, testInfo) => {
   const email = await signUp(page, testInfo.project.name);
-  await page.goto('/you');
+  await page.goto('/you/account');
   await expect(page.getByText(email)).toBeVisible();
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();

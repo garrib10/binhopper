@@ -14,7 +14,8 @@ import { CheckEmailPage } from './pages/auth/CheckEmailPage';
 import { VerifyPage } from './pages/auth/VerifyPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
-import { YouPage } from './pages/auth/YouPage';
+import { YouPage } from './pages/YouPage';
+import { ThemeContext } from './ThemeContext';
 import { WishlistPage } from './pages/WishlistPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { OwnedPage } from './pages/OwnedPage';
@@ -89,7 +90,7 @@ function SearchEntry() {
 export function AppShell() {
   const [theme, setTheme] = useState<ThemePreference>(loadThemePreference);
   useEffect(() => { applyTheme(theme); saveThemePreference(theme); }, [theme]);
-  return <>
+  return <ThemeContext.Provider value={{ theme, setTheme }}>
     <a className="skip-link" href="#content">Skip to content</a>
     <header className="app-header"><div className="shell-header">
       <Link className="app-header__brand" to="/search"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="2.5" /></svg>Binhopper</Link>
@@ -115,7 +116,8 @@ export function AppShell() {
       <Route path="/collection/add/:albumId" element={signedIn(<AddCopyPage />)} />
       <Route path="/collection/:id" element={signedIn(<OwnedPage />)} />
       <Route path="/import" element={signedIn(<Placeholder title="Import from Discogs" />)} />
-      <Route path="/you/*" element={signedIn(<YouPage />)} />
+      <Route path="/you" element={signedIn(<YouPage />)} />
+      <Route path="/you/:tab" element={signedIn(<YouPage />)} />
       <Route path="/sign-in" element={<SignInPage />} />
       <Route path="/create-account" element={<CreateAccountPage />} />
       <Route path="/check-email" element={<CheckEmailPage />} />
@@ -128,5 +130,5 @@ export function AppShell() {
       <Route path="*" element={<NotFound />} />
     </Routes>
     <footer className="app-data-credit">Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</footer>
-  </>;
+  </ThemeContext.Provider>;
 }

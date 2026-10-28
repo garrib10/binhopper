@@ -8,10 +8,10 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, Response
-from sqlalchemy import delete, select
+from sqlalchemy import and_, false, or_, select
 from sqlalchemy.orm import Session
 
-from app.db import get_session
+from app.db import delete_where, get_session
 from app.models import User, UserSession
 from app.passwords import new_token, token_hash
 from app.routers.stock import get_now
@@ -37,15 +37,16 @@ def end_session(db: Session, request: Request) -> None:
     """Delete the session the browser presented, if any."""
     token = request.cookies.get(COOKIE)
     if token:
-        db.execute(delete(UserSession).where(UserSession.token_hash == token_hash(token)))
+        delete_where(db, UserSession, UserSession.token_hash == token_hash(token))
 
 
 def start_session(db: Session, user: User, request: Request, response: Response,
                   now: datetime) -> None:
     """Sign in with a fresh token (rotation: any session the browser had is ended)."""
-    end_session(db, request)
-    db.execute(delete(UserSession).where(UserSession.user_id == user.id,
-                                         UserSession.expires_at <= now))
+    token = request.cookies.get(COOKIE)
+    presented = UserSession.token_hash == token_hash(token) if token else false()
+    delete_where(db, UserSession, or_(presented, and_(UserSession.user_id == user.id,
+                                                      UserSession.expires_at <= now)))
     token = new_token()
     db.add(UserSession(user_id=user.id, token_hash=token_hash(token), created_at=now,
                        expires_at=now + LIFETIME, last_seen_at=now))

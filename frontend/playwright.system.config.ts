@@ -26,7 +26,7 @@ export default defineConfig({
   testDir: './e2e-system',
   testMatch: remote
     ? ['**/staging.spec.ts', '**/album.spec.ts', '**/artist.spec.ts', '**/search.spec.ts']
-    : ['**/nearby-stock.spec.ts', '**/shell.spec.ts', '**/auth.spec.ts', '**/wishlist.spec.ts', '**/collection.spec.ts', '**/reports.spec.ts', '**/you.spec.ts', '**/album.spec.ts', '**/artist.spec.ts', '**/search.spec.ts'],
+    : ['**/nearby-stock.spec.ts', '**/shell.spec.ts', '**/auth.spec.ts', '**/wishlist.spec.ts', '**/collection.spec.ts', '**/reports.spec.ts', '**/you.spec.ts', '**/onboarding.spec.ts', '**/album.spec.ts', '**/artist.spec.ts', '**/search.spec.ts'],
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   use: {

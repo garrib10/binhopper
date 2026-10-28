@@ -24,8 +24,8 @@ export function VerifyPage() {
   }, [setAccount]);
 
   if (state.kind === 'checking') return <AuthLayout title="Confirming your email"><p className="muted" role="status">One moment…</p></AuthLayout>;
-  if (state.kind === 'done') return <AuthLayout title="You're signed in" intro="Your email is confirmed.">
-    <Link className="button button--primary button--block" to="/search">Start searching</Link>
+  if (state.kind === 'done') return <AuthLayout title="You're signed in" intro="Your email is confirmed. Next: tell us where you dig.">
+    <Link className="button button--primary button--block" to="/onboarding">Get started</Link>
   </AuthLayout>;
   return <AuthLayout title="Link didn't work">
     <FormMessage tone="error">{state.message}</FormMessage>

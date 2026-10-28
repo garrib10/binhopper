@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { NearbyStockResponse } from '../api';
@@ -40,6 +40,34 @@ describe('NearbyStockPage', () => {
     const names = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
     expect(names).toEqual(['Spin Cycle Records', 'Groove Merchant']);
     expect(screen.getByText('May be out of date: call to confirm')).toBeInTheDocument();
+  });
+
+  it('AC-17 lists shops without online inventory below the stock, not counted', async () => {
+    mockApi({
+      stores: [{ listing_id: 1, store_id: 1, store_name: 'Spin Cycle Records', area: 'Chelsea', distance_mi: 3.2,
+        pressing_id: 1, pressing_note: null, price: 26, condition: 'New', quantity: 2,
+        freshness: 'current', last_updated_at: null }],
+      other_shops: [
+        { store_id: 5, name: 'Side B Listening Room', area: 'Hoboken, NJ', distance_mi: 1.6, phone: '(201) 555-0142', lat: 40.7, lng: -74 },
+        { store_id: 6, name: 'Crate Corner', area: null, distance_mi: 12, phone: null, lat: 40.9, lng: -74 },
+      ],
+    });
+    render(page);
+    expect(await screen.findByRole('heading', { name: '1 store has it' })).toBeInTheDocument();
+    const stock = screen.getByRole('list', { name: '1 store has it' });
+    expect(within(stock).getAllByRole('heading').map((h) => h.textContent)).toEqual(['Spin Cycle Records']);
+    const others = screen.getByRole('list', { name: 'Other record shops nearby' });
+    expect(within(others).getAllByRole('heading').map((h) => h.textContent)).toEqual(['Side B Listening Room', 'Crate Corner']);
+    expect(screen.getByText('No online inventory. Call to check.')).toBeInTheDocument();
+    expect(others.textContent).not.toContain('$');
+  });
+
+  it('AC-17 shows call-to-check shops even when nobody nearby has the album', async () => {
+    mockApi({ stores: [], nearest_outside_mi: 60,
+      other_shops: [{ store_id: 5, name: 'Side B Listening Room', area: null, distance_mi: 6, phone: null, lat: 40.7, lng: -74 }] });
+    render(page);
+    expect(await screen.findByRole('heading', { name: 'Nothing within 25 mi' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Other record shops nearby' })).toBeInTheDocument();
   });
 
   it('shows the empty state with the nearest copy and a wider radius', async () => {  // AC-03

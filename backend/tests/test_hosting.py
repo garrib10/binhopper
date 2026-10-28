@@ -117,4 +117,3 @@ def test_migrations_give_up_after_the_timeout():
 def test_migrations_connect_at_once_when_the_database_is_up():
     with connect_with_retry(create_engine("sqlite://"), sleep=pytest.fail) as connection:
         assert connection.exec_driver_sql("select 1").scalar() == 1
-

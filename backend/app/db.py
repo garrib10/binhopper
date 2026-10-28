@@ -2,7 +2,7 @@ import sys
 import time
 from collections.abc import Callable, Iterator
 
-from sqlalchemy import Connection, Engine, create_engine
+from sqlalchemy import Connection, Engine, create_engine, event
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -13,7 +13,42 @@ class Base(DeclarativeBase):
     pass
 
 
+# MySQL client errors raised while the server is down or still starting up.
+CANT_CONNECT, LOST_CONNECTION = 2003, 2013
+
+
+def connect_when_ready(dbapi, cargs, cparams, timeout: float = 20.0, interval: float = 1.0,
+                       sleep: Callable[[float], None] = time.sleep,
+                       clock: Callable[[], float] = time.monotonic):
+    """Open a DBAPI connection, retrying while MySQL is down or still starting up."""
+    deadline = clock() + timeout
+    while True:
+        try:
+            return dbapi.connect(*cargs, **cparams)
+        except dbapi.OperationalError as exc:
+            code = exc.args[0] if exc.args else None
+            if code not in (CANT_CONNECT, LOST_CONNECTION) or clock() + interval > deadline:
+                raise
+            print(f"Database not ready ({exc}); retrying in {interval:g}s", file=sys.stderr)
+            sleep(interval)
+
+
+def wait_for_server_on_connect(engine: Engine, timeout: float = 20.0, interval: float = 1.0) -> None:
+    """Make every new MySQL connection retry while the server wakes up (#132).
+
+    Railway's staging MySQL sleeps when idle and refuses connections while it wakes.
+    `pool_pre_ping` notices the dead pooled connection, but its reconnect would fail
+    the request with a 500. Other errors (e.g. a wrong password) still fail at once.
+    """
+
+    @event.listens_for(engine, "do_connect")
+    def connect(dialect, conn_rec, cargs, cparams):
+        return connect_when_ready(dialect.loaded_dbapi, cargs, cparams, timeout, interval)
+
+
 engine = create_engine(settings.database_url, pool_pre_ping=True)
+if engine.dialect.name == "mysql":
+    wait_for_server_on_connect(engine)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 

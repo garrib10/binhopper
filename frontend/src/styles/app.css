@@ -524,6 +524,7 @@ a {
 .copy-remove__buttons { display: flex; gap: var(--space-2); }
 .button--danger { background: var(--color-danger); color: var(--color-surface); }
 .album-actions .tag { align-self: flex-start; margin: 0; }
+
 /* Shops without online inventory (Nearby stock rule 9, #138). */
 .other-shops { margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); }
 .other-shops .section-title { margin: 0; }

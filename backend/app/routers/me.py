@@ -14,9 +14,10 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.db import delete_where, get_session
 from app.models import (
-    Album, AuthToken, CollectionItem, Pressing, StockReport, User, UserSession, UserSettings,
+    Album, AuthToken, CollectionItem, DiscogsAccount, ImportJob, Pressing, StockReport, User, UserSession, UserSettings,
     WishlistItem, ZipCode,
 )
+from app.routers.discogs_import import forget_discogs
 from app.routers.stock import get_now
 from app.sessions import clear_session_cookie, current_user
 
@@ -145,6 +146,8 @@ def download_data(user: Me, db: DB, now: Now):
                           .options(joinedload(WishlistItem.album).joinedload(Album.artist))).all()
     reports = db.scalars(select(StockReport).where(StockReport.user_id == user.id)).all()
     sessions = db.scalars(select(UserSession).where(UserSession.user_id == user.id)).all()
+    discogs = db.get(DiscogsAccount, user.id)
+    imports = db.scalars(select(ImportJob).where(ImportJob.user_id == user.id)).all()
 
     def when(value):
         return value.isoformat() if value else None
@@ -168,6 +171,9 @@ def download_data(user: Me, db: DB, now: Now):
         "stock_reports": [{"listing_id": r.listing_id, "result": r.result,
                            "reported_price": float(r.reported_price) if r.reported_price is not None else None,
                            "created_at": when(r.created_at)} for r in reports],
+        "discogs": {"username": discogs.username, "connected_at": when(discogs.connected_at)} if discogs else None,
+        "imports": [{"status": j.status, "added": j.added, "wishlisted": j.wishlisted, "skipped": j.skipped,
+                     "created_at": when(j.created_at)} for j in imports],
         # Only when each signed-in browser was last used; no tokens, IPs or devices are stored.
         "sessions": [{"created_at": when(s.created_at), "last_seen_at": when(s.last_seen_at),
                       "expires_at": when(s.expires_at)} for s in sessions],
@@ -184,6 +190,7 @@ def delete_account(user: Me, request: Request, db: DB):
     db.execute(update(StockReport).where(StockReport.user_id == user.id).values(user_id=None))
     for model in (WishlistItem, CollectionItem, UserSession, AuthToken):
         delete_where(db, model, model.user_id == user.id)
+    forget_discogs(db, user)  # tokens, import jobs, pending lookups
     db.delete(user)  # its settings row goes with it (cascade)
     db.commit()
     response = Response(status_code=204)

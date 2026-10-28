@@ -120,9 +120,10 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ### Discogs import
 
-1. User connects their Discogs account (OAuth) and picks collection, wantlist, or both.
+1. User connects their Discogs account (OAuth 1.0a; tokens encrypted at rest, removed on disconnect or account deletion) and picks collection, wantlist, or both.
 2. Wantlist items go to the wishlist; collection items keep pressing, condition and notes.
 3. Records already in the app are matched by Discogs release ID and skipped. The summary shows added, wishlisted and skipped counts.
+4. The import runs in the worker, through the same 60-per-minute Discogs queue as the catalog and inventory sync; the Import screen shows progress. Releases not in the catalog yet are looked up by the worker and land when found ("being looked up"); ones still unknown after a day are left out and counted. Two copies of a release in the Discogs collection come in as two copies; a pressing the user owned before the import is skipped.
 
 ### Account settings ("You")
 
@@ -135,7 +136,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ## Data model
 
-Fifteen tables cover v1 in MySQL 8: the ten below, the album\_genres join table, and four sign-in tables (sessions, auth\_tokens, oauth\_states, rate\_limit\_hits). Catalog data (artists, albums, pressings) is cached from Discogs; users, stores and stock are the app's own.
+Eighteen tables cover v1 in MySQL 8: the ten below, the album\_genres join table, four sign-in tables (sessions, auth\_tokens, oauth\_states, rate\_limit\_hits) and three Discogs import tables (discogs\_accounts, import\_jobs, import\_pending). Catalog data (artists, albums, pressings) is cached from Discogs; users, stores and stock are the app's own.
 
 | Table | Key fields | Relates to |
 | --- | --- | --- |
@@ -208,7 +209,9 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | GET, POST | /stores/{storeId}/sighting, /stores/{storeId}/sightings | "I saw it here" at a shop with no online inventory |
 | GET, POST, PATCH, DELETE | /me/wishlist | Read, add, change, remove wishlist items (GET /me/wishlist/albums: hearted album ids) |
 | GET, POST, PATCH, DELETE | /me/collection | Manage collection copies (POST answers 409 for an owned pressing unless `another_copy`; GET /me/collection/owned?album_id= for the album page) |
-| POST | /me/import/discogs | Start a Discogs import |
+| GET, POST | /me/import/discogs | Import status; start a Discogs import (run by the worker) |
+| GET | /discogs/connect, /discogs/callback | Connect a Discogs account (OAuth) |
+| DELETE | /me/discogs | Disconnect Discogs (removes the stored tokens) |
 | GET, PATCH | /me/settings | ZIP, radius, theme, privacy, genres |
 | GET | /me/export, /me/data | Collection CSV; all your data as JSON |
 | DELETE | /me | Delete account and all data |

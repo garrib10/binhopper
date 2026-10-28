@@ -271,6 +271,52 @@ class CollectionItem(Base):
     pressing: Mapped["Pressing"] = relationship()
 
 
+class DiscogsAccount(Base):
+    """A user's connected Discogs account. OAuth tokens are encrypted at rest (#44)."""
+
+    __tablename__ = "discogs_accounts"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    username: Mapped[str] = mapped_column(String(120))
+    token_enc: Mapped[str] = mapped_column(Text)
+    secret_enc: Mapped[str] = mapped_column(Text)
+    connected_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class ImportJob(Base):
+    """A Discogs collection/wantlist import, run page by page by the worker."""
+
+    __tablename__ = "import_jobs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    status: Mapped[str] = mapped_column(String(10), default="queued", index=True)  # queued|running|done|failed
+    collection_page: Mapped[int | None] = mapped_column(Integer)  # next page to fetch; None = finished/not asked
+    wantlist_page: Mapped[int | None] = mapped_column(Integer)
+    added: Mapped[int] = mapped_column(Integer, default=0)
+    wishlisted: Mapped[int] = mapped_column(Integer, default=0)
+    skipped: Mapped[int] = mapped_column(Integer, default=0)
+    unmatched: Mapped[int] = mapped_column(Integer, default=0)
+    error: Mapped[str | None] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class ImportPending(Base):
+    """A release not in the catalog yet: waits for the worker's catalog lookup."""
+
+    __tablename__ = "import_pending"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    job_id: Mapped[int] = mapped_column(ForeignKey("import_jobs.id", ondelete="CASCADE"), index=True)
+    kind: Mapped[str] = mapped_column(String(10))  # collection | wantlist
+    release_id: Mapped[int] = mapped_column(Integer)
+    media_grade: Mapped[str | None] = mapped_column(String(4))
+    sleeve_grade: Mapped[str | None] = mapped_column(String(4))
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
 class ZipCode(Base):
     """ZIP code center points, loaded once at setup."""
 

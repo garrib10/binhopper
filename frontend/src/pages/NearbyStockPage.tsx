@@ -156,7 +156,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
             <h2 className="section-title" id="other-shops-heading">Other record shops nearby</h2>
             <p className="muted">No online inventory. Call to check.</p>
             <ul className="store-list" aria-labelledby="other-shops-heading">
-              {state.data.other_shops.map((shop) => <OtherShopCard key={shop.store_id} shop={shop} />)}
+              {state.data.other_shops.map((shop) => <OtherShopCard key={shop.store_id} shop={shop} albumId={albumId} />)}
             </ul>
           </section>
         ) : null}

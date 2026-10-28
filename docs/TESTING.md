@@ -42,7 +42,7 @@ the feature issue that will add them.
 | AC-07 | Second report the same day: 429 + message | API | `test_reports_api.py`, `ReportPage.test.tsx`, `e2e/reports.spec.ts` | done |
 | AC-08 | Heart twice adds then removes, survives reload | E2E | `e2e/wishlist.spec.ts`, `e2e-system/wishlist.spec.ts`, `WishlistPage.test.tsx`, `test_wishlist_api.py` | done |
 | AC-09 | Duplicate pressing warns, "Add as 2nd copy" | Unit + E2E | `test_collection_api.py`, `CollectionPage.test.tsx`, `e2e/collection.spec.ts`, `e2e-system/collection.spec.ts` | done |
-| AC-10 | Hand-off purchase moves wishlist → collection | E2E | — | #40 |
+| AC-10 | Hand-off purchase moves wishlist → collection | E2E | `test_handoff_api.py`, `RecordPage.test.tsx`, `e2e/handoff.spec.ts`, `e2e-system/handoff.spec.ts` | done |
 | AC-11 | Discogs import skips existing releases | API | — | #44 |
 | AC-12 | Search waits for 2+ characters and a pause | Unit | — | #33 |
 | AC-13 | New account is private; others get 404 | API | `test_auth_api.py`, `test_auth_google.py`, `test_account_api.py` (new accounts private); `test_wishlist_api.py`, `test_collection_api.py` (others get 404); `e2e-system/you.spec.ts` | done (a public profile page comes with sharing, Later) |

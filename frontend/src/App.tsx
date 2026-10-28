@@ -15,8 +15,10 @@ import { VerifyPage } from './pages/auth/VerifyPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { YouPage } from './pages/auth/YouPage';
+import { WishlistPage } from './pages/WishlistPage';
+import { WishlistProvider } from './WishlistContext';
 
-export function App() { return <BrowserRouter><AuthProvider><AppShell /></AuthProvider></BrowserRouter>; }
+export function App() { return <BrowserRouter><AuthProvider><WishlistProvider><AppShell /></WishlistProvider></AuthProvider></BrowserRouter>; }
 
 export function Placeholder({ title }: { title: string }) {
   return <main id="content" className="page shell-page"><h1 className="display">{title}</h1>
@@ -103,7 +105,7 @@ export function AppShell() {
       <Route path="/albums/:id" element={<AlbumPage />} />
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />
       <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
-      <Route path="/wishlist" element={signedIn(<Placeholder title="Wishlist" />)} />
+      <Route path="/wishlist" element={signedIn(<WishlistPage />)} />
       <Route path="/collection" element={signedIn(<Placeholder title="Collection" />)} />
       <Route path="/collection/:id" element={signedIn(<Placeholder title="Your copy" />)} />
       <Route path="/import" element={signedIn(<Placeholder title="Import from Discogs" />)} />

@@ -40,12 +40,12 @@ the feature issue that will add them.
 | AC-05 | 8-day-old unverified listing warns | Unit | `test_freshness.py`, `test_nearby_stock_api.py` | done |
 | AC-06 | 2 missing reports in 24 h: flagged, sorts last | Unit + API | `test_freshness.py`, `test_nearby_stock_api.py` | done |
 | AC-07 | Second report the same day: 429 + message | API | — | #37 |
-| AC-08 | Heart twice adds then removes, survives reload | E2E | — | #39 |
+| AC-08 | Heart twice adds then removes, survives reload | E2E | `e2e/wishlist.spec.ts`, `e2e-system/wishlist.spec.ts`, `WishlistPage.test.tsx`, `test_wishlist_api.py` | done |
 | AC-09 | Duplicate pressing warns, "Add as 2nd copy" | Unit + E2E | seed data only (#96) | #41 |
 | AC-10 | Hand-off purchase moves wishlist → collection | E2E | — | #40 |
 | AC-11 | Discogs import skips existing releases | API | — | #44 |
 | AC-12 | Search waits for 2+ characters and a pause | Unit | — | #33 |
-| AC-13 | New account is private; others get 404 | API | `test_auth_api.py`, `test_auth_google.py` (new accounts private) | #38 done; 404 half #39, #41, #42 |
+| AC-13 | New account is private; others get 404 | API | `test_auth_api.py`, `test_auth_google.py` (new accounts private); `test_wishlist_api.py` (wishlist 404) | #38, #39 done; 404 half #41, #42 |
 | AC-14 | "Match system" follows device dark mode | E2E | `e2e/nearby-stock.spec.ts`, `theme.test.ts` | #42 (settings screen) |
 | AC-15 | Account delete removes data and sign-in | API + E2E | — | #42 |
 | AC-16 | Never more than 60 Discogs calls per 60 s | Integration | — | #32, #70 |

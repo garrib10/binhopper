@@ -88,9 +88,9 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ### Wishlist
 
-1. Add or remove from any album row or page with the heart. Change is saved immediately.
-2. An item can target any pressing or a specific one, plus optional max price and minimum condition.
-3. In-stock items show the store count and the nearest or cheapest store, with a "Find it" button. Out-of-stock items show the nearest copy's distance.
+1. Add or remove from any album row or page with the heart. Change is saved immediately. The wishlist belongs to a signed-in account: signed out, the heart asks the user to sign in and saves nothing.
+2. An item can target any pressing or a specific one, plus optional max price and minimum condition (Goldmine grades M, NM, VG+, VG, G+, G, P; a sealed "New" copy counts as M).
+3. In-stock items show the store count and the nearest store, plus the cheapest when it's a different shop, with a "Find it" button. Out-of-stock items show the nearest copy's distance. Only copies matching the item's pressing, price and condition count.
 
 ### Nearby stock
 
@@ -203,7 +203,7 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | GET | /albums/{id}/stock?zip=&radius= | Nearby stores with that album, sorted |
 | GET | /albums/{id}/online | Online seller links |
 | POST | /stock/{listingId}/reports | "On the shelf" / "missing" / price report |
-| GET, POST, DELETE | /me/wishlist | Read, add, remove wishlist items |
+| GET, POST, PATCH, DELETE | /me/wishlist | Read, add, change, remove wishlist items (GET /me/wishlist/albums: hearted album ids) |
 | GET, POST, PATCH, DELETE | /me/collection | Manage collection copies |
 | POST | /me/import/discogs | Start a Discogs import |
 | GET, PATCH | /me/settings | ZIP, radius, theme, privacy, genres |

@@ -74,3 +74,31 @@ def client(session: Session) -> Iterator[TestClient]:
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def sign_in(client: TestClient, session: Session):
+    """Sign the test client in as a new verified user: `user = sign_in("a@example.com")`.
+
+    Calling it again switches the client to another user (the cookie is replaced).
+    """
+    from datetime import timedelta
+
+    from app.models import User, UserSession, UserSettings
+    from app.passwords import new_token, token_hash
+    from app.sessions import COOKIE
+
+    def as_user(email: str = "collector@example.com") -> User:
+        user = User(username="collector-" + email.split("@")[0][:20], email=email,
+                    email_verified_at=NOW, settings=UserSettings())
+        session.add(user)
+        session.flush()
+        token = new_token()
+        session.add(UserSession(user_id=user.id, token_hash=token_hash(token), created_at=NOW,
+                                expires_at=NOW + timedelta(days=30), last_seen_at=NOW))
+        session.commit()
+        client.cookies.set(COOKIE, token)
+        client.headers["X-Binhopper-CSRF"] = "1"
+        return user
+
+    return as_user

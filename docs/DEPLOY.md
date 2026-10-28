@@ -24,8 +24,9 @@ full setup; until launch, apply only the staging parts:
   environment until launch. Add MySQL and the `api` service only when you're ready to test.
   Enable **app sleeping (serverless)** on the API. Keep the `worker` service off, except while
   testing the Discogs sync. A sleeping MySQL refuses the first connection while it wakes, so
-  migrations retry for up to 2 minutes (`connect_with_retry` in `app/db.py`); the deploy log
-  shows "Database not ready … retrying" meanwhile.
+  migrations retry for up to 2 minutes (`connect_with_retry` in `app/db.py`), and API requests
+  wait up to 20 seconds for it (`wait_for_server_on_connect`, #132). The logs show
+  "Database not ready … retrying" meanwhile; the first request after idle is just slower.
 - **Vercel:** Production Branch stays `main`, but hold back production builds under
   Settings → Git → **Ignored Build Step**, so that only the `staging` branch builds:
 
@@ -45,36 +46,53 @@ full setup; until launch, apply only the staging parts:
 
 ## 1. Railway dashboard (#78)
 
+**The Railway dashboard is the source of truth** for service settings (decided 2026-10-27, #121).
+Railway deprecated Config as Code (`railway.json`, unread after 2026-12-01), and its replacement,
+Infrastructure as Code (`.railway/railway.ts`), doesn't yet document watch paths, app sleeping,
+Wait for CI or restart policy, and deletes resources the file omits. Revisit it when production
+is set up (#119). Until then, enter the settings below by hand and keep this table current.
+
 1. Create the Binhopper project on Hobby with a persistent `staging` environment. At launch, add
    `production` (pre-launch: staging only, section 0). Each environment must have its **own**
    MySQL service named `MySQL`, persistent volume, and credentials. Do not point both APIs at one database.
-2. In each environment add an `api` service connected to `garrib10/binhopper`. Set source
-   branch to `staging` in staging and `main` in production. Root Directory: `/backend`.
-   Config File Path: `/backend/railway.json` (absolute from repository root).
-3. Accept the GitHub app permissions and turn **Wait for CI** on in each API service.
-   The committed config selects Railpack, watches `backend/**`, binds uvicorn to `$PORT`,
-   migrates with `alembic upgrade head`, checks `/api/health`, and restarts on failure.
+   No public TCP proxy on MySQL.
+2. In each environment add an `api` service connected to `garrib10/binhopper`, and accept the
+   GitHub app permissions. Enter these settings (Settings tab):
+
+   | Setting | `api`, staging | `api`, production |
+   | --- | --- | --- |
+   | Source repo / branch | `garrib10/binhopper`, `staging` | `garrib10/binhopper`, `main` |
+   | Root Directory | `/backend` | `/backend` |
+   | **Wait for CI** | on | on |
+   | Railway Config File | **empty** | **empty** |
+   | Watch Paths | `/backend/**` | `/backend/**` |
+   | Builder | Railpack (default), no custom build command | same |
+   | Custom Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` | same |
+   | Pre-deploy Command | `alembic upgrade head && python -m scripts.seed_sample` | `alembic upgrade head` **only** |
+   | Healthcheck Path | `/api/health` | `/api/health` |
+   | Restart Policy | On Failure | On Failure |
+   | Serverless (app sleeping) | on | decide at launch (#119) |
+   | Public domain | generated (step 4) | generated (step 4) |
+
+   The sample seed is fictional and safe to repeat. Production must never run sample or test seeds.
    Railpack installs packages only from **`backend/requirements.txt`** (it skips a
    `pyproject.toml` without a lock file) and takes Python from `backend/.python-version`
    (3.12, as in CI). Add new runtime dependencies to both `pyproject.toml` and
    `requirements.txt`; `tests/test_hosting.py` fails if they differ.
-4. Set each API's `DATABASE_URL` to the Railway reference `${{MySQL.MYSQL_URL}}` using
+3. Set each API's `DATABASE_URL` to the Railway reference `${{MySQL.MYSQL_URL}}` using
    that environment's MySQL service. The backend converts the `mysql://` driver prefix
    to `mysql+pymysql://`; keep the remaining connection string intact.
-5. Generate a public HTTPS domain on each API (Networking → Public Networking → Generate
+4. Generate a public HTTPS domain on each API (Networking → Public Networking → Generate
    Domain). Record each origin privately, with no `/api` suffix. It becomes that environment's
    Vercel `API_ORIGIN` and GitHub `API_URL`.
-6. Leave `CORS_ORIGINS` unset on Railway. Browsers reach the API through the app's own origin,
+5. Leave `CORS_ORIGINS` unset on Railway. Browsers reach the API through the app's own origin,
    so no cross-origin requests happen; the default only allows local Vite dev. The API takes the
    visitor's IP and `https` scheme from `X-Forwarded-For` / `X-Forwarded-Proto` set by Vercel's
    proxy (for rate limits and secure cookies). `FORWARDED_ALLOW_IPS` defaults to `*` because
    Railway's edge connects from changing private IPs; don't change it unless you know the peers.
    Set the API's **`ORIGIN_SECRET`** as described in [Origin secret](#origin-secret-only-the-vercel-proxy-reaches-the-api),
    so direct calls to the Railway URL can't fake those headers.
-7. Confirm staging uses the `environments.staging` override: migrations followed by
-   `python -m scripts.seed_sample`. This fictional sample seed is safe to repeat.
-   Production must use only `alembic upgrade head` and must never run sample/test seeds.
-8. Enable MySQL volume backups in each environment; take a manual backup before schema
+6. Enable MySQL volume backups in each environment; take a manual backup before schema
    changes and rehearse restore on staging. Check backup availability/retention in your plan.
 
 Railway supplies `PORT` and `RAILWAY_GIT_COMMIT_SHA`. Do not hardcode them. The health
@@ -223,7 +241,8 @@ credentials are needed. CI uploads a Playwright report on failure; link the run 
 Do these in order only when v1 is done and the release sign-off says go:
 
 1. **Railway:** create the `production` environment with its own `MySQL` and `api` service
-   (section 1: source branch `main`, Wait for CI, `DATABASE_URL` reference, public domain, backups).
+   (section 1's production column: source branch `main`, Wait for CI, `DATABASE_URL` reference,
+   public domain, backups).
    Production runs only `alembic upgrade head`, never sample seeds. Decide whether production keeps
    app sleeping. Add the `worker` service when shop stock should sync (Discogs worker section),
    and raise the usage limit to match.
@@ -309,7 +328,9 @@ verify the API/catalog and frontend, and document the incident and corrected pro
 
 ## Provider references
 
-- [Railway config as code](https://docs.railway.com/config-as-code/reference)
+- [Railway service settings](https://docs.railway.com/guides/services); Config as Code is
+  [deprecated](https://docs.railway.com/config-as-code) and [Infrastructure as Code](https://docs.railway.com/infrastructure-as-code)
+  is deferred (#121)
 - [Railway Wait for CI](https://docs.railway.com/deployments/github-autodeploys)
 - [Railway rollback and redeploy](https://docs.railway.com/deployments/deployment-actions)
 - [Vercel Vite SPA configuration](https://vercel.com/docs/frameworks/frontend/vite)
@@ -382,11 +403,12 @@ Unknown releases are skipped until imported from the CC0 dumps. Non-USD listings
 are skipped because v1 displays USD; there is no implicit currency conversion.
 
 In **each** Railway environment create a separate `worker` service from the same
-repository and branch as its API, Root Directory `/backend`. Override its config
-file to `/backend/railway.worker.json`. Set its `DATABASE_URL` to that environment's
-MySQL reference, plus `DISCOGS_TOKEN` and `DISCOGS_USER_AGENT`. Keep one replica,
-Wait for CI on, and no public domain. The worker config overrides the API start
-command and health check; do not run it inside uvicorn. Deploy the API/migrations
+repository and branch as its API, entered in the dashboard like the API (section 1):
+Root Directory `/backend`, Railway Config File empty, Watch Paths `/backend/**`,
+**Wait for CI** on, Custom Start Command `python -m app.worker`, **no** pre-deploy
+command, **no** healthcheck path, Restart Policy On Failure, one replica, and no public
+domain. Set its `DATABASE_URL` to that environment's MySQL reference, plus
+`DISCOGS_TOKEN` and `DISCOGS_USER_AGENT`. Do not run the worker inside uvicorn. Deploy the API/migrations
 first, then the worker. The MySQL advisory lease prevents overlapping workers and
 all catalog/inventory calls share durable rolling quota reservations.
 

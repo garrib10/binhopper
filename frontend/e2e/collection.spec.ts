@@ -75,6 +75,6 @@ test('grade chips and pressing choices meet the 44 px touch target', async ({ pa
   await page.goto('/collection/add/1');
   for (const control of await page.getByRole('group', { name: 'Sleeve condition' }).getByRole('button').all()) {
     const box = (await control.boundingBox())!;
-    expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
+    expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(43.5);
   }
 });

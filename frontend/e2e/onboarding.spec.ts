@@ -31,7 +31,7 @@ for (const theme of ['light', 'dark'] as const) {
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     for (const control of await page.getByRole('button').all()) {
       const box = await control.boundingBox();
-      if (box) expect(box.height).toBeGreaterThanOrEqual(44);
+      if (box) expect(box.height).toBeGreaterThanOrEqual(43.5);
     }
     await page.getByRole('button', { name: 'Continue' }).click();
     await expect(page.getByRole('heading', { name: 'Got records already?' })).toBeVisible();

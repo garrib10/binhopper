@@ -295,6 +295,10 @@ a {
   padding: 0 var(--space-4);
   border-radius: var(--radius-lg);
   border: 0;
+  /* Theme colors, never the browser's default button colors: WebKit's default is white
+     on light grey in dark mode (1.8:1 contrast; found by the WebKit E2E run, #72). */
+  background: var(--color-surface);
+  color: var(--color-text);
   font-weight: 700;
   cursor: pointer;
 }

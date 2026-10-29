@@ -25,8 +25,11 @@ for (const theme of ['light', 'dark'] as const) {
     await page.goto('/records/3');
     await expect(page.getByRole('heading', { name: 'Rumours' })).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-    // Calling the shop is the hand-off (tel: links don't navigate in the test browser).
-    await page.getByRole('link', { name: 'Call store' }).click();
+    // Calling the shop is the hand-off. Keep the browser from opening its phone-app dialog
+    // (Firefox's blocks the page afterwards); the app's own click handler still runs.
+    const call = page.getByRole('link', { name: 'Call store' });
+    await call.evaluate((a) => a.addEventListener('click', (e) => e.preventDefault(), { once: true }));
+    await call.click();
     await expect(page.getByRole('heading', { name: 'Got Rumours?' })).toBeVisible();
 
     // Later, back on the wishlist, it asks again.

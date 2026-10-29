@@ -132,6 +132,10 @@ export function AppShell() {
       <Route path="/stores/:id/report" element={signedIn(<SightingPage />)} />
       <Route path="*" element={<NotFound />} />
     </Routes>
-    <footer className="app-data-credit">Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</footer>
+    <footer className="app-data-credit">
+      <p>Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</p>
+      {/* Required wording, Discogs API Terms of Use › Discogs Intellectual Property. */}
+      <p>This application uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs. ‘Discogs’ is a trademark of Zink Media, LLC.</p>
+    </footer>
   </ThemeContext.Provider>;
 }

@@ -17,6 +17,7 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { YouPage } from './pages/YouPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { RecordPage } from './pages/RecordPage';
+import { ImportPage } from './pages/ImportPage';
 import { ThemeContext } from './ThemeContext';
 import { WishlistPage } from './pages/WishlistPage';
 import { CollectionPage } from './pages/CollectionPage';
@@ -117,7 +118,7 @@ export function AppShell() {
       <Route path="/collection" element={signedIn(<CollectionPage />)} />
       <Route path="/collection/add/:albumId" element={signedIn(<AddCopyPage />)} />
       <Route path="/collection/:id" element={signedIn(<OwnedPage />)} />
-      <Route path="/import" element={signedIn(<Placeholder title="Import from Discogs" />)} />
+      <Route path="/import" element={signedIn(<ImportPage />)} />
       <Route path="/you" element={signedIn(<YouPage />)} />
       <Route path="/you/:tab" element={signedIn(<YouPage />)} />
       <Route path="/sign-in" element={<SignInPage />} />

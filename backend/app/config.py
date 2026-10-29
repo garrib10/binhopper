@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     # Google sign-in shows only when both are set (Google Cloud › Credentials).
     google_client_id: str = ""
     google_client_secret: str = ""
+    # Discogs import (#44): the app registered at discogs.com/settings/developers, and the
+    # Fernet key that encrypts users' Discogs tokens at rest (generate it, never commit it).
+    discogs_consumer_key: str = ""
+    discogs_consumer_secret: str = ""
+    token_encryption_key: str = ""
     # Manually verified artist-ID → official shop URL; never guessed from a name.
     artist_store_urls: dict[int, HttpUrl] = Field(default_factory=dict)
 

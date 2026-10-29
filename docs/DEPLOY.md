@@ -463,6 +463,22 @@ domain. Set its `DATABASE_URL` to that environment's MySQL reference, plus
 first, then the worker. The MySQL advisory lease prevents overlapping workers and
 all catalog/inventory calls share durable rolling quota reservations.
 
+**Discogs import (#44).** Users connect their own Discogs accounts, so the app needs a
+Discogs **application** (separate from `DISCOGS_TOKEN`, the app's own personal token):
+
+1. On [discogs.com/settings/developers](https://www.discogs.com/settings/developers) → **Create an
+   Application**: name Binhopper, callback URL `<PUBLIC_APP_URL>/api/discogs/callback` (locally
+   `http://localhost:5173/api/discogs/callback`). Copy the **consumer key** and **consumer secret**.
+2. Generate a token encryption key on your own machine (keep it in your password manager):
+   `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`.
+3. Set `DISCOGS_CONSUMER_KEY`, `DISCOGS_CONSUMER_SECRET` and `TOKEN_ENCRYPTION_KEY` on **both**
+   the `api` (the OAuth handshake) and the `worker` (it reads users' collections), with the same
+   values. Changing `TOKEN_ENCRYPTION_KEY` later disconnects everyone (their stored tokens can't be
+   read), so set it once.
+
+Without them the Import screen says "Discogs import isn't set up on this server yet." Imports
+only progress while the worker runs.
+
 A failed inventory page retains the previous snapshot and retries after five
 minutes; API readers hide it at six hours even while the worker is down. The
 worker scrubs expired marketplace values. Watch worker failure logs and last sync

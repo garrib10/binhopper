@@ -135,6 +135,7 @@ Run on staging before each release, at phone and desktop size, in light and dark
 - [ ] Screen reader spot check (VoiceOver): headings, buttons and alerts are announced
 - [ ] Slow network (DevTools "Slow 3G"): loading states show; nothing double-submits
 - [ ] API down (stop the backend): "Can't reach Binhopper right now." and Try again works
+  (automated for every screen in `e2e/states.spec.ts`, #45; still worth one look on a real phone)
 - [ ] Sign-in: create an account, open the emailed link, sign out, sign in; forgot password → reset;
   Continue with Google (staging: only your own email gets mail, only Google test users can sign in)
 - [ ] Privacy: a second account can't see the first account's collection or wishlist

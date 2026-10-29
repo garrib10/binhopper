@@ -41,7 +41,7 @@ test('radius 25 sorts by freshness tier, then distance', async ({ page }) => {  
     'Groove Merchant',
   ]);
   await expect(page.getByText('23.7 mi · White Plains')).toBeVisible();
-  await expect(page.getByText('May be out of date: call to confirm')).toBeVisible();  // AC-17: the seeded shop with no online inventory is listed separately, never counted.
+  await expect(page.getByText(/^May be out of date: stock last updated \d+ days ago. It may have sold./)).toBeVisible();  // AC-17: the seeded shop with no online inventory is listed separately, never counted.
   const others = page.getByRole('list', { name: 'Other record shops nearby' });
   await expect(others.getByRole('heading', { level: 3 })).toHaveText(['Side B Listening Room']);
   await expect(others.getByRole('link', { name: 'Call to check' })).toHaveAttribute('href', 'tel:2015550142');
@@ -100,7 +100,7 @@ for (const theme of ['Light', 'Dark']) {
 
 
 test('AC-05 fictional manual stock retains its stale warning without a marketplace attribution', async ({ page }) => {
-  await expect(page.getByText('May be out of date: call to confirm')).toBeVisible();
+  await expect(page.getByText(/^May be out of date: stock last updated \d+ days ago. It may have sold./)).toBeVisible();
   await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toHaveCount(0);
 });
 

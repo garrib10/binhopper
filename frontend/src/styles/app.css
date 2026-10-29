@@ -583,3 +583,6 @@ a {
 .danger-zone h3, .danger-zone p { margin: 0; }
 .danger-zone__buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .store-card__links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.error-state__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.error-state__actions .button { display: inline-flex; align-items: center; text-decoration: none; }
+.store-list__note { margin: var(--space-2) 0 0; font-size: var(--text-sm); }

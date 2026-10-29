@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Binhopper's brand mark (the record in the app header) on a vinyl-black tile.
+       Colors from tokens.css: --color-vinyl #1b1814, --color-accent #d2451e, --color-brass #e2b13c. -->
+  <rect width="512" height="512" rx="112" fill="#1b1814"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#d2451e" stroke-width="34"/>
+  <circle cx="256" cy="256" r="104" fill="none" stroke="#d2451e" stroke-opacity="0.35" stroke-width="6"/>
+  <circle cx="256" cy="256" r="54" fill="#e2b13c"/>
+  <circle cx="256" cy="256" r="12" fill="#1b1814"/>
+</svg>

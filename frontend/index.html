@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Find the records you want in shops near you." />
     <title>Binhopper</title>
+    <!-- Install as an app (#91). Colors match tokens.css --color-bg (light / dark). -->
+    <!-- use-credentials: browsers fetch manifests without cookies otherwise, which fails behind
+         Vercel Deployment Protection on staging. Harmless in production. -->
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1e0b0f" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-title" content="Binhopper" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

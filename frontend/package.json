@@ -10,8 +10,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test",
-    "e2e:system": "playwright test -c playwright.system.config.ts"
+    "e2e": "playwright test --project=mobile --project=desktop",
+    "e2e:all": "playwright test",
+    "e2e:system": "playwright test -c playwright.system.config.ts",
+    "visual:docker": "sh scripts/visual-docker.sh",
+    "visual:update": "sh scripts/visual-docker.sh --update-snapshots"
   },
   "dependencies": {
     "@vercel/functions": "3.9.11",

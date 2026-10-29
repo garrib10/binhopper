@@ -54,11 +54,16 @@ for (const theme of ['light', 'dark'] as const) {
   });
 }
 
+/** Safari only tabs to links with Option+Tab (its default setting), so WebKit uses that. */
+function tabKey(page: Page): string {
+  return page.context().browser()?.browserType().name() === 'webkit' ? 'Alt+Tab' : 'Tab';
+}
+
 /** Press Tab until `name` has focus; fail if it's never reached. Focus must always be visible. */
 async function tabTo(page: Page, role: 'link' | 'button', name: string | RegExp) {
   const target = page.getByRole(role, { name }).first();
   for (let i = 0; i < 80; i++) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey(page));
     const outline = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement | null;
       if (!el || el === document.body) return 'none-needed';
@@ -79,10 +84,10 @@ test('keyboard only: skip link, then search → album → nearby → hold or buy
   await page.goto('/search?q=rumours');
   await expect(page.getByRole('link', { name: /Rumours.*Fleetwood Mac/ })).toBeVisible();
 
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(tabKey(page));
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   await page.keyboard.press('Enter');
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(tabKey(page));
   expect(await page.evaluate(() => !!document.activeElement?.closest('#content')), 'skip link jumps past the header').toBe(true);
 
   await tabTo(page, 'link', /Rumours.*Fleetwood Mac/);
@@ -95,6 +100,8 @@ test('keyboard only: skip link, then search → album → nearby → hold or buy
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Spin Cycle Records' })).toBeVisible();
   await tabTo(page, 'link', 'Call store');
+  // Keep the browser from opening its phone-app dialog; the app's click handler still runs.
+  await page.getByRole('link', { name: 'Call store' }).evaluate((a) => a.addEventListener('click', (e) => e.preventDefault(), { once: true }));
   await page.keyboard.press('Enter');
   await tabTo(page, 'button', "It's on my shelf, add to collection");
   await page.keyboard.press('Enter');

@@ -16,8 +16,10 @@ system tests (#95) and the test-data seed (#96).
 | Unit (backend) | pytest | `backend/tests/test_geo.py`, `test_freshness.py`, … | Pure rules: radius math, freshness, duplicate detection, ZIP parsing | `backend` |
 | Unit (frontend) | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` | Component behavior: validation, error messages, state changes | `frontend` |
 | API | pytest + FastAPI `TestClient` | `backend/tests/test_*_api.py` | Each endpoint's happy path, error codes, auth and privacy | `backend` |
+| API contract | pytest (`test_api_contract.py`) | `backend/openapi.json`, `frontend/src/api-types.ts` | The frontend's response types match the API's Pydantic models; regenerate with `python -m scripts.export_openapi` (#68) | `backend` |
 | Integration | the same pytest suite on MySQL 8.4 | `TEST_DATABASE_URL` set (#94) | What SQLite hides: column precision, upserts, collation; migrations apply cleanly | `integration` (#94) |
-| E2E (mocked API) | Playwright, 390 px + 1440 px | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks; `e2e/a11y.spec.ts` sweeps every screen (axe, 44 px targets, keyboard walkthroughs, #74) | `e2e` |
+| E2E (mocked API) | Playwright, 390 px + 1440 px; Chromium in `e2e`, WebKit + Firefox in `e2e-browsers` (#72) | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks; `e2e/a11y.spec.ts` sweeps every screen (axe, 44 px targets, keyboard walkthroughs, #74) | `e2e` |
+| Visual | Playwright screenshots in the Playwright Linux image | `frontend/visual/` (#73) | Key screens in light and dark at 390 and 1440 px match committed baselines (AC-14); `npm run visual:docker` compares, `npm run visual:update` accepts a deliberate change | `visual` |
 | System | Playwright, real API + seeded MySQL | `frontend/e2e-system/` (#95) | The whole stack together, nothing mocked | `system` (#95) |
 | Acceptance | all of the above | the table below | AC-01 to AC-21, each at the level SPEC.md names | all |
 
@@ -89,7 +91,9 @@ the moment it loads, and loading twice is a no-op.
   key endpoints with an httpx `MockTransport` (`test_auth_google.py`); the Resend backend is
   tested the same way. The local system run uses `EMAIL_BACKEND=file` and reads the link from
   the file. Tests also use cheap Argon2 settings so hashing stays fast.
-- The only real Discogs call is the nightly smoke test (#69): scheduled, read-only, never on PRs.
+- The only real Discogs call is the nightly smoke test (#69, `.github/workflows/discogs-smoke.yml`,
+  `backend/scripts/discogs_smoke.py`): two read-only GETs through the worker's queue and parser,
+  scheduled and on demand, never on PRs. It needs the `DISCOGS_TOKEN` repository secret.
 
 ## CI gates
 

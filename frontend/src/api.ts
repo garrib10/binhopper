@@ -1,47 +1,7 @@
-export type Freshness = 'verified' | 'current' | 'out_of_date' | 'reported_missing';
-
-export interface NearbyStore {
-  listing_id: number;
-  store_id: number;
-  store_name: string;
-  area: string | null;
-  distance_mi: number;
-  pressing_id: number;
-  pressing_note: string | null;
-  price: number;
-  condition: string;
-  quantity: number;
-  freshness: Freshness;
-  last_updated_at: string | null;
-  missing_reports?: number;
-  lat?: number;
-  lng?: number;
-  phone?: string | null;
-  source?: string;
-  discogs_url?: string | null;
-}
-
-/** A shop in the radius with no online inventory: call to check (never a price). */
-export interface OtherShop {
-  store_id: number;
-  name: string;
-  area: string | null;
-  distance_mi: number;
-  phone: string | null;
-  lat: number;
-  lng: number;
-}
-
-export interface NearbyStockResponse {
-  album_id: number;
-  zip: string;
-  radius_mi: number;
-  center_lat?: number;
-  center_lng?: number;
-  stores: NearbyStore[];
-  nearest_outside_mi: number | null;
-  other_shops?: OtherShop[];
-}
+// Response types come from the API's own models (src/api-types.ts, generated from
+// backend/openapi.json; CI fails if they drift, #68).
+import type { NearbyStockResponse } from './api-types';
+export type { Freshness, NearbyStockResponse, NearbyStore, OtherShop } from './api-types';
 
 export const RADII = [10, 25, 50, 100] as const;
 export type Radius = (typeof RADII)[number];

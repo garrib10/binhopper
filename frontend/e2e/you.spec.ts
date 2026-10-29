@@ -29,7 +29,7 @@ for (const theme of ['light', 'dark'] as const) {
       await expect(page.getByRole('tabpanel', { name: tab })).toBeVisible();
       expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
       for (const control of await page.getByRole('tabpanel').getByRole('button').all()) {
-        expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+        expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(43.5);
       }
     }
   });

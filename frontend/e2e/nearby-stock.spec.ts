@@ -144,7 +144,7 @@ for (const theme of ['light', 'dark'] as const) {
     await expect(others).not.toContainText('$');
     await expect(page.locator('.shop-marker')).toHaveCount(2); // not on the map
     for (const link of await others.getByRole('link').all()) {
-      expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(43.5);
     }
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });

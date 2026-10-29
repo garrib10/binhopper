@@ -30,10 +30,10 @@ describe('NearbyStockPage', () => {
       stores: [
         { listing_id: 1, store_id: 1, store_name: 'Spin Cycle Records', area: 'Chelsea', distance_mi: 3.2,
           pressing_id: 1, pressing_note: '180g reissue', price: 26, condition: 'New', quantity: 2,
-          freshness: 'current', last_updated_at: null },
+          freshness: 'current', last_updated_at: null, lat: 40.75, lng: -74, phone: null },
         { listing_id: 2, store_id: 2, store_name: 'Groove Merchant', area: null, distance_mi: 21.4,
           pressing_id: 1, pressing_note: null, price: 28, condition: 'New', quantity: 3,
-          freshness: 'out_of_date', last_updated_at: null },
+          freshness: 'out_of_date', last_updated_at: null, lat: 40.75, lng: -74, phone: null },
       ],
     });
     render(page);
@@ -47,7 +47,7 @@ describe('NearbyStockPage', () => {
     mockApi({
       stores: [{ listing_id: 1, store_id: 1, store_name: 'Spin Cycle Records', area: 'Chelsea', distance_mi: 3.2,
         pressing_id: 1, pressing_note: null, price: 26, condition: 'New', quantity: 2,
-        freshness: 'current', last_updated_at: null }],
+        freshness: 'current', last_updated_at: null, lat: 40.75, lng: -74, phone: null }],
       other_shops: [
         { store_id: 5, name: 'Side B Listening Room', area: 'Hoboken, NJ', distance_mi: 1.6, phone: '(201) 555-0142', lat: 40.7, lng: -74 },
         { store_id: 6, name: 'Crate Corner', area: null, distance_mi: 12, phone: null, lat: 40.9, lng: -74 },

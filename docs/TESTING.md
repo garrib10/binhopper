@@ -91,7 +91,9 @@ the moment it loads, and loading twice is a no-op.
   key endpoints with an httpx `MockTransport` (`test_auth_google.py`); the Resend backend is
   tested the same way. The local system run uses `EMAIL_BACKEND=file` and reads the link from
   the file. Tests also use cheap Argon2 settings so hashing stays fast.
-- The only real Discogs call is the nightly smoke test (#69): scheduled, read-only, never on PRs.
+- The only real Discogs call is the nightly smoke test (#69, `.github/workflows/discogs-smoke.yml`,
+  `backend/scripts/discogs_smoke.py`): two read-only GETs through the worker's queue and parser,
+  scheduled and on demand, never on PRs. It needs the `DISCOGS_TOKEN` repository secret.
 
 ## CI gates
 

@@ -6,7 +6,9 @@
     <meta name="description" content="Find the records you want in shops near you." />
     <title>Binhopper</title>
     <!-- Install as an app (#91). Colors match tokens.css --color-bg (light / dark). -->
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- use-credentials: browsers fetch manifests without cookies otherwise, which fails behind
+         Vercel Deployment Protection on staging. Harmless in production. -->
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
     <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
     <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />

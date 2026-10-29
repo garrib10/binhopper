@@ -1,11 +1,12 @@
 """Local catalog search/browse only: never calls Discogs from a request."""
 from datetime import datetime, timedelta
+from collections import Counter, defaultdict
 from heapq import nsmallest
 from itertools import islice
 from typing import Annotated, Literal
 from urllib.parse import urlencode, urlsplit
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy import exists, func, or_, select, true
 from sqlalchemy.orm import Session, joinedload, selectinload
 
@@ -75,6 +76,35 @@ def summary(session, album, center, radius, terms, now):
                              else "https://www.discogs.com/search/?" + urlencode({"q": album.title}))}
 
 
+STYLES_PER_GENRE = 40
+
+
+def genre_counts(session, now, *where):
+    """(genre, style, albums) for visible albums."""
+    count = func.count(func.distinct(AlbumGenre.album_id))
+    base = select(AlbumGenre.genre, AlbumGenre.style, count).join(Album, Album.id == AlbumGenre.album_id).where(
+        visible(Album, now), *where).group_by(AlbumGenre.genre, AlbumGenre.style)
+    return session.execute(base).all()
+
+
+def genre_matches(session, now, q, limit=3):
+    """Genres and styles named like the search, for "Browse Shoegaze →" (SPEC › Search rule 1)."""
+    pattern = '%' + q.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
+    rows = genre_counts(session, now, or_(AlbumGenre.genre.ilike(pattern, escape='\\'),
+                                          AlbumGenre.style.ilike(pattern, escape='\\')))
+    totals, parents = Counter(), defaultdict(Counter)
+    for genre, style, albums in rows:
+        if q.lower() in genre.lower():
+            totals[genre] += albums
+            parents[genre][genre] += albums
+        if style and q.lower() in style.lower():
+            totals[style] += albums
+            parents[style][genre] += albums
+    ranked = sorted(totals, key=lambda name: (not name.lower().startswith(q.lower()), -totals[name], name))
+    # A style's parent is the genre it's filed under most, so "Change genre or year" lands on it.
+    return [{'name': name, 'genre': parents[name].most_common(1)[0][0]} for name in ranked[:limit]]
+
+
 def albums(session, now, center, radius, q=None, genre=None, decade=None, year=None,
            lp=False, new=False, used=False, under_30=False, in_stock_nearby=False,
            sort="popular", limit=50, offset=0):
@@ -135,16 +165,17 @@ def search(session: Annotated[Session, Depends(get_session)], now: Annotated[dat
            in_stock_nearby: bool = False, limit: Annotated[int, Query(ge=1, le=100)] = 50,
            offset: Annotated[int, Query(ge=0, le=10000)] = 0):
     if len(q.strip()) < 2:
-        return {'albums': [], 'artists': []}
+        return {'albums': [], 'artists': [], 'genres': []}
     center = origin(session, zip, radius)
     if type == 'artists':
         pattern = '%' + q.strip().replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
         rows = session.scalars(select(Artist).where(visible(Artist, now), Artist.name.ilike(pattern, escape='\\'))
                                .order_by(Artist.name, Artist.id).limit(limit).offset(offset)).all()
-        return {'albums': [], 'artists': [{'id': a.id, 'name': a.name,
+        return {'albums': [], 'genres': [], 'artists': [{'id': a.id, 'name': a.name,
             'image_url': fresh_image(a.image_url, getattr(a, 'image_fetched_at', None), now)} for a in rows]}
-    return {'artists': [], 'albums': albums(session, now, center, radius, q=q.strip(), lp=lp, new=new,
-             used=used, under_30=under_30, in_stock_nearby=in_stock_nearby, limit=limit, offset=offset)}
+    return {'artists': [], 'genres': genre_matches(session, now, q.strip()) if offset == 0 else [],
+            'albums': albums(session, now, center, radius, q=q.strip(), lp=lp, new=new, used=used,
+                             under_30=under_30, in_stock_nearby=in_stock_nearby, limit=limit, offset=offset)}
 
 
 @router.get('/browse', dependencies=[per_ip(SEARCH)])
@@ -163,3 +194,19 @@ def browse(session: Annotated[Session, Depends(get_session)], now: Annotated[dat
     return {'artists': [], 'albums': albums(session, now, center, radius, genre=genre,
              decade=decade, year=year, sort=sort, lp=lp, new=new, used=used, under_30=under_30,
              in_stock_nearby=in_stock_nearby, limit=limit, offset=offset)}
+
+
+@router.get('/genres', dependencies=[per_ip(SEARCH)])
+def genres(response: Response, session: Annotated[Session, Depends(get_session)],
+           now: Annotated[datetime, Depends(get_now)]):
+    """Every genre in the catalog, most albums first, each with its most common styles (Search rule 5)."""
+    albums = func.count(func.distinct(AlbumGenre.album_id))
+    totals = session.execute(select(AlbumGenre.genre, albums).join(Album, Album.id == AlbumGenre.album_id)
+                             .where(visible(Album, now)).group_by(AlbumGenre.genre)).all()
+    response.headers['Cache-Control'] = 'public, max-age=600'  # the catalog changes slowly
+    styles = defaultdict(Counter)
+    for genre, style, count in genre_counts(session, now, AlbumGenre.style.is_not(None)):
+        styles[genre][style] += count
+    return {'genres': [{'name': g, 'albums': n,
+                        'styles': [s for s, _ in sorted(styles[g].items(), key=lambda kv: (-kv[1], kv[0]))[:STYLES_PER_GENRE]]}
+                       for g, n in sorted(totals, key=lambda row: (-row[1], row[0]))]}

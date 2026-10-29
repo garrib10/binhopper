@@ -57,6 +57,13 @@ the feature issue that will add them.
 | AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
 | AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |
 
+Spec rules without an AC id are tested the same way and named by rule in the test:
+
+| Rule | Tests |
+| --- | --- |
+| Search rule 1: "Browse <genre or style> →" from the search box | `test_search_api.py`, `SearchPage.test.tsx`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` |
+| Search rule 5: every catalog genre, then its styles, then decade and year | `test_search_api.py`, `SearchPage.test.tsx`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` |
+
 ## Test data
 
 | Data | Where | Used by |

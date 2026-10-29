@@ -17,7 +17,7 @@ system tests (#95) and the test-data seed (#96).
 | Unit (frontend) | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` | Component behavior: validation, error messages, state changes | `frontend` |
 | API | pytest + FastAPI `TestClient` | `backend/tests/test_*_api.py` | Each endpoint's happy path, error codes, auth and privacy | `backend` |
 | Integration | the same pytest suite on MySQL 8.4 | `TEST_DATABASE_URL` set (#94) | What SQLite hides: column precision, upserts, collation; migrations apply cleanly | `integration` (#94) |
-| E2E (mocked API) | Playwright, 390 px + 1440 px | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks; `e2e/a11y.spec.ts` sweeps every screen (axe, 44 px targets, keyboard walkthroughs, #74) | `e2e` |
+| E2E (mocked API) | Playwright, 390 px + 1440 px; Chromium in `e2e`, WebKit + Firefox in `e2e-browsers` (#72) | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks; `e2e/a11y.spec.ts` sweeps every screen (axe, 44 px targets, keyboard walkthroughs, #74) | `e2e` |
 | Visual | Playwright screenshots in the Playwright Linux image | `frontend/visual/` (#73) | Key screens in light and dark at 390 and 1440 px match committed baselines (AC-14); `npm run visual:docker` compares, `npm run visual:update` accepts a deliberate change | `visual` |
 | System | Playwright, real API + seeded MySQL | `frontend/e2e-system/` (#95) | The whole stack together, nothing mocked | `system` (#95) |
 | Acceptance | all of the above | the table below | AC-01 to AC-21, each at the level SPEC.md names | all |

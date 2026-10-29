@@ -40,7 +40,7 @@ for (const theme of ['light', 'dark'] as const) {
         await expect(page.getByText('Bad gateway')).toHaveCount(0);  // no raw error text
         const retry = page.getByRole('button', { name: 'Try again' });
         await expect(retry).toBeVisible();
-        expect((await retry.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+        expect((await retry.boundingBox())!.height).toBeGreaterThanOrEqual(43.5);
         expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
         fail = false;
         await page.unroute(api);

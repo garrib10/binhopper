@@ -62,7 +62,8 @@ npm install
 npm run dev                              # http://localhost:5173 (proxies /api to :8000)
 npm test                                 # Vitest
 npx playwright install chromium          # first time only
-npm run e2e                              # Playwright, API mocked
+npm run e2e                              # Playwright, API mocked (Chromium)
+npm run e2e:all                          # same, plus WebKit (Safari) and Firefox; first: npx playwright install webkit firefox
 npm run e2e:system                       # Playwright, real API + seeded MySQL (setup: README.md › Tests)
 npm run visual:docker                    # screenshot comparison in Docker (light + dark); visual:update accepts changes
 npm run build                            # type-check + production build

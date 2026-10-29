@@ -24,3 +24,16 @@ for (const theme of ['light', 'dark'] as const) {
     await expect(page.getByRole('link', { name: 'Browse by genre' })).toHaveAttribute('href', '/genres');
   });
 }
+
+test('switching Albums / Artists / Genre & year doesn’t move the page', async ({ page }) => {
+  await page.route('**/api/**', (route) => route.fulfill({ status: 401, json: {} }));
+  const spots: string[] = [];
+  for (const path of ['/search', '/search?type=artists', '/genres']) {
+    await page.goto(path);
+    const title = (await page.locator('h1').first().boundingBox())!;
+    const tabs = (await page.getByRole('navigation', { name: 'Search by' }).boundingBox())!;
+    spots.push(`title x=${Math.round(title.x)} y=${Math.round(title.y)}; tabs x=${Math.round(tabs.x)} y=${Math.round(tabs.y)} w=${Math.round(tabs.width)}`);
+  }
+  expect(new Set(spots).size, spots.join('\n')).toBe(1);
+  await expect(page.getByRole('link', { name: 'Search', exact: true })).toHaveAttribute('aria-current', 'page');
+});

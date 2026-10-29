@@ -15,6 +15,8 @@ import { VerifyPage } from './pages/auth/VerifyPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { YouPage } from './pages/YouPage';
+import { OnboardingPage } from './pages/OnboardingPage';
+import { RecordPage } from './pages/RecordPage';
 import { ImportPage } from './pages/ImportPage';
 import { ThemeContext } from './ThemeContext';
 import { WishlistPage } from './pages/WishlistPage';
@@ -111,7 +113,7 @@ export function AppShell() {
       <Route path="/artists/:id" element={<ArtistPage />} />
       <Route path="/albums/:id" element={<AlbumPage />} />
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />
-      <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
+      <Route path="/records/:id" element={<RecordPage />} />
       <Route path="/wishlist" element={signedIn(<WishlistPage />)} />
       <Route path="/collection" element={signedIn(<CollectionPage />)} />
       <Route path="/collection/add/:albumId" element={signedIn(<AddCopyPage />)} />
@@ -125,7 +127,7 @@ export function AppShell() {
       <Route path="/verify" element={<VerifyPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="/onboarding" element={<Placeholder title="Get started" />} />
+      <Route path="/onboarding" element={signedIn(<OnboardingPage />)} />
       <Route path="/stock/:id/report" element={signedIn(<ReportPage />)} />
       <Route path="/stores/:id/report" element={signedIn(<SightingPage />)} />
       <Route path="*" element={<NotFound />} />

@@ -92,7 +92,8 @@ def test_start_uses_pkce_state_and_nonce(client, google):
 
 def test_AC_13_a_new_google_account_starts_private_and_is_signed_in(client, google, session):
     response = finish(client, google, start(client))
-    assert (response.status_code, response.headers["location"]) == (302, "/wishlist")
+    # #43: a brand-new account goes through onboarding first, then on to where it was headed.
+    assert (response.status_code, response.headers["location"]) == (302, "/onboarding?return_to=%2Fwishlist")
     user = session.scalar(select(User))
     assert (user.email, user.google_sub, user.auth_provider) == (
         "listener@example.com", "google-sub-1", "google")
@@ -179,4 +180,11 @@ def test_an_expired_flow_fails(client, google):
                                        "/\\evil.example.com", "javascript:alert(1)"])
 def test_return_to_cannot_leave_the_site(client, google, return_to):
     response = finish(client, google, start(client, return_to))
-    assert response.headers["location"] == "/search"
+    assert response.headers["location"] == "/onboarding?return_to=%2Fsearch"
+
+
+def test_an_existing_account_skips_onboarding(client, google):
+    finish(client, google, start(client))
+    client.cookies.delete(COOKIE)
+    response = finish(client, google, start(client, "/collection"))
+    assert response.headers["location"] == "/collection"

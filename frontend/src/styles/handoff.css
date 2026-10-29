@@ -1,0 +1,26 @@
+/* Locate, hold, buy (#40): Record.dc.html, plus the "Got it?" prompt also shown on the wishlist. */
+.record-page { max-width: 640px; gap: var(--space-4); }
+.record-page__top { display: flex; justify-content: space-between; align-items: center; }
+.record-header { display: flex; gap: var(--space-4); align-items: center; }
+.record-header p { margin: 4px 0 0; }
+.record-header__cover { flex: none; width: 104px; }
+.record-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.record-steps li { padding-top: 8px; border-top: 4px solid var(--color-border-strong); font-size: 12px; font-weight: 600; color: var(--color-text-muted); }
+.record-steps li[data-done='true'] { border-color: var(--color-text); color: var(--color-text); }
+.record-steps li[aria-current='step'] { border-color: var(--color-accent); color: var(--color-text); font-weight: 800; }
+.record-shop { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); }
+.record-shop p { margin: 0; }
+.record-shop__row { display: flex; justify-content: space-between; gap: var(--space-3); }
+.record-shop__name { margin: 0; font-size: var(--text-lg); }
+.record-shop__price { font-family: var(--font-display); font-weight: 800; font-stretch: 85%; font-size: 28px; }
+.record-shop__actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-2); }
+.record-shop__actions .button { display: flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; border: 1px solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); }
+.record-shop__actions .button--primary { background: var(--color-accent); color: var(--color-on-accent); border-color: var(--color-accent); }
+.text-link { display: inline-flex; align-items: center; min-height: var(--touch-target); color: var(--color-link); font-weight: 700; }
+.got-it { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-ok-bg); color: var(--color-ok-text); }
+.got-it p { margin: 0; }
+.got-it .notice { color: var(--color-warn-text); }
+.got-it__title { margin: 0; font-size: var(--text-lg); }
+.got-it__buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.got-it__buttons .button { display: inline-flex; align-items: center; text-decoration: none; }
+.wishlist-got-it { display: flex; flex-direction: column; gap: var(--space-2); }

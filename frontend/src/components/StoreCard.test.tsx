@@ -30,3 +30,26 @@ it('AC-17 with no phone there is no call link', () => {
   expect(screen.queryByRole('link', { name: 'Call to check' })).toBeNull();
   expect(screen.getByText('No online inventory: stop by to check')).toBeVisible();
 });
+
+const base: NearbyStore = { listing_id: 2, store_id: 2, store_name: 'Groove Merchant', area: 'Montclair', distance_mi: 21.4,
+  pressing_id: 1, pressing_note: null, price: 28, condition: 'New', quantity: 3, freshness: 'current', last_updated_at: null,
+  lat: 40.8, lng: -74.2, phone: '+1 973 555 0101' };
+const NOW_MS = Date.parse('2026-10-28T12:00:00Z');
+
+it('StaleStock: an out-of-date listing says how old it is, marks the price and asks "I checked it"', () => {
+  render(<MemoryRouter><ol><StoreCard now={NOW_MS} index={0} store={{ ...base, freshness: 'out_of_date', last_updated_at: '2026-10-19T12:00:00' }} /></ol></MemoryRouter>);
+  expect(screen.getByText('May be out of date: stock last updated 9 days ago. It may have sold. Call before you make the trip.')).toBeVisible();
+  expect(screen.getByText('(price may have changed)')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Call to confirm' })).toBeVisible();
+  expect(screen.getByRole('link', { name: 'I checked it: Groove Merchant' })).toHaveAttribute('href', '/stock/2/report');
+});
+
+it('StaleStock: verified says when, and reported-missing says how many people', () => {
+  render(<MemoryRouter><ol>
+    <StoreCard now={NOW_MS} index={0} store={{ ...base, freshness: 'verified', last_updated_at: '2026-10-28T10:00:00' }} />
+    <StoreCard now={NOW_MS} index={1} store={{ ...base, listing_id: 3, freshness: 'reported_missing', missing_reports: 2 }} />
+  </ol></MemoryRouter>);
+  expect(screen.getByText('Verified on the shelf 2 hr ago')).toBeVisible();
+  expect(screen.getByText("Reported missing today: 2 people didn't find it")).toBeVisible();
+  expect(screen.getAllByRole('link', { name: /Report stock/ })).toHaveLength(2);
+});

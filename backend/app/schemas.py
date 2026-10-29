@@ -18,6 +18,7 @@ class NearbyStore(BaseModel):
     quantity: int
     freshness: Freshness
     last_updated_at: datetime | None
+    missing_reports: int = 0  # "not on the shelf" reports in the last 24 h
     lat: float
     lng: float
     phone: str | None

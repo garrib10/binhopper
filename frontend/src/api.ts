@@ -13,6 +13,7 @@ export interface NearbyStore {
   quantity: number;
   freshness: Freshness;
   last_updated_at: string | null;
+  missing_reports?: number;
   lat?: number;
   lng?: number;
   phone?: string | null;

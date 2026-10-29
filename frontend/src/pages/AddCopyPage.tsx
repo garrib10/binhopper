@@ -5,6 +5,7 @@ import { type AlbumDetail, getCatalog } from '../catalog';
 import { addCopy, AlreadyOwned, ordinal, type CopyDetails } from '../collection';
 import { Cover } from '../components/AlbumTile';
 import { CopyForm } from '../components/CopyForm';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 
 /** Add a copy of an album (SPEC.md › Collection rules 1–3). */
 export function AddCopyPage() {
@@ -12,15 +13,17 @@ export function AddCopyPage() {
   const navigate = useNavigate();
   const [album, setAlbum] = useState<AlbumDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loadProblem, setLoadProblem] = useState<LoadProblem | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [duplicate, setDuplicate] = useState<{ copies: number; pressingId: number; details: CopyDetails } | null>(null);
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
     getCatalog<AlbumDetail>(`/albums/${albumId}`, controller.signal).then(setAlbum).catch((err) => {
-      if (!controller.signal.aborted) setError(err instanceof ApiError && err.status === 404 ? 'Album not found.' : "Can't reach Binhopper right now.");
+      if (!controller.signal.aborted) setLoadProblem(describeLoadError(err, "That album isn't in Binhopper."));
     });
     return () => controller.abort();
-  }, [albumId]);
+  }, [albumId, attempt]);
 
   async function save(pressingId: number, details: CopyDetails, anotherCopy = false) {
     setBusy(true); setError(null);
@@ -36,7 +39,8 @@ export function AddCopyPage() {
   }
 
   if (!album) return <main id="content" className="page"><h1 className="display">Add to collection</h1>
-    {error ? <p role="alert">{error}</p> : <p role="status">Loading…</p>}</main>;
+    {loadProblem ? <LoadError problem={loadProblem} onRetry={() => { setLoadProblem(null); setAttempt((n) => n + 1); }} back={{ to: '/search', label: 'Back to search' }} />
+      : <p role="status">Loading…</p>}</main>;
   return <main id="content" className="page copy-page">
     <Link className="back-link" to={`/albums/${album.id}`}>← {album.title}</Link>
     <header className="copy-header">

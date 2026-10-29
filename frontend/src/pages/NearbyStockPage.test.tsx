@@ -40,7 +40,7 @@ describe('NearbyStockPage', () => {
     expect(await screen.findByRole('heading', { name: '2 stores have it' })).toBeInTheDocument();
     const names = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
     expect(names).toEqual(['Spin Cycle Records', 'Groove Merchant']);
-    expect(screen.getByText('May be out of date: call to confirm')).toBeInTheDocument();
+    expect(screen.getByText(/^May be out of date: stock last updated over a week ago. It may have sold. Call before you make the trip.$/)).toBeInTheDocument();
   });
 
   it('AC-17 lists shops without online inventory below the stock, not counted', async () => {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ApiError } from '../api';
 import { type AlbumSummary, getCatalog } from '../catalog';
 import { AlbumTile, Cover } from '../components/AlbumTile';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { loadLocation } from '../location';
 
 interface ArtistDetail {
@@ -14,19 +14,19 @@ export function ArtistPage() {
   const { id } = useParams();
   const [saved] = useState(loadLocation);
   const [artist, setArtist] = useState<ArtistDetail | null>(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<LoadProblem | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [full, setFull] = useState(false);
   const [kind, setKind] = useState('Studio');
   useEffect(() => {
     const controller = new AbortController();
-    setArtist(null); setError(''); setFull(false); setKind('Studio');
+    setArtist(null); setError(null); setFull(false); setKind('Studio');
     getCatalog<ArtistDetail>(`/artists/${id}?zip=${saved.zip}&radius=${saved.radius}`, controller.signal)
       .then((data) => { if (!controller.signal.aborted) setArtist(data); })
-      .catch((cause) => { if (!controller.signal.aborted) setError(cause instanceof ApiError && cause.status === 404 ? cause.message : "Can't reach Binhopper right now."); });
+      .catch((cause) => { if (!controller.signal.aborted) setError(describeLoadError(cause, "That artist isn't in Binhopper.")); });
     return () => controller.abort();
   }, [id, saved, attempt]);
-  if (!artist) return <main id="content" className="page"><h1 className="display">Artist</h1>{error ? <><p role="alert">{error}</p><button className="button" onClick={() => setAttempt(attempt + 1)}>Try again</button></> : <p role="status">Loading artist…</p>}</main>;
+  if (!artist) return <main id="content" className="page"><h1 className="display">Artist</h1>{error ? <LoadError problem={error} onRetry={() => setAttempt(attempt + 1)} back={{ to: '/search', label: 'Back to search' }} /> : <p role="status">Loading artist…</p>}</main>;
   const bio = artist.bio ?? '';
   return <main id="content" className="catalog-page artist-page"><aside className="artist-profile"><Cover key={artist.id} url={artist.image_url} title={artist.name} portrait />
     <h1 className="display">{artist.name}</h1><p className="muted">{artist.genres.join(' · ')}{artist.genres.length ? ' · ' : ''}{artist.origin ?? 'Origin unavailable'}</p>

@@ -133,6 +133,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
                 <StoreCard key={s.listing_id} store={s} index={i} />
               ))}
             </ol>
+            <p className="muted store-list__note">Stores are ranked by how fresh their stock data is, then distance.</p>
           </>
         )}
 
@@ -142,7 +143,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
             {state.data.nearest_outside_mi !== null && (
               <p className="muted">Nearest copy is {state.data.nearest_outside_mi} mi away.</p>
             )}
-            <p>No shop in this radius has this album right now.</p>
+            <p>No shop near you has {online?.album_title ?? albumTitle} right now{state.data.nearest_outside_mi !== null ? ", but it's closer than you think." : '.'}</p>
             {nextRadius && (
               <button type="button" className="button button--primary" onClick={() => setRadius(nextRadius)}>
                 Try {nextRadius} mi

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ApiError } from '../api';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { disconnectDiscogs, fetchImportStatus, isActive, startImport, type ImportStatus } from '../discogsImport';
 import '../styles/import.css';
 
@@ -14,7 +15,9 @@ export function ImportPage() {
   const [wantlist, setWantlist] = useState(true);
   const [error, setError] = useState<string | null>(params.get('error') === 'discogs' ? "Connecting to Discogs didn't finish. Try again." : null);
   const [busy, setBusy] = useState(false);
-  const load = useCallback(() => fetchImportStatus().then(setStatus).catch(() => setError("Can't reach Binhopper right now.")), []);
+  const [loadProblem, setLoadProblem] = useState<LoadProblem | null>(null);
+  const load = useCallback(() => fetchImportStatus().then((s) => { setStatus(s); setLoadProblem(null); })
+    .catch((err) => setLoadProblem(describeLoadError(err, 'Import is unavailable.'))), []);
   useEffect(() => { load(); }, [load]);
   const running = isActive(status?.job ?? null);
   useEffect(() => {  // the worker runs the import; check on it while it's going
@@ -37,7 +40,8 @@ export function ImportPage() {
     <header><h1 className="display">Bring your records</h1>
       <p className="muted">Already catalog on Discogs? Import your collection and wantlist so you don't start from zero.</p></header>
     {error && <p role="alert" className="notice notice--danger">{error}</p>}
-    {!status ? <p role="status">Loading…</p>
+    {!status && loadProblem ? <LoadError problem={loadProblem} onRetry={load} back={{ to: '/collection', label: 'Back to collection' }} />
+      : !status ? <p role="status">Loading…</p>
       : !status.configured ? <p className="notice notice--warn">Discogs import isn't set up on this server yet.</p>
       : !status.connected ? <section className="import-card">
         <p>Connect your Discogs account. Discogs asks you to approve read access, then sends you back here.</p>

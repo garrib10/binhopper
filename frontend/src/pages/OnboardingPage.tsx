@@ -4,6 +4,7 @@ import { ApiError, isValidZip, RADII, type Radius } from '../api';
 import { fetchSettings, saveSettings, type SettingsChange } from '../account';
 import { safeReturnTo } from '../auth';
 import { loadLocation, saveLocation } from '../location';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import '../styles/onboarding.css';
 
 const RADIUS_NOTES: Record<Radius, string> = { 10: 'Neighborhood', 25: 'Across town', 50: 'Day trip', 100: 'Road trip' };
@@ -39,6 +40,9 @@ export function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [locationOff, setLocationOff] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [loadProblem, setLoadProblem] = useState<LoadProblem | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const first = useRef(true);
 
   useEffect(() => {
@@ -47,8 +51,9 @@ export function OnboardingPage() {
       setRadius(s.default_radius_mi);
       setGenres(s.favorite_genres);
       setAllGenres(s.genres);
-    }).catch(() => setError("Can't reach Binhopper right now."));
-  }, []);
+      setLoaded(true);
+    }).catch((err) => setLoadProblem(describeLoadError(err, 'Your settings are unavailable.')));
+  }, [attempt]);
   useEffect(() => {  // move focus to each new step's question for keyboard and screen reader users
     if (first.current) { first.current = false; return; }
     heading.current?.focus();
@@ -90,6 +95,9 @@ export function OnboardingPage() {
     } finally { setBusy(false); }
   }
 
+  if (!loaded) return <main id="content" className="onboarding">
+    {loadProblem ? <LoadError problem={loadProblem} onRetry={() => { setLoadProblem(null); setAttempt((n) => n + 1); }} />
+      : <p role="status">Loading…</p>}</main>;
   const QUESTIONS = ['Where do you dig?', 'How far will you go?', 'What do you spin?', 'Got records already?'];
   return <main id="content" className="onboarding">
     <p className="onboarding__step">Step {step + 1} of {STEPS}</p>

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ApiError } from '../api';
 import { type AlbumDetail, getCatalog } from '../catalog';
 import { Cover } from '../components/AlbumTile';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { HeartButton } from '../components/HeartButton';
 import { useAuth } from '../AuthContext';
 import { fetchOwned } from '../collection';
@@ -12,19 +12,19 @@ export function AlbumPage() {
   const { id } = useParams();
   const [saved] = useState(loadLocation);
   const [album, setAlbum] = useState<AlbumDetail | null>(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<LoadProblem | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [tab, setTab] = useState('tracks');
   useEffect(() => {
     const controller = new AbortController();
-    setAlbum(null); setError(''); setTab('tracks');
+    setAlbum(null); setError(null); setTab('tracks');
     getCatalog<AlbumDetail>(`/albums/${id}?zip=${saved.zip}&radius=${saved.radius}`, controller.signal)
       .then((data) => { if (!controller.signal.aborted) setAlbum(data); })
-      .catch((cause) => { if (!controller.signal.aborted) setError(cause instanceof ApiError && cause.status === 404 ? cause.message : "Can't reach Binhopper right now."); });
+      .catch((cause) => { if (!controller.signal.aborted) setError(describeLoadError(cause, "That album isn't in Binhopper.")); });
     return () => controller.abort();
   }, [id, saved, attempt]);
   if (!album) return <main id="content" className="page"><h1 className="display">Album</h1>
-    {error ? <><p role="alert">{error}</p><button className="button" onClick={() => setAttempt(attempt + 1)}>Try again</button></> : <p role="status">Loading album…</p>}</main>;
+    {error ? <LoadError problem={error} onRetry={() => setAttempt(attempt + 1)} back={{ to: '/search', label: 'Back to search' }} /> : <p role="status">Loading album…</p>}</main>;
   const sides = new Map<string, typeof album.tracklist>();
   for (const track of album.tracklist) {
     const side = /^[A-Z]\d/i.test(track.position) ? `Side ${track.position[0].toUpperCase()}` : 'Tracks';

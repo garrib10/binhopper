@@ -17,7 +17,7 @@ system tests (#95) and the test-data seed (#96).
 | Unit (frontend) | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` | Component behavior: validation, error messages, state changes | `frontend` |
 | API | pytest + FastAPI `TestClient` | `backend/tests/test_*_api.py` | Each endpoint's happy path, error codes, auth and privacy | `backend` |
 | Integration | the same pytest suite on MySQL 8.4 | `TEST_DATABASE_URL` set (#94) | What SQLite hides: column precision, upserts, collation; migrations apply cleanly | `integration` (#94) |
-| E2E (mocked API) | Playwright, 390 px + 1440 px | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks | `e2e` |
+| E2E (mocked API) | Playwright, 390 px + 1440 px | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks; `e2e/a11y.spec.ts` sweeps every screen (axe, 44 px targets, keyboard walkthroughs, #74) | `e2e` |
 | System | Playwright, real API + seeded MySQL | `frontend/e2e-system/` (#95) | The whole stack together, nothing mocked | `system` (#95) |
 | Acceptance | all of the above | the table below | AC-01 to AC-21, each at the level SPEC.md names | all |
 
@@ -135,6 +135,7 @@ Run on staging before each release, at phone and desktop size, in light and dark
 - [ ] Screen reader spot check (VoiceOver): headings, buttons and alerts are announced
 - [ ] Slow network (DevTools "Slow 3G"): loading states show; nothing double-submits
 - [ ] API down (stop the backend): "Can't reach Binhopper right now." and Try again works
+  (automated for every screen in `e2e/states.spec.ts`, #45; still worth one look on a real phone)
 - [ ] Sign-in: create an account, open the emailed link, sign out, sign in; forgot password → reset;
   Continue with Google (staging: only your own email gets mail, only Google test users can sign in)
 - [ ] Privacy: a second account can't see the first account's collection or wishlist

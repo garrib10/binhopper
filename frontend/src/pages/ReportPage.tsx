@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '../api';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { ago, fetchListing, parsePrice, reportListing, type ReportableListing, type ReportResult } from '../reports';
 
 const ANSWERS: [ReportResult, string][] = [['present', 'Yes, it’s there'], ['missing', 'Not on the shelf'], ['different_price', 'Different price']];
@@ -16,7 +17,8 @@ export function ReportPage() {
   const { id = '' } = useParams();
   const priceId = useId();
   const [listing, setListing] = useState<ReportableListing | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadProblem | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [answer, setAnswer] = useState<ReportResult | null>(null);
   const [price, setPrice] = useState('');
   const [message, setMessage] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null);
@@ -28,10 +30,10 @@ export function ReportPage() {
       setListing(data);
       if (data.reported_today) setMessage({ tone: 'ok', text: 'You already reported this today. Thanks!' });
     }).catch((err) => {
-      if (!controller.signal.aborted) setLoadError(err instanceof ApiError && err.status === 404 ? 'This listing is no longer shown.' : "Can't reach Binhopper right now.");
+      if (!controller.signal.aborted) setLoadError(describeLoadError(err, 'This listing is no longer shown. It may have sold.'));
     });
     return () => controller.abort();
-  }, [id]);
+  }, [id, attempt]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -51,7 +53,8 @@ export function ReportPage() {
   }
 
   if (!listing) return <main id="content" className="page"><h1 className="display">I'm at the shop</h1>
-    {loadError ? <p role="alert">{loadError}</p> : <p role="status">Loading…</p>}</main>;
+    {loadError ? <LoadError problem={loadError} onRetry={() => { setLoadError(null); setAttempt((n) => n + 1); }} back={{ to: '/search', label: 'Back to search' }} />
+      : <p role="status">Loading…</p>}</main>;
   const closed = done || listing.reported_today;
   return <main id="content" className="page report-page">
     <Link className="back-link" to={`/albums/${listing.album.id}/stores`}>← {listing.store.name}</Link>

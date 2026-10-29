@@ -2,7 +2,7 @@ import sys
 import time
 from collections.abc import Callable, Iterator
 
-from sqlalchemy import Connection, Engine, create_engine, event
+from sqlalchemy import Connection, Engine, create_engine, delete, event, select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -73,6 +73,19 @@ def connect_with_retry(
                 raise
             print(f"Database not ready ({exc.orig}); retrying in {interval:g}s", file=sys.stderr)
             sleep(interval)
+
+
+def delete_where(db: Session, model, *conditions) -> int:
+    """Delete matching rows by primary key; returns how many.
+
+    A plain `DELETE … WHERE` on MySQL locks the index gaps it scans, even when nothing
+    matches, and two requests that then insert into those gaps deadlock (1213). Reading
+    the ids first (a non-locking read) and deleting exactly those rows locks only them.
+    """
+    ids = db.scalars(select(model.id).where(*conditions)).all()
+    if ids:
+        db.execute(delete(model).where(model.id.in_(ids)))
+    return len(ids)
 
 
 def get_session() -> Iterator[Session]:

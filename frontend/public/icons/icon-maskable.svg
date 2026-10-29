@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Maskable: full-bleed tile, mark inside the central 80% safe zone. -->
+  <rect width="512" height="512" fill="#1b1814"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#d2451e" stroke-width="28"/>
+  <circle cx="256" cy="256" r="84" fill="none" stroke="#d2451e" stroke-opacity="0.35" stroke-width="5"/>
+  <circle cx="256" cy="256" r="44" fill="#e2b13c"/>
+  <circle cx="256" cy="256" r="10" fill="#1b1814"/>
+</svg>

@@ -69,6 +69,17 @@ npm run dev
 
 Open http://localhost:5173.
 
+**Install as an app.** Binhopper is installable (#91): on an iPhone, open it in Safari →
+Share → Add to Home Screen; on Android, Chrome → ⋮ → Install app. It opens full screen
+with its own icon. Installing needs https, so try it on staging, not on a phone pointed
+at your laptop. The icons come from `frontend/public/icons/*.svg`; after changing one,
+run `node scripts/make-icons.mjs` in `frontend/` to redraw the PNGs.
+
+**Signing in locally.** Create an account at http://localhost:5173/create-account. Locally no
+email is sent (`EMAIL_BACKEND=log`): the confirmation or reset email, with its link, is printed
+in the `uvicorn` terminal between `--- Email to …` lines. Open that link in the browser. Google
+sign-in shows only if you add Google keys to `backend/.env` (see docs/DEPLOY.md › Sign-in).
+
 ## Tests
 
 ```bash

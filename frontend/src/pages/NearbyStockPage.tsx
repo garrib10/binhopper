@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ApiError, fetchNearbyStock, isValidZip, RADII, type NearbyStockResponse, type Radius } from '../api';
 import { RadiusPicker } from '../components/RadiusPicker';
-import { StoreCard } from '../components/StoreCard';
+import { OtherShopCard, StoreCard } from '../components/StoreCard';
 import { StockMap } from '../components/StockMap';
 import { OnlineSellers, type OnlineResult } from '../components/OnlineSellers';
 import { getCatalog } from '../catalog';
@@ -125,14 +125,15 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
 
         {state.kind === 'loaded' && state.data.stores.length > 0 && (
           <>
-            <h2 className="section-title">
+            <h2 className="section-title" id="stock-heading">
               {state.data.stores.length} {state.data.stores.length === 1 ? 'store has it' : 'stores have it'}
             </h2>
-            <ol className="store-list">
+            <ol className="store-list" aria-labelledby="stock-heading">
               {state.data.stores.map((s, i) => (
                 <StoreCard key={s.listing_id} store={s} index={i} />
               ))}
             </ol>
+            <p className="muted store-list__note">Stores are ranked by how fresh their stock data is, then distance.</p>
           </>
         )}
 
@@ -142,7 +143,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
             {state.data.nearest_outside_mi !== null && (
               <p className="muted">Nearest copy is {state.data.nearest_outside_mi} mi away.</p>
             )}
-            <p>No shop in this radius has this album right now.</p>
+            <p>No shop near you has {online?.album_title ?? albumTitle} right now{state.data.nearest_outside_mi !== null ? ", but it's closer than you think." : '.'}</p>
             {nextRadius && (
               <button type="button" className="button button--primary" onClick={() => setRadius(nextRadius)}>
                 Try {nextRadius} mi
@@ -151,6 +152,15 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
             {online?.sellers?.length ? <a href="#online-sellers">See online sellers instead</a> : null}
           </div>
         )}
+        {state.kind === 'loaded' && state.data.other_shops?.length ? (
+          <section className="other-shops" aria-labelledby="other-shops-heading">
+            <h2 className="section-title" id="other-shops-heading">Other record shops nearby</h2>
+            <p className="muted">No online inventory. Call to check.</p>
+            <ul className="store-list" aria-labelledby="other-shops-heading">
+              {state.data.other_shops.map((shop) => <OtherShopCard key={shop.store_id} shop={shop} albumId={albumId} />)}
+            </ul>
+          </section>
+        ) : null}
         <OnlineSellers data={online} />
         {onlineError && <p className="muted">Online sellers are unavailable right now.</p>}
       </section>

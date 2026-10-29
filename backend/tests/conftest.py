@@ -18,6 +18,8 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app import mailer, passwords
+from app.config import settings
 from app.db import Base, get_session
 from app.main import app
 from app.routers.stock import get_now
@@ -53,6 +55,18 @@ def session(request) -> Iterator[Session]:
         yield s
 
 
+@pytest.fixture(autouse=True)
+def fast_auth(monkeypatch):
+    """Every test: cheap Argon2 parameters and emails kept in memory, never sent."""
+    from argon2 import PasswordHasher
+
+    cheap = PasswordHasher(time_cost=1, memory_cost=8, parallelism=1)
+    monkeypatch.setattr(passwords, "hasher", cheap)
+    monkeypatch.setattr(passwords, "DUMMY_HASH", cheap.hash("binhopper-no-such-account"))
+    monkeypatch.setattr(settings, "email_backend", "memory")
+    mailer.outbox.clear()
+
+
 @pytest.fixture
 def client(session: Session) -> Iterator[TestClient]:
     app.dependency_overrides[get_session] = lambda: session
@@ -60,3 +74,31 @@ def client(session: Session) -> Iterator[TestClient]:
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def sign_in(client: TestClient, session: Session):
+    """Sign the test client in as a new verified user: `user = sign_in("a@example.com")`.
+
+    Calling it again switches the client to another user (the cookie is replaced).
+    """
+    from datetime import timedelta
+
+    from app.models import User, UserSession, UserSettings
+    from app.passwords import new_token, token_hash
+    from app.sessions import COOKIE
+
+    def as_user(email: str = "collector@example.com") -> User:
+        user = User(username="collector-" + email.split("@")[0][:20], email=email,
+                    email_verified_at=NOW, settings=UserSettings())
+        session.add(user)
+        session.flush()
+        token = new_token()
+        session.add(UserSession(user_id=user.id, token_hash=token_hash(token), created_at=NOW,
+                                expires_at=NOW + timedelta(days=30), last_seen_at=NOW))
+        session.commit()
+        client.cookies.set(COOKIE, token)
+        client.headers["X-Binhopper-CSRF"] = "1"
+        return user
+
+    return as_user

@@ -1,0 +1,16 @@
+/* Discogs import (#44): Import.dc.html. */
+.import-page { max-width: 560px; gap: var(--space-4); }
+.import-page header p { margin: 6px 0 0; }
+.import-card { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.import-card p { margin: 0; }
+.import-card .section-title { margin: 0; }
+.import-choices label { display: flex; align-items: flex-start; gap: var(--space-3); min-height: var(--touch-target); cursor: pointer; }
+.import-choices label > span { display: flex; flex-direction: column; gap: 2px; }
+.import-choices label .muted { font-size: 12px; }
+.import-choices input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--color-accent); }
+.import-counts { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin: 0; }
+.import-counts div { display: flex; flex-direction: column-reverse; gap: 2px; }
+.import-counts dt { font-size: 12px; color: var(--color-text-muted); }
+.import-counts dd { margin: 0; font-family: var(--font-display); font-weight: 800; font-stretch: 85%; font-size: 28px; }
+.import-links { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.import-links .button { display: inline-flex; align-items: center; text-decoration: none; }

@@ -58,3 +58,9 @@ it('allows genre, decade and optional year browsing', async () => {
   expect(request.searchParams.get('decade')).toBe('1970');
   expect(request.searchParams.get('year')).toBe('1977');
 });
+
+it('shows the notice the Discogs API terms require on every screen', () => {
+  setup();
+  expect(screen.getByRole('contentinfo')).toHaveTextContent(
+    'This application uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs. ‘Discogs’ is a trademark of Zink Media, LLC.');
+});

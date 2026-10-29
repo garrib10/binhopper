@@ -12,7 +12,7 @@ from app.freshness import SORT_TIER, classify
 from app.inventory import visible_inventory
 from app.geo import ALLOWED_RADII_MI, bounding_box, display_miles, haversine_mi, within_radius
 from app.models import Album, Pressing, StockListing, StockReport, Store, ZipCode, utcnow
-from app.schemas import NearbyStockResponse, NearbyStore
+from app.schemas import NearbyStockResponse, NearbyStore, OtherShop
 
 router = APIRouter(prefix="/api", tags=["stock"])
 
@@ -86,6 +86,7 @@ def nearby_stock(
                 discogs_url=(f"https://www.discogs.com/sell/item/{listing.discogs_listing_id}"
                              if listing.source == "discogs" and listing.discogs_listing_id else None),
                 freshness=fresh,
+                missing_reports=missing_counts.get(listing.id, 0),
                 last_updated_at=max(
                     (t for t in (listing.last_synced_at, listing.last_verified_at) if t),
                     default=None,
@@ -111,7 +112,24 @@ def nearby_stock(
         center_lng=origin.lng,
         stores=stores,
         nearest_outside_mi=nearest_outside,
+        other_shops=_other_shops(session, origin, radius, {s.store_id for s in stores}),
     )
+
+
+def _other_shops(session: Session, origin: ZipCode, radius: int, listed: set[int]) -> list[OtherShop]:
+    """Active shops in the radius with no Discogs seller account and no listing here (rule 9)."""
+    min_lat, max_lat, min_lng, max_lng = bounding_box(origin.lat, origin.lng, radius)
+    candidates = session.scalars(select(Store).where(
+        Store.active.is_(True), Store.discogs_seller_name.is_(None),
+        Store.lat.between(min_lat, max_lat), Store.lng.between(min_lng, max_lng))).all()
+    shops = []
+    for store in candidates:
+        d = haversine_mi(origin.lat, origin.lng, store.lat, store.lng)
+        if store.id not in listed and within_radius(d, radius):
+            shops.append(OtherShop(store_id=store.id, name=store.name, area=store.area,
+                                   distance_mi=display_miles(d), phone=store.phone,
+                                   lat=store.lat, lng=store.lng))
+    return sorted(shops, key=lambda s: (s.distance_mi, s.name))
 
 
 def _missing_reports_last_24h(session: Session, listing_ids: list[int], now: datetime) -> dict[int, int]:

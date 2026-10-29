@@ -35,10 +35,11 @@ Version 1 ships the core loop plus account settings; everything that depends on 
 | Locate, hold, buy (hand-off to shop) | v1 | Core loop |
 | Collection with pressing + condition | v1 | Core loop |
 | Discogs import | v1 | Collectors won't start from zero |
-| Account settings ("You": 4 tabs mobile, 5 desktop) | v1 | Required for App Store; privacy controls |
+| Account settings ("You": 4 tabs mobile, 5 desktop) | v1 | Privacy controls, sign-in and account management |
 | Light + dark mode | v1 | Already designed; cheap with theme tokens |
 | Empty and error states | v1 | Needed the moment real data is involved |
 | Stock confirmation ("I saw it here") | v1 | Part of the launch data plan |
+| Two-step sign-in | v1.1 | Optional extra protection once there are real accounts to protect |
 | Barcode / cover scan | v1.1 | High value, but needs camera + matching work |
 | Price + distance alerts, notifications inbox | v1.1 | Needs reliable stock data first |
 | Holds & orders tracking | v1.1 | v1 hands off to the shop's own process |
@@ -48,6 +49,8 @@ Version 1 ships the core loop plus account settings; everything that depends on 
 | Record Store Day mode | v1.2 | Seasonal; time it to an RSD date |
 | Sell or trade, shareable profile + gift list | Later | Social features after a user base exists |
 | Store portal (inventory upload) | Later | Build when shops ask to be listed |
+| Sign in with Apple | Later | Needs a $99/year Apple Developer account; add it with a native iOS app (App Store guideline 4.8) |
+| Friends (and the "Friends" privacy option) | Later | Comes with the social features |
 
 ## Feature specs
 
@@ -55,8 +58,8 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ### Onboarding
 
-1. Four steps: location, default radius, favorite genres, then import or scan. Back and Continue on every step; the last step offers "Skip for now."
-2. Location: "Use my location" asks the device for permission; ZIP entry is always available instead. A 5-digit US ZIP is required to continue.
+1. Four steps: location, default radius, favorite genres, then import (scanning arrives with barcode scan in v1.1). Back and Continue on every step; the last step offers "Skip for now." It runs once, right after sign-up: a new email account goes there from its confirmation link, a new Google account straight after Google. Signed-out visitors keep using the ZIP box.
+2. Location: "Use my location" asks the device for permission and fills in the nearest ZIP; the coordinates are used for that one lookup and never stored. If permission is denied, the screen says location is off and the ZIP entry still works. A 5-digit US ZIP is required to continue.
 3. Default radius options: 10, 25, 50, 100 mi. Default is 25.
 4. Genres are optional, multi-select, from a fixed list of 12.
 5. Choices are saved to the user's settings and can be changed later in You › Settings.
@@ -85,9 +88,9 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ### Wishlist
 
-1. Add or remove from any album row or page with the heart. Change is saved immediately.
-2. An item can target any pressing or a specific one, plus optional max price and minimum condition.
-3. In-stock items show the store count and the nearest or cheapest store, with a "Find it" button. Out-of-stock items show the nearest copy's distance.
+1. Add or remove from any album row or page with the heart. Change is saved immediately. The wishlist belongs to a signed-in account: signed out, the heart asks the user to sign in and saves nothing.
+2. An item can target any pressing or a specific one, plus optional max price and minimum condition (Goldmine grades M, NM, VG+, VG, G+, G, P; a sealed "New" copy counts as M).
+3. In-stock items show the store count and the nearest store, plus the cheapest when it's a different shop, with a "Find it" button. Out-of-stock items show the nearest copy's distance. Only copies matching the item's pressing, price and condition count.
 
 ### Nearby stock
 
@@ -99,12 +102,13 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 6. Two or more "not on the shelf" reports in 24 h mark the listing "Reported missing" and drop it to the bottom.
 7. No stores in radius → show the nearest copy's distance and offer the next radius up and online sellers. Alerts stay hidden until v1.1.
 8. Below the store list: "Can't make it? Buy online" with search links for Discogs marketplace, eBay, Amazon and Urban Outfitters. Include the official artist store only when its verified HTTPS URL is configured. No scraped prices or availability claims.
+9. Below the stock list, above "Can't make it? Buy online": "Other record shops nearby — no online inventory. Call to check." It lists active shops within the radius that have no Discogs seller account and no listing for this album, sorted by distance, each with name, distance, area, phone (tap to call) and Directions. They never show a price or stock claim, never count toward "N stores have it" or search stock lines, and aren't pinned on the map. When a user reports the album there as on the shelf, the shop moves into the stock list as a user-reported listing under the freshness rules (rule 5).
 
 ### Locate, hold, buy
 
 1. Locate: directions in the device's maps app, plus call store.
 2. Hold or buy in v1 hands off to the shop: its phone number, website or Discogs listing. In-app holds come in v1.1.
-3. After a hand-off, prompt "Got it? Add to collection," which also removes it from the wishlist.
+3. After a hand-off, prompt "Got it? Add to collection," which also removes it from the wishlist. The prompt shows on that record's page and on the wishlist until the user answers ("add" or "No thanks"), for up to 7 days; it's remembered in the browser only. The copy is added with its pressing, the listing's price and condition, and the shop as "bought at"; an owned pressing asks before adding a second copy.
 
 ### Collection
 
@@ -112,29 +116,31 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 2. Each copy records pressing, media grade and sleeve grade (M, NM, VG+, VG, G+, G, P), price paid, where bought, notes.
 3. Adding a pressing you already own warns "You already own this pressing" and offers "Add as 2nd copy."
 4. Views: grid or list; sort by recently added, artist A–Z, genre, year.
+5. Estimated value waits for marketplace price data (v1.2). Until then the collection shows records, artists, wishlist and duplicate counts. The collection belongs to a signed-in account.
 
 ### Discogs import
 
-1. User connects their Discogs account (OAuth) and picks collection, wantlist, or both.
+1. User connects their Discogs account (OAuth 1.0a; tokens encrypted at rest, removed on disconnect or account deletion) and picks collection, wantlist, or both.
 2. Wantlist items go to the wishlist; collection items keep pressing, condition and notes.
 3. Records already in the app are matched by Discogs release ID and skipped. The summary shows added, wishlisted and skipped counts.
+4. The import runs in the worker, through the same 60-per-minute Discogs queue as the catalog and inventory sync; the Import screen shows progress. Releases not in the catalog yet are looked up by the worker and land when found ("being looked up"); ones still unknown after a day are left out and counted. Two copies of a release in the Discogs collection come in as two copies; a pressing the user owned before the import is skipped.
 
 ### Account settings ("You")
 
 1. Opened from the profile button in the header on every main screen, mobile and desktop.
-2. Mobile tabs: Profile, Settings, Privacy, Account. Desktop adds Notifications as a fifth tab.
-3. Profile: photo, username, favorite genres, connected accounts (Discogs, Spotify, Apple Music).
+2. Tabs: Profile, Settings, Privacy, Account (side tabs on desktop). Desktop's Notifications tab arrives with alerts in v1.1.
+3. Profile: initials avatar (photo upload comes later), username, favorite genres, connected accounts (Discogs in v1; Spotify and Apple Music listen links need no account).
 4. Settings: home ZIP, default radius, current-location toggle (off by default), appearance (Light, Dark, Match system; default Match system).
-5. Privacy: profile, collection and wishlist each set to Everyone, Friends or Only me (default Only me). Export collection (CSV) and download all data.
-6. Account: email, sign-in method, password and security, help, sign out, delete account with confirmation.
+5. Privacy: profile, collection and wishlist each set to Everyone or Only me (default Only me); a Friends option comes with the social features (Later). Export collection (CSV) and download all data.
+6. Account: email, sign-in method, password (reset by email), sign out, delete account with confirmation. Help pages, terms and privacy policy links arrive with the policies before launch.
 
 ## Data model
 
-Eleven tables cover v1 in MySQL 8: the ten below plus an album\_genres join table. Catalog data (artists, albums, pressings) is cached from Discogs; users, stores and stock are the app's own.
+Eighteen tables cover v1 in MySQL 8: the ten below, the album\_genres join table, four sign-in tables (sessions, auth\_tokens, oauth\_states, rate\_limit\_hits) and three Discogs import tables (discogs\_accounts, import\_jobs, import\_pending). Catalog data (artists, albums, pressings) is cached from Discogs; users, stores and stock are the app's own.
 
 | Table | Key fields | Relates to |
 | --- | --- | --- |
-| users | id, username, email, auth\_provider, home\_zip, default\_radius\_mi, theme, created\_at | settings, wishlist\_items, collection\_items |
+| users | id, username, email, auth\_provider, email\_verified\_at, google\_sub, password\_hash, home\_zip, default\_radius\_mi, theme, created\_at | settings, wishlist\_items, collection\_items |
 | user\_settings | user\_id, use\_current\_location, privacy\_profile, privacy\_collection, privacy\_wishlist, favorite\_genres (JSON) | users (1:1) |
 | artists | id, discogs\_artist\_id, name, bio, image\_url | albums |
 | albums (Discogs "master") | id, discogs\_master\_id, artist\_id, title, year, cover\_url, tracklist (JSON with side positions) | artists, pressings |
@@ -144,6 +150,7 @@ Eleven tables cover v1 in MySQL 8: the ten below plus an album\_genres join tabl
 | stock\_reports | id, listing\_id, user\_id, result (present / missing / different\_price), reported\_price, created\_at | stock\_listings, users |
 | wishlist\_items | id, user\_id, album\_id, pressing\_id (nullable = any), max\_price, min\_condition, created\_at | users, albums, pressings |
 | collection\_items | id, user\_id, pressing\_id, media\_grade, sleeve\_grade, price\_paid, bought\_at, notes, added\_at | users, pressings |
+| sessions / auth\_tokens | user\_id, token\_hash, expires\_at (auth\_tokens: purpose, used\_at) | users |
 
 Rules: one user can own the same pressing more than once (copy 2, copy 3). ZIP codes resolve to a lat/lng center through a ZIP lookup table loaded once at setup. Genres and styles sit in album\_genres (album\_id, genre, style), indexed on genre, so genre + year browsing stays fast; artist genres are derived from their albums.
 
@@ -157,7 +164,7 @@ Launch data comes from Discogs (catalog and shop inventory), a places API (shop 
 | Discogs seller inventory | What a shop has for sale, price, condition | `GET /users/{username}/inventory` for each shop's Discogs seller account | Paginated; only "For Sale" items visible; we keep a store → seller-name directory by hand |
 | Discogs data dumps | Bulk catalog seed | Monthly CC0 dumps loaded into the database | Free to use; reduces API calls |
 | Places API (Google Places or similar) | Shop names, addresses, coordinates, hours | Search "record store" in the area being mapped, review results by hand | Pricing and terms per provider; store only what terms allow |
-| User stock reports | "On the shelf" / "missing" / "different price" | Report screen on store and stock pages | One report per user per listing per day |
+| User stock reports | "On the shelf" / "missing" / "different price"; "I saw it here" at a shop with no online inventory | Report screen on store and stock pages (signed in) | One report per user per listing per day, and at most 30 reports per user per hour. "Different price" updates manual and user-reported listings, never Discogs listings. "I saw it here" asks for the pressing, new or used, and the sticker price, and becomes a user-reported listing |
 | Online sellers | Fallback links | Deep links to a search on the seller's site (artist store, retailer, eBay, Amazon) | No stock data or scraping; affiliate links later |
 | Spotify / Apple Music | Listen links | Album search link or ID match | Link out only |
 
@@ -182,24 +189,34 @@ The app only calls our API. The sync worker fills the database on a schedule and
 - Backend: Python 3.12+ with FastAPI, Pydantic models for request and response validation, SQLAlchemy 2.0 as the ORM, Alembic for database migrations. FastAPI's built-in /docs page (Swagger) lets you try every endpoint by hand.
 - Database: MySQL 8. Store locations are plain `lat` / `lng` columns with a composite index; the nearby search filters by a bounding box in SQL, then checks exact distance in Python (haversine). This works the same in MySQL and in the SQLite test database. A spatial `POINT` column can replace it later if the store count grows a lot.
 - Jobs: a scheduled worker using APScheduler, with python3-discogs-client for Discogs calls.
+- Email: Resend for verification and password-reset emails, behind one send\_email interface; local development logs emails instead of sending.
 - Hosting: one small app server, a managed MySQL database, and static hosting for the front end.
 
 **Main API endpoints**
 
 | Method | Path | Purpose |
 | --- | --- | --- |
+| POST | /auth/register, /auth/verify, /auth/sign-in, /auth/sign-out, /auth/forgot-password, /auth/reset-password | Email sign-up and sign-in |
+| GET | /auth/google/start, /auth/google/callback | Google sign-in |
+| GET | /auth/me | Current user or 401 |
+| GET | /zips/nearest?lat=&lng= | Nearest ZIP for "Use my location" (nothing stored) |
 | GET | /search?q=&type=albums\|artists | Search catalog |
 | GET | /browse?genre=&decade=&year=&sort= | Genre + year results |
 | GET | /artists/{id} | Artist page with discography |
 | GET | /albums/{id} | Album page, tracklist, pressings |
 | GET | /albums/{id}/stock?zip=&radius= | Nearby stores with that album, sorted |
 | GET | /albums/{id}/online | Online seller links |
-| POST | /stock/{listingId}/reports | "On the shelf" / "missing" / price report |
-| GET, POST, DELETE | /me/wishlist | Read, add, remove wishlist items |
-| GET, POST, PATCH, DELETE | /me/collection | Manage collection copies |
-| POST | /me/import/discogs | Start a Discogs import |
+| GET, POST | /stock/{listingId}, /stock/{listingId}/reports | Report screen data; "On the shelf" / "missing" / price report |
+| GET, POST | /stores/{storeId}/sighting, /stores/{storeId}/sightings | "I saw it here" at a shop with no online inventory |
+| GET, POST, PATCH, DELETE | /me/wishlist | Read, add, change, remove wishlist items (GET /me/wishlist/albums: hearted album ids) |
+| GET, POST, PATCH, DELETE | /me/collection | Manage collection copies (POST answers 409 for an owned pressing unless `another_copy`; GET /me/collection/owned?album_id= for the album page) |
+| GET, POST | /me/import/discogs | Import status; start a Discogs import (run by the worker) |
+| GET | /discogs/connect, /discogs/callback | Connect a Discogs account (OAuth) |
+| DELETE | /me/discogs | Disconnect Discogs (removes the stored tokens) |
+| GET | /listings/{id} | One copy at one shop, for the hold-or-buy page |
+| POST | /me/collection/from-listing | "Got it? Add to collection" (adds the copy, removes the album from the wishlist) |
 | GET, PATCH | /me/settings | ZIP, radius, theme, privacy, genres |
-| GET | /me/export | Collection CSV / data download |
+| GET | /me/export, /me/data | Collection CSV; all your data as JSON |
 | DELETE | /me | Delete account and all data |
 
 ## Privacy, security and compliance
@@ -208,12 +225,12 @@ Everything a user stores starts private, and the app collects only what the core
 
 - **Private by default:** profile, collection and wishlist are "Only me" until the user changes them. What someone paid and their collection's value are never shown to others.
 - **Location:** device location is off by default and requested only when the user taps "Use my location." The server stores the home ZIP, not GPS history.
-- **Account deletion in the app:** required by Apple for any app with account creation. Deleting removes the user row and all wishlist, collection, report and settings data. Anonymized stock reports may be kept for listing accuracy.
+- **Account deletion in the app:** a privacy feature: anyone can delete their account from You › Account. Deleting removes the user row and all wishlist, collection, report, session and settings data. Anonymized stock reports may be kept for listing accuracy.
 - **Data export:** collection as CSV, plus a full data download.
-- **Sign-in:** Sign in with Apple, Google, or email + password. Passwords hashed (bcrypt or Argon2); optional 2-step sign-in.
+- **Sign-in:** Google or email + password in v1; Sign in with Apple waits for a native iOS app, and optional two-step sign-in comes in v1.1. Email sign-ups confirm their address by a link before the first sign-in. Passwords are hashed with Argon2id. Sessions use an HttpOnly, SameSite=Lax cookie set through the app's own origin; sign-in, sign-up and reset are rate-limited, and responses never reveal whether an email has an account. Verification and password-reset emails are sent through Resend.
 - **Connected accounts:** Discogs, Spotify and Apple Music use OAuth; tokens are encrypted at rest and removed on disconnect.
 - **Transport and secrets:** HTTPS everywhere; API keys only on the server, never in the React bundle.
-- **Abuse limits:** rate-limit stock reports and search per user to protect data quality and the Discogs quota.
+- **Abuse limits:** rate-limit stock reports per user, and search per IP address (search works signed out), to protect data quality and the Discogs quota.
 - **Policies before launch:** a privacy policy and terms of use, linked in You › Account.
 
 ## Acceptance criteria and test plan
@@ -238,6 +255,11 @@ The riskiest logic is the radius math, stock freshness and duplicate handling, s
 | AC-14 | Settings | Given appearance "Match system" and a phone in dark mode, when the app opens, then the dark theme shows | E2E |
 | AC-15 | Account | Given a confirmed delete, then the user's data is gone and sign-in with the old credentials fails | API + E2E |
 | AC-16 | Rate limit | Given 100 sync jobs queued, when the worker runs, then Discogs calls never exceed 60 in any 60-second window | Integration |
+| AC-17 | Nearby stock | Given an active shop with no Discogs seller 12 mi from the ZIP and radius 25, when stock loads, then it appears under "Other record shops nearby" with call and directions, without a price, sorted by distance, and is not counted in the stock list | API + Unit + E2E |
+| AC-18 | Stock reports | Given a shop listed under "Other record shops nearby", when a signed-in user reports the album there as on the shelf, then the shop moves into the stock list as a user report labelled "Verified" for 24 h, then under the 7-day rule | API + E2E |
+| AC-19 | Account | Given a new email sign-up, when the emailed link is opened, then the account is verified and signed in; the same link fails a second time, and a link older than 24 h fails | API + E2E |
+| AC-20 | Account | Given an unknown email or a wrong password, then sign-in, sign-up, forgot-password and resend-verification respond identically (same status and body) | API |
+| AC-21 | Account | Given a password reset, then all the user's other sessions end and the reset link works once, within 1 h | API + E2E |
 
 **Test approach**
 

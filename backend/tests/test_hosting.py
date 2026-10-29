@@ -37,7 +37,7 @@ def test_sample_seed_repeat_with_existing_zip(session):
         return [session.scalar(select(func.count()).select_from(model))
                 for model in (Album, Store, StockListing, ZipCode)]
     before = counts()
-    assert before == [1, 4, 4, 1]
+    assert before == [1, 5, 4, 1]  # 4 shops with stock + 1 call-to-check shop (#138)
     assert load(session) is False
     assert counts() == before
 

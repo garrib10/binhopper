@@ -288,6 +288,56 @@ redeploys. The Deploy check reports exactly that.
 **Rotating:** generate a new value. Set Railway's `ORIGIN_SECRET` to `new,old` and apply, which
 accepts both. Set Vercel's to `new` and redeploy. Then set Railway's to `new` alone and apply.
 
+## Sign-in: email and Google (#38)
+
+The API sends verification and password-reset emails, and runs the Google sign-in exchange.
+Everything lives on the Railway `api` service; Vercel and GitHub need nothing. Keys never go in
+Git, in chat or in `VITE_` variables.
+
+| Railway `api` variable | Staging | Production (at launch) |
+| --- | --- | --- |
+| `PUBLIC_APP_URL` | `https://binhopper-git-staging-garrib11.vercel.app` | the production app URL |
+| `EMAIL_BACKEND` | `resend` | `resend` |
+| `RESEND_API_KEY` (secret) | a **Sending access** key | its own key |
+| `EMAIL_FROM` | `Binhopper <onboarding@resend.dev>` | `Binhopper <hello@your-domain>` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (secret) | from Google Cloud | the same client, with the production redirect URI added |
+
+`PUBLIC_APP_URL` builds the links in emails and Google's redirect URI, and it's the only
+`Origin` the API accepts on POSTs, so open staging at that address (not a per-deployment
+`…-<hash>-garrib11.vercel.app` URL) to sign in. Without `GOOGLE_CLIENT_ID` and
+`GOOGLE_CLIENT_SECRET` the app simply hides "Continue with Google".
+
+**Resend on staging (as of 2026-10-28):** without a verified domain, Resend's test sender
+`onboarding@resend.dev` delivers **only to the email of the Resend account owner**; any other
+address gets a 403, which the API logs ("Email to … failed") without changing its response. So on
+staging, only the owner can finish an email sign-up or reset. The free plan allows 3,000 emails
+a month and 100 a day. **Real delivery needs a custom domain** with Resend's DNS records
+(SPF/DKIM) verified, then `EMAIL_FROM` on that domain: tracked in #119 with the domain decision.
+Sources: [Resend 403 with resend.dev](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain),
+[Resend domains](https://resend.com/docs/dashboard/domains/introduction),
+[Resend pricing](https://resend.com/pricing).
+
+**Google Cloud (one-time):**
+
+1. [console.cloud.google.com](https://console.cloud.google.com) → new project **Binhopper**.
+2. **Google Auth Platform → Branding/Audience:** External, app name Binhopper, your support email.
+   Leave it in **Testing**: only the Google accounts listed under **Test users** can sign in.
+   Data access scopes: `openid`, `email`, `profile`.
+3. **Clients → Create client → Web application.** Authorized redirect URIs:
+   - `http://localhost:5173/api/auth/google/callback` (local dev)
+   - `https://binhopper-git-staging-garrib11.vercel.app/api/auth/google/callback` (staging)
+4. Put the client ID and secret in Railway (above) and, if you want Google locally, in `backend/.env`.
+
+Publishing the consent screen (so anyone can use Google sign-in) needs a homepage and a privacy
+policy on a domain you own (#85, #119); until then it stays in Testing.
+
+**Local development:** `EMAIL_BACKEND=log` (the default) prints each email with its link in the
+`uvicorn` output; open the link in the browser. The local system tests use `EMAIL_BACKEND=file`.
+
+**Check after setting the variables:** open the staging app → Sign in → Create an account with
+the Resend owner's address → the email arrives → the link signs you in. `curl -i <APP_URL>/api/auth/me`
+(with the bypass header) returns 401 with `Cache-Control: no-store`.
+
 ## 5. Better Stack dashboard
 
 Issue #83 includes recording monitor setup; this guide does not provision it or close the
@@ -346,6 +396,7 @@ verify the API/catalog and frontend, and document the incident and corrected pro
 - [Vercel Protection Bypass for Automation](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
   and [Shareable Links](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/sharable-links)
 - [GitHub workflow_run semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
+- [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)
 - [Better Stack HTTP monitors](https://betterstack.com/docs/uptime/uptime-monitor/)
 
 ## Nearby map tiles (#36)
@@ -411,6 +462,22 @@ domain. Set its `DATABASE_URL` to that environment's MySQL reference, plus
 `DISCOGS_TOKEN` and `DISCOGS_USER_AGENT`. Do not run the worker inside uvicorn. Deploy the API/migrations
 first, then the worker. The MySQL advisory lease prevents overlapping workers and
 all catalog/inventory calls share durable rolling quota reservations.
+
+**Discogs import (#44).** Users connect their own Discogs accounts, so the app needs a
+Discogs **application** (separate from `DISCOGS_TOKEN`, the app's own personal token):
+
+1. On [discogs.com/settings/developers](https://www.discogs.com/settings/developers) → **Create an
+   Application**: name Binhopper, callback URL `<PUBLIC_APP_URL>/api/discogs/callback` (locally
+   `http://localhost:5173/api/discogs/callback`). Copy the **consumer key** and **consumer secret**.
+2. Generate a token encryption key on your own machine (keep it in your password manager):
+   `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`.
+3. Set `DISCOGS_CONSUMER_KEY`, `DISCOGS_CONSUMER_SECRET` and `TOKEN_ENCRYPTION_KEY` on **both**
+   the `api` (the OAuth handshake) and the `worker` (it reads users' collections), with the same
+   values. Changing `TOKEN_ENCRYPTION_KEY` later disconnects everyone (their stored tokens can't be
+   read), so set it once.
+
+Without them the Import screen says "Discogs import isn't set up on this server yet." Imports
+only progress while the worker runs.
 
 A failed inventory page retains the previous snapshot and retries after five
 minutes; API readers hide it at six hours even while the worker is down. The

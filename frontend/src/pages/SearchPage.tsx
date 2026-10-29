@@ -2,6 +2,7 @@ import '../styles/search.css';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { ApiError } from '../api';
+import { HeartButton } from '../components/HeartButton';
 import { loadLocation } from '../location';
 import { fetchSearch, type SearchAlbum, type SearchResult } from '../search';
 
@@ -18,7 +19,7 @@ function ResultRow({ album, radius, grid }: { album: SearchAlbum; radius: number
   return <article className="search-result"><Link className={`search-album${grid ? ' search-album--grid' : ''}`} to={`/albums/${album.id}`}>
     <span className="search-cover">{album.cover_url && !failed ? <img src={album.cover_url} alt={`${album.title} cover`} onError={() => setFailed(true)} /> : <span className="search-vinyl" aria-hidden="true"><span /></span>}</span>
     <span className="search-album__info"><strong>{album.title}</strong><span className="muted">{album.artist.name}{album.year ? ` · ${album.year}` : ''} · {album.format}</span><span className={album.store_count ? 'search-stock' : 'muted'}>{stock}</span></span>
-  </Link><a className="search-attribution" href={album.discogs_url} target="_blank" rel="noopener noreferrer">Data provided by Discogs.</a></article>;
+  </Link><HeartButton albumId={album.id} title={album.title} /><a className="search-attribution" href={album.discogs_url} target="_blank" rel="noopener noreferrer">Data provided by Discogs.</a></article>;
 }
 
 export function SearchPage() {

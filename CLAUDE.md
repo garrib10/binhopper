@@ -6,8 +6,8 @@ and track your collection. React web app (mobile + desktop) + Python FastAPI + M
 ## Where things are
 
 - `docs/SPEC.md`: what to build. Feature rules, data model, API endpoints, acceptance
-  criteria (AC-01 to AC-16). Follow it; if code and spec disagree, ask before changing either.
-- `docs/TESTING.md`: test levels, AC-01 to AC-16 → tests map, test data, mocking rules, CI gates.
+  criteria (AC-01 to AC-21). Follow it; if code and spec disagree, ask before changing either.
+- `docs/TESTING.md`: test levels, AC-01 to AC-21 → tests map, test data, mocking rules, CI gates.
 - `design/mockups/*.dc.html`: the visual target for every screen. `design/README.md` explains
   the file format and maps each file to its spec section.
 - `frontend/src/styles/tokens.css`: all colors, fonts, radii and spacing, light + dark.
@@ -48,6 +48,7 @@ pip install -e ".[dev]"
 cp .env.example .env
 alembic upgrade head                     # creates/updates tables from migrations/versions/
 # Changed a model? alembic revision --autogenerate -m "what changed", review it, commit it
+# Changed an API model? python -m scripts.export_openapi  (regenerates frontend/src/api-types.ts)
 python -m scripts.seed_sample            # fictional sample data
 python -m scripts.seed_test_data         # test cases: radius edges, every freshness tier (not for demos)
 # All US ZIPs: download + unzip the Census ZCTA Gazetteer file first (see README.md), then
@@ -62,8 +63,10 @@ npm install
 npm run dev                              # http://localhost:5173 (proxies /api to :8000)
 npm test                                 # Vitest
 npx playwright install chromium          # first time only
-npm run e2e                              # Playwright, API mocked
+npm run e2e                              # Playwright, API mocked (Chromium)
+npm run e2e:all                          # same, plus WebKit (Safari) and Firefox; first: npx playwright install webkit firefox
 npm run e2e:system                       # Playwright, real API + seeded MySQL (setup: README.md › Tests)
+npm run visual:docker                    # screenshot comparison in Docker (light + dark); visual:update accepts changes
 npm run build                            # type-check + production build
 ```
 

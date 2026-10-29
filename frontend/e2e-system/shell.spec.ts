@@ -2,15 +2,18 @@ import { expect, test } from '../test/fixtures';
 
 test('AC-14 shell navigation preserves system theme, history and direct routes', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto('/collection');
-  await expect(page.getByRole('heading', { name: 'Collection', exact: true })).toBeVisible();
+  await page.goto('/genres');
+  await expect(page.getByRole('heading', { name: 'Browse', exact: true })).toBeVisible();
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(30, 11, 15)');
-  await page.getByRole('link', { name: 'You: account and settings' }).click();
-  await expect(page.getByRole('heading', { name: 'You', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Sign in' }).click();
+  await expect(page.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible();
   await page.goBack();
-  await expect(page).toHaveURL(/\/collection$/);
+  await expect(page).toHaveURL(/\/genres$/);
   await page.goForward();
-  await expect(page).toHaveURL(/\/you$/);
+  await expect(page).toHaveURL(/\/sign-in\?return_to=%2Fgenres$/);
+  // Signed-in screens send a signed-out visitor to sign in first.
+  await page.goto('/collection');
+  await expect(page).toHaveURL(/\/sign-in\?return_to=%2Fcollection$/);
   await page.goto('/not-a-route');
   await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible();
 });

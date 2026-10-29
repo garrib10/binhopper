@@ -46,7 +46,7 @@ own schedule, which the API copy is not.
    stay for those.
 3. **Images:** show cover images from the URL Discogs returns, without storing the files; don't
    re-host them. Fall back to a placeholder.
-4. **Notices:** add the app-wide notice to the terms/about page (#85) and "Data provided by Discogs"
+4. **Notices:** the app-wide notice is in the footer of every screen (since 2026-10-29), and goes in the terms (#85) too and "Data provided by Discogs"
    with a followed link wherever Discogs data appears.
 5. **Business model:** Binhopper stays free for users; no paid tiers (decided 2026-10-27, see
    section 5). A paid tier would need Discogs' written permission first.

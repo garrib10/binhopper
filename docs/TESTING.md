@@ -16,10 +16,12 @@ system tests (#95) and the test-data seed (#96).
 | Unit (backend) | pytest | `backend/tests/test_geo.py`, `test_freshness.py`, … | Pure rules: radius math, freshness, duplicate detection, ZIP parsing | `backend` |
 | Unit (frontend) | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` | Component behavior: validation, error messages, state changes | `frontend` |
 | API | pytest + FastAPI `TestClient` | `backend/tests/test_*_api.py` | Each endpoint's happy path, error codes, auth and privacy | `backend` |
+| API contract | pytest (`test_api_contract.py`) | `backend/openapi.json`, `frontend/src/api-types.ts` | The frontend's response types match the API's Pydantic models; regenerate with `python -m scripts.export_openapi` (#68) | `backend` |
 | Integration | the same pytest suite on MySQL 8.4 | `TEST_DATABASE_URL` set (#94) | What SQLite hides: column precision, upserts, collation; migrations apply cleanly | `integration` (#94) |
-| E2E (mocked API) | Playwright, 390 px + 1440 px | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks | `e2e` |
+| E2E (mocked API) | Playwright, 390 px + 1440 px; Chromium in `e2e`, WebKit + Firefox in `e2e-browsers` (#72) | `frontend/e2e/` | UI flows with the API faked by `page.route`, plus axe accessibility checks; `e2e/a11y.spec.ts` sweeps every screen (axe, 44 px targets, keyboard walkthroughs, #74) | `e2e` |
+| Visual | Playwright screenshots in the Playwright Linux image | `frontend/visual/` (#73) | Key screens in light and dark at 390 and 1440 px match committed baselines (AC-14); `npm run visual:docker` compares, `npm run visual:update` accepts a deliberate change | `visual` |
 | System | Playwright, real API + seeded MySQL | `frontend/e2e-system/` (#95) | The whole stack together, nothing mocked | `system` (#95) |
-| Acceptance | all of the above | the table below | AC-01 to AC-16, each at the level SPEC.md names | all |
+| Acceptance | all of the above | the table below | AC-01 to AC-21, each at the level SPEC.md names | all |
 
 **What a feature owes:** pytest for every API rule; a Vitest test for each piece of UI behavior;
 a Playwright test at 390 px and 1440 px for each core flow; the AC id in each of those tests.
@@ -39,16 +41,21 @@ the feature issue that will add them.
 | AC-04 | Invalid or unknown ZIP: inline error, no request | Unit + E2E | `NearbyStockPage.test.tsx`, `test_nearby_stock_api.py`; `e2e-system/…` (#95) | done |
 | AC-05 | 8-day-old unverified listing warns | Unit | `test_freshness.py`, `test_nearby_stock_api.py` | done |
 | AC-06 | 2 missing reports in 24 h: flagged, sorts last | Unit + API | `test_freshness.py`, `test_nearby_stock_api.py` | done |
-| AC-07 | Second report the same day: 429 + message | API | — | #37 |
-| AC-08 | Heart twice adds then removes, survives reload | E2E | — | #39 |
-| AC-09 | Duplicate pressing warns, "Add as 2nd copy" | Unit + E2E | seed data only (#96) | #41 |
-| AC-10 | Hand-off purchase moves wishlist → collection | E2E | — | #40 |
-| AC-11 | Discogs import skips existing releases | API | — | #44 |
+| AC-07 | Second report the same day: 429 + message | API | `test_reports_api.py`, `ReportPage.test.tsx`, `e2e/reports.spec.ts` | done |
+| AC-08 | Heart twice adds then removes, survives reload | E2E | `e2e/wishlist.spec.ts`, `e2e-system/wishlist.spec.ts`, `WishlistPage.test.tsx`, `test_wishlist_api.py` | done |
+| AC-09 | Duplicate pressing warns, "Add as 2nd copy" | Unit + E2E | `test_collection_api.py`, `CollectionPage.test.tsx`, `e2e/collection.spec.ts`, `e2e-system/collection.spec.ts` | done |
+| AC-10 | Hand-off purchase moves wishlist → collection | E2E | `test_handoff_api.py`, `RecordPage.test.tsx`, `e2e/handoff.spec.ts`, `e2e-system/handoff.spec.ts` | done |
+| AC-11 | Discogs import skips existing releases | API | `test_discogs_import.py`, `ImportPage.test.tsx`, `e2e/import.spec.ts` | done |
 | AC-12 | Search waits for 2+ characters and a pause | Unit | — | #33 |
-| AC-13 | New account is private; others get 404 | API | — | #38, #42 |
-| AC-14 | "Match system" follows device dark mode | E2E | `e2e/nearby-stock.spec.ts`, `theme.test.ts` | #42 (settings screen) |
-| AC-15 | Account delete removes data and sign-in | API + E2E | — | #42 |
+| AC-13 | New account is private; others get 404 | API | `test_auth_api.py`, `test_auth_google.py`, `test_account_api.py` (new accounts private); `test_wishlist_api.py`, `test_collection_api.py` (others get 404); `e2e-system/you.spec.ts` | done (a public profile page comes with sharing, Later) |
+| AC-14 | "Match system" follows device dark mode | E2E | `e2e/nearby-stock.spec.ts`, `theme.test.ts`, `e2e/you.spec.ts`, `YouPage.test.tsx` | done |
+| AC-15 | Account delete removes data and sign-in | API + E2E | `test_account_api.py`, `YouPage.test.tsx`, `e2e/you.spec.ts`, `e2e-system/you.spec.ts` | done |
 | AC-16 | Never more than 60 Discogs calls per 60 s | Integration | — | #32, #70 |
+| AC-17 | Shops without online inventory listed apart, by distance, no price | API + Unit + E2E | `test_nearby_stock_api.py`, `StoreCard.test.tsx`, `NearbyStockPage.test.tsx`, `e2e/nearby-stock.spec.ts`, `e2e-system/nearby-stock.spec.ts` | done |
+| AC-18 | A "present" report moves the shop into the stock list | API + E2E | `test_reports_api.py`, `ReportPage.test.tsx`, `e2e/reports.spec.ts` (the system spec stays read-only: it shares the sample seed) | done |
+| AC-19 | Verify link signs in once, expires after 24 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts`, `e2e-system/auth.spec.ts` | done |
+| AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
+| AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |
 
 ## Test data
 
@@ -73,14 +80,20 @@ the moment it loads, and loading twice is a no-op.
 
 ## Mocking rules
 
-- **Discogs and Places are always mocked** in automated tests. No test may call a real outside
+- **Discogs, Places, Google and Resend are always mocked** in automated tests. No test may call a real outside
   API, and CI has no keys for them.
 - Backend: replace the client at its boundary (a fake client or `monkeypatch`), never by
   patching `httpx` globally. Rate-limit tests use a fake clock, not real waiting.
 - Frontend unit tests: stub `fetch` with `vi.spyOn(globalThis, 'fetch')`.
 - E2E (mocked): fake the API with `page.route`. The system tests mock nothing, so they must not
   reach outside services either.
-- The only real Discogs call is the nightly smoke test (#69): scheduled, read-only, never on PRs.
+- Sign-in: pytest runs with `EMAIL_BACKEND=memory` (`conftest.py`) and fakes Google's token and
+  key endpoints with an httpx `MockTransport` (`test_auth_google.py`); the Resend backend is
+  tested the same way. The local system run uses `EMAIL_BACKEND=file` and reads the link from
+  the file. Tests also use cheap Argon2 settings so hashing stays fast.
+- The only real Discogs call is the nightly smoke test (#69, `.github/workflows/discogs-smoke.yml`,
+  `backend/scripts/discogs_smoke.py`): two read-only GETs through the worker's queue and parser,
+  scheduled and on demand, never on PRs. It needs the `DISCOGS_TOKEN` repository secret.
 
 ## CI gates
 
@@ -94,6 +107,22 @@ and Labeler. Required before merging:
 
 `integration` (#94) and `system` (#95) run on every PR once merged. Add them to the rulesets
 after they have run once (see [BRANCHING.md › One-time GitHub settings](BRANCHING.md#one-time-github-settings)).
+
+## Performance baseline
+
+k6 load tests for nearby stock and search (`perf/`, #71), run on demand with Actions ›
+Performance baseline. 10 virtual users for a minute each, against MySQL with the sample seed.
+Baseline recorded 2026-10-29 on a local Mac (API with 2 workers, MySQL 8.4 in Docker):
+
+| Endpoint | Median | p95 | Threshold (fails the run) |
+| --- | --- | --- | --- |
+| `GET /api/albums/{id}/stock` | 37 ms | 73 ms | p95 < 300 ms |
+| `GET /api/search` | 49 ms | 77 ms | p95 < 400 ms |
+| `GET /api/browse` | 47 ms | 72 ms | p95 < 400 ms |
+
+Zero errors across 2,621 requests. Thresholds sit about 4–5× above the baseline to absorb
+slower CI runners; if a change legitimately needs more, record the new numbers here and raise
+the threshold in the same PR.
 
 ## Running tests locally
 
@@ -126,6 +155,9 @@ Run on staging before each release, at phone and desktop size, in light and dark
 - [ ] Screen reader spot check (VoiceOver): headings, buttons and alerts are announced
 - [ ] Slow network (DevTools "Slow 3G"): loading states show; nothing double-submits
 - [ ] API down (stop the backend): "Can't reach Binhopper right now." and Try again works
+  (automated for every screen in `e2e/states.spec.ts`, #45; still worth one look on a real phone)
+- [ ] Sign-in: create an account, open the emailed link, sign out, sign in; forgot password → reset;
+  Continue with Google (staging: only your own email gets mail, only Google test users can sign in)
 - [ ] Privacy: a second account can't see the first account's collection or wishlist
 - [ ] Anything that felt confusing: file an issue
 

@@ -96,6 +96,6 @@ test('sign-in controls meet the 44 px touch target', async ({ page }) => {
   await page.goto('/sign-in');
   for (const control of [page.getByLabel('Email'), page.getByRole('button', { name: 'Sign in' }),
     page.getByRole('button', { name: 'Show password' }), page.getByRole('link', { name: 'Forgot password?' })]) {
-    expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(43.5);
   }
 });

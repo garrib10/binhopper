@@ -25,7 +25,7 @@ function api(routes: Record<string, (init?: RequestInit) => unknown>) {
     const key = `${init?.method ?? 'GET'} ${String(input).split('?')[0]}`;
     const handler = routes[key];
     if (!handler) return new Response('{}', { status: key === 'GET /api/auth/me' ? 401 : 404 });
-    const body = handler(init);
+    const body = await handler(init);
     return body === null ? new Response(null, { status: 204 }) : new Response(JSON.stringify(body), { status: 200 });
   });
 }
@@ -62,6 +62,25 @@ describe('Wishlist page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/me/wishlist/7', expect.objectContaining({
       method: 'PATCH', body: JSON.stringify({ pressing_id: 11, max_price: 30, min_condition: 'VG+' }) })));
+  });
+
+  it('shows placeholder cards on the first load, not an empty page', async () => {
+    api({ 'GET /api/auth/me': () => account, 'GET /api/me/wishlist': () => new Promise(() => {}) });
+    renderSignedIn(<WishlistPage />);
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading your wishlist…');
+    expect(document.querySelectorAll('.list-placeholder__item')).toHaveLength(3);
+    expect(screen.queryByRole('listitem')).toBeNull();  // the placeholders are hidden from screen readers
+  });
+
+  it('takes a removed record off at once, without waiting for the refresh', async () => {
+    let removed = false;  // the refresh after removing never answers, so only the local change can show
+    api({ 'GET /api/auth/me': () => account, 'GET /api/me/wishlist/albums': () => ({ album_ids: [1, 2] }),
+      'GET /api/me/wishlist': () => (removed ? new Promise(() => {}) : { items: [rumours, blue] }),
+      'DELETE /api/me/wishlist/8': () => { removed = true; return null; } });
+    renderSignedIn(<WishlistPage />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove Blue from wishlist' }));
+    await waitFor(() => expect(screen.queryByText('Blue')).toBeNull());
+    expect(screen.getByText('1 record')).toBeVisible();
   });
 
   it('shows the empty state', async () => {

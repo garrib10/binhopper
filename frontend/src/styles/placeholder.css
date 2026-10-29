@@ -1,0 +1,15 @@
+/* Loading placeholders for Wishlist and Collection: the same footprint as the real cards. */
+.list-placeholder { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.list-placeholder--grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-4); }
+.list-placeholder__item { display: flex; gap: var(--space-3); padding: var(--space-3); border-radius: 16px; background: var(--color-surface); border: 1px solid var(--color-border); }
+.list-placeholder--grid .list-placeholder__item { flex-direction: column; padding: 0; border: 0; background: none; }
+.list-placeholder__cover { flex: 0 0 72px; height: 72px; border-radius: 10px; background: var(--color-chip-bg); }
+.list-placeholder--grid .list-placeholder__cover { flex: none; height: auto; aspect-ratio: 1; }
+.list-placeholder--list .list-placeholder__cover { flex-basis: 44px; height: 44px; }
+.list-placeholder__lines { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.list-placeholder__lines span { height: 12px; border-radius: 6px; background: var(--color-chip-bg); }
+.list-placeholder__lines span + span { width: 60%; }
+@media (prefers-reduced-motion: no-preference) {
+  .list-placeholder__cover, .list-placeholder__lines span { animation: list-placeholder-pulse 1.2s ease-in-out infinite alternate; }
+}
+@keyframes list-placeholder-pulse { from { opacity: 1; } to { opacity: 0.55; } }

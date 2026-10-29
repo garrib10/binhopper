@@ -104,3 +104,14 @@ def test_other_users_wishlists_are_untouched(client, sign_in, listing, session):
     sign_in("buyer@example.com")
     assert client.post("/api/me/collection/from-listing", json={"listing_id": listing.id}).json()["removed_from_wishlist"] is False
     assert session.scalar(select(func.count()).select_from(WishlistItem)) == 1
+
+
+def test_got_it_keeps_a_wish_for_a_different_specific_pressing(client, sign_in, listing, session):
+    user = sign_in()
+    other = Pressing(album_id=listing.pressing.album_id, variant_note="Original press")
+    session.add(other)
+    session.flush()
+    session.add(WishlistItem(user_id=user.id, album_id=other.album_id, pressing_id=other.id))
+    session.commit()
+    body = client.post("/api/me/collection/from-listing", json={"listing_id": listing.id}).json()
+    assert (body["removed_from_wishlist"], body["album_on_wishlist"]) == (False, True)

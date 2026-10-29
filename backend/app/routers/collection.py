@@ -6,10 +6,10 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
-from app.db import get_session
+from app.db import delete_where, get_session
 from app.grades import GRADES
 from app.models import Album, AlbumGenre, CollectionItem, Pressing, User, WishlistItem
 from app.routers.search import fresh_image
@@ -55,6 +55,21 @@ class NewCopy(CopyDetails):
 
 class CopyChange(CopyDetails):
     pressing_id: int
+
+
+def leave_wishlist(db: Session, user_id: int, pressing: Pressing) -> dict:
+    """Got a copy: drop the wishlist entries it satisfies (SPEC › Collection rule 6).
+
+    An entry for "any pressing" or for this same pressing goes; an entry for a different,
+    specific pressing stays, because the user still wants that version. Returns what
+    happened, so the app can say so and keep the hearts right.
+    """
+    removed = delete_where(db, WishlistItem, WishlistItem.user_id == user_id,
+                           WishlistItem.album_id == pressing.album_id,
+                           or_(WishlistItem.pressing_id.is_(None), WishlistItem.pressing_id == pressing.id))
+    still = db.scalar(select(WishlistItem.id).where(WishlistItem.user_id == user_id,
+                                                    WishlistItem.album_id == pressing.album_id)) is not None
+    return {"removed_from_wishlist": removed > 0, "album_on_wishlist": still}
 
 
 def own_copy(db: Session, user: User, copy_id: int) -> CollectionItem:
@@ -170,8 +185,9 @@ def add_copy(body: NewCopy, user: Me, db: DB, now: Now):
     item = CollectionItem(user_id=user.id, pressing_id=pressing.id, added_at=now,
                           **body.model_dump(exclude={"pressing_id", "another_copy"}))
     db.add(item)
+    wishlist = leave_wishlist(db, user.id, pressing)
     db.commit()
-    return view(item, len(owned) + 1, now)
+    return {**view(item, len(owned) + 1, now), **wishlist}
 
 
 @router.patch("/{copy_id}")

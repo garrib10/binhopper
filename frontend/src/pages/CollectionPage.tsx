@@ -60,7 +60,8 @@ export function CollectionPage() {
       ? <ul className="collection-grid">{state.data.items.map((copy) => <li key={copy.id}>
         <Link className="collection-tile" to={`/collection/${copy.id}`}>
           <Cover url={copy.album.cover_url} title={copy.album.title} />
-          {gradePair(copy) && <span className="collection-tile__grade">{gradePair(copy)}</span>}
+          {/* No condition yet: a nudge, since only the pressing is required (rule 2). */}
+          <span className={`collection-tile__grade${gradePair(copy) ? '' : ' collection-tile__grade--missing'}`}>{gradePair(copy) ?? 'Add condition'}</span>
           <strong>{copy.album.title}</strong>
           <span className="muted">{copy.album.artist.name} · {copy.pressing.note}{copy.copy_number > 1 ? ` · copy ${copy.copy_number}` : ''}</span>
         </Link></li>)}</ul>
@@ -70,7 +71,7 @@ export function CollectionPage() {
           <td><Link to={`/collection/${copy.id}`}>{copy.album.title}</Link></td>
           <td>{copy.album.artist.name}</td>
           <td>{copy.pressing.note}{copy.copy_number > 1 ? ` (copy ${copy.copy_number})` : ''}</td>
-          <td>{gradePair(copy) ?? '–'}</td>
+          <td>{gradePair(copy) ?? <Link to={`/collection/${copy.id}`} aria-label={`Add condition: ${copy.album.title}`}>Add condition</Link>}</td>
           <td>{added.format(new Date(copy.added_at))}</td>
         </tr>)}</tbody></table></div>)}
   </main>;

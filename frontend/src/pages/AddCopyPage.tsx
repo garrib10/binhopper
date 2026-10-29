@@ -5,12 +5,14 @@ import { type AlbumDetail, getCatalog } from '../catalog';
 import { addCopy, AlreadyOwned, ordinal, type CopyDetails } from '../collection';
 import { Cover } from '../components/AlbumTile';
 import { CopyForm } from '../components/CopyForm';
+import { useWishlist } from '../WishlistContext';
 import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 
 /** Add a copy of an album (SPEC.md › Collection rules 1–3). */
 export function AddCopyPage() {
   const { albumId = '' } = useParams();
   const navigate = useNavigate();
+  const { forget } = useWishlist();
   const [album, setAlbum] = useState<AlbumDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadProblem, setLoadProblem] = useState<LoadProblem | null>(null);
@@ -29,7 +31,9 @@ export function AddCopyPage() {
     setBusy(true); setError(null);
     try {
       const copy = await addCopy(pressingId, details, anotherCopy);
-      navigate(`/collection/${copy.id}`, { replace: true });
+      if (!copy.album_on_wishlist) forget(Number(albumId));  // keep the hearts in step (rule 6)
+      navigate(`/collection/${copy.id}`, { replace: true, state: {
+        added: true, leftWishlist: copy.removed_from_wishlist, stillWanted: copy.album_on_wishlist } });
     } catch (err) {
       if (err instanceof AlreadyOwned) setDuplicate({ copies: err.copies, pressingId, details });
       else setError(err instanceof ApiError && err.status < 500 ? err.message : "Couldn't save. Try again.");

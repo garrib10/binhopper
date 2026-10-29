@@ -58,8 +58,12 @@ export function StoreCard({ store, index }: Props) {
       </div>
       <ShopActions name={store.store_name} phone={store.phone} lat={store.lat} lng={store.lng}
         callLabel={store.freshness === 'out_of_date' ? 'Call to confirm' : 'Call shop'} />
-      <Link className="store-card__report" to={`/stock/${store.listing_id}/report`}
-        aria-label={`Report stock: ${store.store_name}`}>Report stock</Link>
+      <div className="store-card__links">
+        <Link className="store-card__report" to={`/records/${store.listing_id}`}
+          aria-label={`Hold or buy: ${store.store_name}`}>Hold or buy</Link>
+        <Link className="store-card__report" to={`/stock/${store.listing_id}/report`}
+          aria-label={`Report stock: ${store.store_name}`}>Report stock</Link>
+      </div>
     </li>
   );
 }

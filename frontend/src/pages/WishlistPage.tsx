@@ -4,6 +4,9 @@ import { ApiError } from '../api';
 import { Cover } from '../components/AlbumTile';
 import { loadLocation } from '../location';
 import { useWishlist } from '../WishlistContext';
+import { GotItPrompt } from '../components/GotItPrompt';
+import { pendingHandoffs } from '../handoff';
+import '../styles/handoff.css';
 import {
   fetchWishlist, GRADES, removeWishlistItem, updateWishlistItem, wantText,
   type Grade, type WishlistItem,
@@ -18,6 +21,8 @@ export function WishlistPage() {
   const [location] = useState(loadLocation);
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [attempt, setAttempt] = useState(0);
+  // Hand-offs still waiting for "Got it?" (up to 7 days; SPEC › Locate, hold, buy rule 3).
+  const [handoffs, setHandoffs] = useState(pendingHandoffs);
   useEffect(() => {
     const controller = new AbortController();
     setState({ kind: 'loading' });
@@ -35,6 +40,8 @@ export function WishlistPage() {
       {count !== null && <span className="muted">{count} {count === 1 ? 'record' : 'records'}</span>}
     </header>
     <p className="muted">Stock within {location.radius} mi of {location.zip} · <Link to="/albums/1/stores">Change location</Link></p>
+    {handoffs.length > 0 && <div className="wishlist-got-it">{handoffs.map((h) =>
+      <GotItPrompt key={h.listingId} handoff={h} onAdded={reload} onDone={() => setHandoffs(pendingHandoffs())} />)}</div>}
     {state.kind === 'loading' && <p role="status">Loading your wishlist…</p>}
     {state.kind === 'error' && <div className="error-state">
       <p role="alert" className="notice notice--danger">Can't reach Binhopper right now.</p>

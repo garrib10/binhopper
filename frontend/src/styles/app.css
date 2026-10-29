@@ -582,3 +582,4 @@ a {
 .danger-zone { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); border: 1.5px solid var(--color-danger); border-radius: var(--radius-lg); background: var(--color-danger-bg); }
 .danger-zone h3, .danger-zone p { margin: 0; }
 .danger-zone__buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.store-card__links { display: flex; flex-wrap: wrap; gap: var(--space-4); }

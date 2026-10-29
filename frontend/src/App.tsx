@@ -16,6 +16,7 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { YouPage } from './pages/YouPage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { RecordPage } from './pages/RecordPage';
 import { ThemeContext } from './ThemeContext';
 import { WishlistPage } from './pages/WishlistPage';
 import { CollectionPage } from './pages/CollectionPage';
@@ -111,7 +112,7 @@ export function AppShell() {
       <Route path="/artists/:id" element={<ArtistPage />} />
       <Route path="/albums/:id" element={<AlbumPage />} />
       <Route path="/albums/:id/stores" element={<NearbyRoute />} />
-      <Route path="/records/:id" element={<Placeholder title="Locate, hold or buy" />} />
+      <Route path="/records/:id" element={<RecordPage />} />
       <Route path="/wishlist" element={signedIn(<WishlistPage />)} />
       <Route path="/collection" element={signedIn(<CollectionPage />)} />
       <Route path="/collection/add/:albumId" element={signedIn(<AddCopyPage />)} />

@@ -108,7 +108,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 1. Locate: directions in the device's maps app, plus call store.
 2. Hold or buy in v1 hands off to the shop: its phone number, website or Discogs listing. In-app holds come in v1.1.
-3. After a hand-off, prompt "Got it? Add to collection," which also removes it from the wishlist.
+3. After a hand-off, prompt "Got it? Add to collection," which also removes it from the wishlist. The prompt shows on that record's page and on the wishlist until the user answers ("add" or "No thanks"), for up to 7 days; it's remembered in the browser only. The copy is added with its pressing, the listing's price and condition, and the shop as "bought at"; an owned pressing asks before adding a second copy.
 
 ### Collection
 
@@ -210,6 +210,8 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | GET, POST, PATCH, DELETE | /me/wishlist | Read, add, change, remove wishlist items (GET /me/wishlist/albums: hearted album ids) |
 | GET, POST, PATCH, DELETE | /me/collection | Manage collection copies (POST answers 409 for an owned pressing unless `another_copy`; GET /me/collection/owned?album_id= for the album page) |
 | POST | /me/import/discogs | Start a Discogs import |
+| GET | /listings/{id} | One copy at one shop, for the hold-or-buy page |
+| POST | /me/collection/from-listing | "Got it? Add to collection" (adds the copy, removes the album from the wishlist) |
 | GET, PATCH | /me/settings | ZIP, radius, theme, privacy, genres |
 | GET | /me/export, /me/data | Collection CSV; all your data as JSON |
 | DELETE | /me | Delete account and all data |

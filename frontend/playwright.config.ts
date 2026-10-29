@@ -13,9 +13,15 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
   },
+  // Chromium runs on every PR (the required `e2e` check). WebKit (Safari's engine: many users
+  // are on iPhones) and Firefox run in the `e2e-browsers` job; locally: npm run e2e:all (#72).
   projects: [
     { name: 'mobile', use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 } } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
+    { name: 'mobile-webkit', use: { ...devices['iPhone 13'], viewport: { width: 390, height: 844 } } },
+    { name: 'desktop-webkit', use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } } },
+    { name: 'mobile-firefox', use: { ...devices['Desktop Firefox'], viewport: { width: 390, height: 844 } } },
+    { name: 'desktop-firefox', use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
     command: 'npm run dev',

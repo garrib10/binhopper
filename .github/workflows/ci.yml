@@ -111,6 +111,29 @@ jobs:
           name: playwright-report
           path: frontend/playwright-report
 
+  # Visual regression (#73): screenshots of key screens in light and dark at 390 and 1440 px,
+  # compared with frontend/visual/__screenshots__. Runs in the official Playwright image so
+  # fonts and rendering match the baselines (made with `npm run visual:update`, same image).
+  # Keep the image tag equal to the installed @playwright/test version.
+  visual:
+    runs-on: ubuntu-latest
+    needs: frontend
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - run: npm ci
+      - run: npx playwright test -c playwright.visual.config.ts
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: visual-diffs
+          path: frontend/test-results
+
   # Full stack, nothing mocked: the built frontend against the real API and a migrated,
   # seeded MySQL, in Playwright at 390 px and 1440 px.
   system:

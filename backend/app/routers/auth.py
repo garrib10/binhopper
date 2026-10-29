@@ -9,6 +9,7 @@ Rules that keep accounts private:
 """
 
 import hmac
+from urllib.parse import quote
 import secrets
 import string
 from datetime import datetime, timedelta
@@ -373,15 +374,16 @@ def google_start(request: Request, db: DB, now: Now,
     return response
 
 
-def google_account(db: Session, claims: dict, now: datetime) -> User:
+def google_account(db: Session, claims: dict, now: datetime) -> tuple[User, bool]:
+    """The account for these Google claims, and whether it was just created."""
     sub, email = str(claims["sub"]), str(claims["email"]).strip().lower()
     user = db.scalar(select(User).where(User.google_sub == sub))
     if user is not None:
-        return user
+        return user, False
     user = db.scalar(select(User).where(User.email == email))
     if user is None:
         return new_user(db, email, now, auth_provider="google", google_sub=sub,
-                        email_verified_at=now)
+                        email_verified_at=now), True
     if user.email_verified_at is None:
         # Someone may have signed up with this address without owning it. Google has
         # proven who owns it, so their password and any sessions stop working.
@@ -390,7 +392,7 @@ def google_account(db: Session, claims: dict, now: datetime) -> User:
         delete_where(db, AuthToken, AuthToken.user_id == user.id)
         user.email_verified_at = now
     user.google_sub = sub
-    return user
+    return user, False
 
 
 @router.get("/google/callback")
@@ -413,12 +415,14 @@ def google_callback(request: Request, db: DB, now: Now,
     except GoogleSignInError:
         return google_failed(request)
     try:
-        user = google_account(db, claims, now)
+        user, created = google_account(db, claims, now)
         db.flush()
     except IntegrityError:
         db.rollback()
         return google_failed(request)
-    response = RedirectResponse(flow.return_to, status_code=302)
+    # A brand-new account starts with onboarding (SPEC › Onboarding), then goes where it was headed.
+    target = f"/onboarding?return_to={quote(flow.return_to, safe='')}" if created else flow.return_to
+    response = RedirectResponse(target, status_code=302)
     response.delete_cookie(OAUTH_COOKIE, path="/api/auth/google")
     start_session(db, user, request, response, now)
     return response

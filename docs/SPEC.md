@@ -58,8 +58,8 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ### Onboarding
 
-1. Four steps: location, default radius, favorite genres, then import or scan. Back and Continue on every step; the last step offers "Skip for now."
-2. Location: "Use my location" asks the device for permission; ZIP entry is always available instead. A 5-digit US ZIP is required to continue.
+1. Four steps: location, default radius, favorite genres, then import (scanning arrives with barcode scan in v1.1). Back and Continue on every step; the last step offers "Skip for now." It runs once, right after sign-up: a new email account goes there from its confirmation link, a new Google account straight after Google. Signed-out visitors keep using the ZIP box.
+2. Location: "Use my location" asks the device for permission and fills in the nearest ZIP; the coordinates are used for that one lookup and never stored. If permission is denied, the screen says location is off and the ZIP entry still works. A 5-digit US ZIP is required to continue.
 3. Default radius options: 10, 25, 50, 100 mi. Default is 25.
 4. Genres are optional, multi-select, from a fixed list of 12.
 5. Choices are saved to the user's settings and can be changed later in You › Settings.
@@ -198,6 +198,7 @@ The app only calls our API. The sync worker fills the database on a schedule and
 | POST | /auth/register, /auth/verify, /auth/sign-in, /auth/sign-out, /auth/forgot-password, /auth/reset-password | Email sign-up and sign-in |
 | GET | /auth/google/start, /auth/google/callback | Google sign-in |
 | GET | /auth/me | Current user or 401 |
+| GET | /zips/nearest?lat=&lng= | Nearest ZIP for "Use my location" (nothing stored) |
 | GET | /search?q=&type=albums\|artists | Search catalog |
 | GET | /browse?genre=&decade=&year=&sort= | Genre + year results |
 | GET | /artists/{id} | Artist page with discography |

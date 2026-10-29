@@ -1,0 +1,2922 @@
+{
+  "components": {
+    "schemas": {
+      "CopyChange": {
+        "properties": {
+          "bought_at": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bought At"
+          },
+          "media_grade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Grade"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "pressing_id": {
+            "title": "Pressing Id",
+            "type": "integer"
+          },
+          "price_paid": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Paid"
+          },
+          "sleeve_grade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sleeve Grade"
+          }
+        },
+        "required": [
+          "pressing_id"
+        ],
+        "title": "CopyChange",
+        "type": "object"
+      },
+      "Credentials": {
+        "properties": {
+          "email": {
+            "maxLength": 320,
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 4096,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "Credentials",
+        "type": "object"
+      },
+      "EmailBody": {
+        "properties": {
+          "email": {
+            "maxLength": 320,
+            "title": "Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "EmailBody",
+        "type": "object"
+      },
+      "Freshness": {
+        "enum": [
+          "verified",
+          "current",
+          "out_of_date",
+          "reported_missing"
+        ],
+        "title": "Freshness",
+        "type": "string"
+      },
+      "GotIt": {
+        "properties": {
+          "another_copy": {
+            "default": false,
+            "title": "Another Copy",
+            "type": "boolean"
+          },
+          "listing_id": {
+            "title": "Listing Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "listing_id"
+        ],
+        "title": "GotIt",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ImportChoice": {
+        "properties": {
+          "collection": {
+            "default": true,
+            "title": "Collection",
+            "type": "boolean"
+          },
+          "wantlist": {
+            "default": true,
+            "title": "Wantlist",
+            "type": "boolean"
+          }
+        },
+        "title": "ImportChoice",
+        "type": "object"
+      },
+      "ListingReport": {
+        "properties": {
+          "reported_price": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 100000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported Price"
+          },
+          "result": {
+            "enum": [
+              "present",
+              "missing",
+              "different_price"
+            ],
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "ListingReport",
+        "type": "object"
+      },
+      "NearbyStockResponse": {
+        "properties": {
+          "album_id": {
+            "title": "Album Id",
+            "type": "integer"
+          },
+          "center_lat": {
+            "title": "Center Lat",
+            "type": "number"
+          },
+          "center_lng": {
+            "title": "Center Lng",
+            "type": "number"
+          },
+          "nearest_outside_mi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nearest Outside Mi"
+          },
+          "other_shops": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/OtherShop"
+            },
+            "title": "Other Shops",
+            "type": "array"
+          },
+          "radius_mi": {
+            "title": "Radius Mi",
+            "type": "integer"
+          },
+          "stores": {
+            "items": {
+              "$ref": "#/components/schemas/NearbyStore"
+            },
+            "title": "Stores",
+            "type": "array"
+          },
+          "zip": {
+            "title": "Zip",
+            "type": "string"
+          }
+        },
+        "required": [
+          "album_id",
+          "zip",
+          "radius_mi",
+          "center_lat",
+          "center_lng",
+          "stores",
+          "nearest_outside_mi"
+        ],
+        "title": "NearbyStockResponse",
+        "type": "object"
+      },
+      "NearbyStore": {
+        "properties": {
+          "area": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area"
+          },
+          "condition": {
+            "title": "Condition",
+            "type": "string"
+          },
+          "discogs_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discogs Url"
+          },
+          "distance_mi": {
+            "title": "Distance Mi",
+            "type": "number"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "last_updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated At"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "listing_id": {
+            "title": "Listing Id",
+            "type": "integer"
+          },
+          "lng": {
+            "title": "Lng",
+            "type": "number"
+          },
+          "missing_reports": {
+            "default": 0,
+            "title": "Missing Reports",
+            "type": "integer"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "pressing_id": {
+            "title": "Pressing Id",
+            "type": "integer"
+          },
+          "pressing_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressing Note"
+          },
+          "price": {
+            "title": "Price",
+            "type": "number"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "source": {
+            "default": "manual",
+            "title": "Source",
+            "type": "string"
+          },
+          "store_id": {
+            "title": "Store Id",
+            "type": "integer"
+          },
+          "store_name": {
+            "title": "Store Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "listing_id",
+          "store_id",
+          "store_name",
+          "area",
+          "distance_mi",
+          "pressing_id",
+          "pressing_note",
+          "price",
+          "condition",
+          "quantity",
+          "freshness",
+          "last_updated_at",
+          "lat",
+          "lng",
+          "phone"
+        ],
+        "title": "NearbyStore",
+        "type": "object"
+      },
+      "NewCopy": {
+        "properties": {
+          "another_copy": {
+            "default": false,
+            "title": "Another Copy",
+            "type": "boolean"
+          },
+          "bought_at": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bought At"
+          },
+          "media_grade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Grade"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "pressing_id": {
+            "title": "Pressing Id",
+            "type": "integer"
+          },
+          "price_paid": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Paid"
+          },
+          "sleeve_grade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sleeve Grade"
+          }
+        },
+        "required": [
+          "pressing_id"
+        ],
+        "title": "NewCopy",
+        "type": "object"
+      },
+      "NewItem": {
+        "properties": {
+          "album_id": {
+            "title": "Album Id",
+            "type": "integer"
+          },
+          "max_price": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 100000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Price"
+          },
+          "min_condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Condition"
+          },
+          "pressing_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressing Id"
+          }
+        },
+        "required": [
+          "album_id"
+        ],
+        "title": "NewItem",
+        "type": "object"
+      },
+      "OtherShop": {
+        "description": "A shop in the radius with no online inventory: call to check (Nearby stock rule 9).\n\nNever carries a price, quantity or freshness: we don't know what's on its shelves.",
+        "properties": {
+          "area": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area"
+          },
+          "distance_mi": {
+            "title": "Distance Mi",
+            "type": "number"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lng": {
+            "title": "Lng",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "store_id": {
+            "title": "Store Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "store_id",
+          "name",
+          "area",
+          "distance_mi",
+          "phone",
+          "lat",
+          "lng"
+        ],
+        "title": "OtherShop",
+        "type": "object"
+      },
+      "ResetBody": {
+        "properties": {
+          "password": {
+            "maxLength": 4096,
+            "title": "Password",
+            "type": "string"
+          },
+          "token": {
+            "maxLength": 200,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "password"
+        ],
+        "title": "ResetBody",
+        "type": "object"
+      },
+      "SettingsChange": {
+        "description": "Only the fields sent are changed.",
+        "properties": {
+          "default_radius_mi": {
+            "anyOf": [
+              {
+                "enum": [
+                  10,
+                  25,
+                  50,
+                  100
+                ],
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Radius Mi"
+          },
+          "favorite_genres": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Favorite Genres"
+          },
+          "home_zip": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{5}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Home Zip"
+          },
+          "privacy_collection": {
+            "anyOf": [
+              {
+                "enum": [
+                  "public",
+                  "private"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Privacy Collection"
+          },
+          "privacy_profile": {
+            "anyOf": [
+              {
+                "enum": [
+                  "public",
+                  "private"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Privacy Profile"
+          },
+          "privacy_wishlist": {
+            "anyOf": [
+              {
+                "enum": [
+                  "public",
+                  "private"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Privacy Wishlist"
+          },
+          "theme": {
+            "anyOf": [
+              {
+                "enum": [
+                  "light",
+                  "dark",
+                  "system"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theme"
+          },
+          "use_current_location": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Use Current Location"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          }
+        },
+        "title": "SettingsChange",
+        "type": "object"
+      },
+      "ShopSighting": {
+        "description": "'It's on the shelf' at a shop with no listing for the album yet (rule 9).",
+        "properties": {
+          "album_id": {
+            "title": "Album Id",
+            "type": "integer"
+          },
+          "condition": {
+            "enum": [
+              "New",
+              "Used"
+            ],
+            "title": "Condition",
+            "type": "string"
+          },
+          "pressing_id": {
+            "title": "Pressing Id",
+            "type": "integer"
+          },
+          "price": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 100000.0,
+            "title": "Price",
+            "type": "number"
+          }
+        },
+        "required": [
+          "album_id",
+          "pressing_id",
+          "condition",
+          "price"
+        ],
+        "title": "ShopSighting",
+        "type": "object"
+      },
+      "TokenBody": {
+        "properties": {
+          "token": {
+            "maxLength": 200,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "TokenBody",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WishlistTarget": {
+        "description": "Which copy counts: any or one pressing, plus an optional price cap and grade floor.",
+        "properties": {
+          "max_price": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 100000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Price"
+          },
+          "min_condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Condition"
+          },
+          "pressing_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressing Id"
+          }
+        },
+        "title": "WishlistTarget",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Catalog, nearby stock, wishlist and collection. Try endpoints at /docs.",
+    "title": "Binhopper API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/albums/{album_id}": {
+      "get": {
+        "operationId": "album_detail_api_albums__album_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "album_id",
+            "required": true,
+            "schema": {
+              "title": "Album Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "zip",
+            "required": false,
+            "schema": {
+              "default": "10011",
+              "pattern": "^\\d{5}$",
+              "title": "Zip",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "title": "Radius",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Album Detail",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/albums/{album_id}/online": {
+      "get": {
+        "operationId": "online_sellers_api_albums__album_id__online_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "album_id",
+            "required": true,
+            "schema": {
+              "title": "Album Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Online Sellers",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/albums/{album_id}/stock": {
+      "get": {
+        "operationId": "nearby_stock_api_albums__album_id__stock_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "album_id",
+            "required": true,
+            "schema": {
+              "title": "Album Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "5-digit US ZIP code",
+            "in": "query",
+            "name": "zip",
+            "required": true,
+            "schema": {
+              "description": "5-digit US ZIP code",
+              "pattern": "^\\d{5}$",
+              "title": "Zip",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Search radius in miles: 10, 25, 50 or 100",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "description": "Search radius in miles: 10, 25, 50 or 100",
+              "title": "Radius",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NearbyStockResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Nearby Stock",
+        "tags": [
+          "stock"
+        ]
+      }
+    },
+    "/api/artists/{artist_id}": {
+      "get": {
+        "operationId": "artist_detail_api_artists__artist_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artist_id",
+            "required": true,
+            "schema": {
+              "title": "Artist Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "zip",
+            "required": false,
+            "schema": {
+              "default": "10011",
+              "pattern": "^\\d{5}$",
+              "title": "Zip",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "title": "Radius",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Artist Detail",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "operationId": "forgot_password_api_auth_forgot_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Forgot Password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "operationId": "google_callback_api_auth_google_callback_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Code"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Google Callback",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/google/start": {
+      "get": {
+        "operationId": "google_start_api_auth_google_start_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "return_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 500,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Google Start",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "current_api_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Current",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/providers": {
+      "get": {
+        "operationId": "providers_api_auth_providers_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Providers",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "register_api_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/resend-verification": {
+      "post": {
+        "operationId": "resend_verification_api_auth_resend_verification_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resend Verification",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "reset_password_api_auth_reset_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reset Password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/sign-in": {
+      "post": {
+        "operationId": "sign_in_api_auth_sign_in_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sign In",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/sign-out": {
+      "post": {
+        "operationId": "sign_out_api_auth_sign_out_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sign Out",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/verify": {
+      "post": {
+        "operationId": "verify_api_auth_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Verify",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/browse": {
+      "get": {
+        "operationId": "browse_api_browse_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "genre",
+            "required": true,
+            "schema": {
+              "maxLength": 60,
+              "minLength": 1,
+              "title": "Genre",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "decade",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2100,
+                  "minimum": 1900,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Decade"
+            }
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2109,
+                  "minimum": 1900,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "popular",
+              "enum": [
+                "popular",
+                "near"
+              ],
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "zip",
+            "required": false,
+            "schema": {
+              "default": "10011",
+              "pattern": "^\\d{5}$",
+              "title": "Zip",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "title": "Radius",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lp",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Lp",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "new",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "New",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "used",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Used",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "under_30",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Under 30",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "in_stock_nearby",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "In Stock Nearby",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 10000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Browse",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/discogs/callback": {
+      "get": {
+        "operationId": "callback_api_discogs_callback_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "oauth_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Oauth Token"
+            }
+          },
+          {
+            "in": "query",
+            "name": "oauth_verifier",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Oauth Verifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Callback",
+        "tags": [
+          "discogs import"
+        ]
+      }
+    },
+    "/api/discogs/connect": {
+      "get": {
+        "operationId": "connect_api_discogs_connect_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Connect",
+        "tags": [
+          "discogs import"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Api Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/listings/{listing_id}": {
+      "get": {
+        "description": "One copy at one shop, with everything needed to hand off to the shop.",
+        "operationId": "listing_api_listings__listing_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listing_id",
+            "required": true,
+            "schema": {
+              "title": "Listing Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Listing",
+        "tags": [
+          "hand-off"
+        ]
+      }
+    },
+    "/api/me": {
+      "delete": {
+        "description": "Delete the account and its data (AC-15). Stock reports stay, anonymized, for listing\naccuracy (SPEC \u203a Privacy \u203a Account deletion).",
+        "operationId": "delete_account_api_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Account",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/me/collection": {
+      "get": {
+        "operationId": "list_collection_api_me_collection_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "recent",
+              "enum": [
+                "recent",
+                "artist",
+                "genre",
+                "year"
+              ],
+              "title": "Sort",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Collection",
+        "tags": [
+          "collection"
+        ]
+      },
+      "post": {
+        "operationId": "add_copy_api_me_collection_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewCopy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Copy",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/api/me/collection/from-listing": {
+      "post": {
+        "description": "AC-10: \"Got it? Add to collection\" adds the copy and removes the album from the wishlist.",
+        "operationId": "got_it_api_me_collection_from_listing_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GotIt"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Got It",
+        "tags": [
+          "hand-off"
+        ]
+      }
+    },
+    "/api/me/collection/owned": {
+      "get": {
+        "description": "How many copies of each of an album's pressings the user owns (album page).",
+        "operationId": "owned_pressings_api_me_collection_owned_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "album_id",
+            "required": true,
+            "schema": {
+              "title": "Album Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Owned Pressings",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/api/me/collection/{copy_id}": {
+      "delete": {
+        "operationId": "remove_copy_api_me_collection__copy_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "copy_id",
+            "required": true,
+            "schema": {
+              "title": "Copy Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Copy",
+        "tags": [
+          "collection"
+        ]
+      },
+      "get": {
+        "operationId": "get_copy_api_me_collection__copy_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "copy_id",
+            "required": true,
+            "schema": {
+              "title": "Copy Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Copy",
+        "tags": [
+          "collection"
+        ]
+      },
+      "patch": {
+        "operationId": "change_copy_api_me_collection__copy_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "copy_id",
+            "required": true,
+            "schema": {
+              "title": "Copy Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopyChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Copy",
+        "tags": [
+          "collection"
+        ]
+      }
+    },
+    "/api/me/data": {
+      "get": {
+        "description": "Everything we store about the user, as JSON (SPEC \u203a Privacy \u203a Data export).",
+        "operationId": "download_data_api_me_data_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Download Data",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/me/discogs": {
+      "delete": {
+        "description": "Remove the stored tokens (SPEC \u203a Connected accounts) and stop any running import.",
+        "operationId": "disconnect_api_me_discogs_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Disconnect",
+        "tags": [
+          "discogs import"
+        ]
+      }
+    },
+    "/api/me/export": {
+      "get": {
+        "description": "Collection as CSV (SPEC \u203a Account rule 5).",
+        "operationId": "export_collection_api_me_export_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export Collection",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/me/import/discogs": {
+      "get": {
+        "operationId": "import_status_api_me_import_discogs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Import Status",
+        "tags": [
+          "discogs import"
+        ]
+      },
+      "post": {
+        "operationId": "start_import_api_me_import_discogs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportChoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Import",
+        "tags": [
+          "discogs import"
+        ]
+      }
+    },
+    "/api/me/settings": {
+      "get": {
+        "operationId": "get_settings_api_me_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings",
+        "tags": [
+          "account"
+        ]
+      },
+      "patch": {
+        "operationId": "change_settings_api_me_settings_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Settings",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/me/wishlist": {
+      "delete": {
+        "description": "The heart's \"off\": every wishlist entry for that album.",
+        "operationId": "remove_album_api_me_wishlist_delete",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "album_id",
+            "required": true,
+            "schema": {
+              "title": "Album Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Album",
+        "tags": [
+          "wishlist"
+        ]
+      },
+      "get": {
+        "operationId": "list_wishlist_api_me_wishlist_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "zip",
+            "required": false,
+            "schema": {
+              "default": "10011",
+              "pattern": "^\\d{5}$",
+              "title": "Zip",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "title": "Radius",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Wishlist",
+        "tags": [
+          "wishlist"
+        ]
+      },
+      "post": {
+        "operationId": "add_api_me_wishlist_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add",
+        "tags": [
+          "wishlist"
+        ]
+      }
+    },
+    "/api/me/wishlist/albums": {
+      "get": {
+        "description": "Which albums have a filled heart.",
+        "operationId": "wishlisted_albums_api_me_wishlist_albums_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Wishlisted Albums",
+        "tags": [
+          "wishlist"
+        ]
+      }
+    },
+    "/api/me/wishlist/{item_id}": {
+      "delete": {
+        "operationId": "remove_api_me_wishlist__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove",
+        "tags": [
+          "wishlist"
+        ]
+      },
+      "patch": {
+        "operationId": "change_api_me_wishlist__item_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WishlistTarget"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change",
+        "tags": [
+          "wishlist"
+        ]
+      }
+    },
+    "/api/search": {
+      "get": {
+        "operationId": "search_api_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 200,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "default": "albums",
+              "enum": [
+                "albums",
+                "artists"
+              ],
+              "title": "Type",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "zip",
+            "required": false,
+            "schema": {
+              "default": "10011",
+              "pattern": "^\\d{5}$",
+              "title": "Zip",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "title": "Radius",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lp",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Lp",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "new",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "New",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "used",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Used",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "under_30",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Under 30",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "in_stock_nearby",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "In Stock Nearby",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 10000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/stock/{listing_id}": {
+      "get": {
+        "description": "What the report screen shows: the listing as the app lists it.",
+        "operationId": "listing_for_report_api_stock__listing_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listing_id",
+            "required": true,
+            "schema": {
+              "title": "Listing Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Listing For Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/stock/{listing_id}/reports": {
+      "post": {
+        "operationId": "report_listing_api_stock__listing_id__reports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listing_id",
+            "required": true,
+            "schema": {
+              "title": "Listing Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Listing",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/stores/{store_id}/sighting": {
+      "get": {
+        "description": "What \"I saw it here\" asks about: the shop and the album's pressings.",
+        "operationId": "sighting_form_api_stores__store_id__sighting_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "title": "Store Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "album_id",
+            "required": true,
+            "schema": {
+              "title": "Album Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sighting Form",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/stores/{store_id}/sightings": {
+      "post": {
+        "description": "AC-18: the shop moves into the stock list as a user-reported listing.",
+        "operationId": "report_sighting_api_stores__store_id__sightings_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "title": "Store Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopSighting"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Sighting",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/zips/nearest": {
+      "get": {
+        "operationId": "nearest_zip_api_zips_nearest_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Lng",
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Nearest Zip",
+        "tags": [
+          "location"
+        ]
+      }
+    }
+  }
+}

@@ -48,6 +48,7 @@ pip install -e ".[dev]"
 cp .env.example .env
 alembic upgrade head                     # creates/updates tables from migrations/versions/
 # Changed a model? alembic revision --autogenerate -m "what changed", review it, commit it
+# Changed an API model? python -m scripts.export_openapi  (regenerates frontend/src/api-types.ts)
 python -m scripts.seed_sample            # fictional sample data
 python -m scripts.seed_test_data         # test cases: radius edges, every freshness tier (not for demos)
 # All US ZIPs: download + unzip the Census ZCTA Gazetteer file first (see README.md), then

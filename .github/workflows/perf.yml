@@ -1,0 +1,60 @@
+name: Performance baseline
+
+# k6 load tests for the hot paths (#71): nearby stock and search/browse, 10 virtual users for
+# a minute each, against a fresh MySQL with the fictional sample seed. Fails when a p95
+# threshold in perf/*.js is crossed. Manual only; never touches staging, Discogs or Places.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  k6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: binhopper
+          MYSQL_USER: binhopper
+          MYSQL_PASSWORD: binhopper
+          MYSQL_ROOT_PASSWORD: binhopper-root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: mysql+pymysql://binhopper:binhopper@127.0.0.1:3306/binhopper
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - name: Migrate and seed the database
+        working-directory: backend
+        run: |
+          pip install -e .
+          alembic upgrade head
+          python -m scripts.seed_sample
+          python -m scripts.load_zip_codes tests/fixtures/gazetteer_zcta_sample.txt
+      - name: Start the API
+        working-directory: backend
+        run: |
+          nohup uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2 > api.log 2>&1 &
+          for i in $(seq 30); do curl -sf http://127.0.0.1:8000/api/health && exit 0; sleep 1; done
+          cat api.log; exit 1
+      - name: Nearby stock
+        run: docker run --rm --network host -v "$PWD/perf:/perf:ro" -e BASE_URL=http://127.0.0.1:8000 grafana/k6:2.2.0 run /perf/stock.js
+      - name: Search and browse
+        if: success() || failure()
+        run: docker run --rm --network host -v "$PWD/perf:/perf:ro" -e BASE_URL=http://127.0.0.1:8000 grafana/k6:2.2.0 run /perf/search.js
+      - name: API log
+        if: failure()
+        run: tail -n 100 backend/api.log

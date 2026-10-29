@@ -86,6 +86,7 @@ def nearby_stock(
                 discogs_url=(f"https://www.discogs.com/sell/item/{listing.discogs_listing_id}"
                              if listing.source == "discogs" and listing.discogs_listing_id else None),
                 freshness=fresh,
+                missing_reports=missing_counts.get(listing.id, 0),
                 last_updated_at=max(
                     (t for t in (listing.last_synced_at, listing.last_verified_at) if t),
                     default=None,

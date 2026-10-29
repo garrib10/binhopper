@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ApiError } from '../api';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { fetchSightingForm, parsePrice, reportSighting, type SightingForm } from '../reports';
 
 /**
@@ -13,7 +14,8 @@ export function SightingPage() {
   const albumId = Number(params.get('album'));
   const priceId = useId();
   const [form, setForm] = useState<SightingForm | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadProblem | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [pressing, setPressing] = useState<number | null>(null);
   const [condition, setCondition] = useState<'New' | 'Used' | null>(null);
   const [price, setPrice] = useState('');
@@ -26,10 +28,10 @@ export function SightingPage() {
       setForm(data);
       if (data.pressings.length === 1) setPressing(data.pressings[0].id);
     }).catch((err) => {
-      if (!controller.signal.aborted) setLoadError(err instanceof ApiError && err.status < 500 ? err.message : "Can't reach Binhopper right now.");
+      if (!controller.signal.aborted) setLoadError(describeLoadError(err, "That shop or album isn't in Binhopper."));
     });
     return () => controller.abort();
-  }, [id, albumId]);
+  }, [id, albumId, attempt]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -50,7 +52,8 @@ export function SightingPage() {
 
   const back = `/albums/${albumId}/stores`;
   if (!form) return <main id="content" className="page"><h1 className="display">I saw it here</h1>
-    {loadError ? <p role="alert">{loadError} <Link to={back}>Back to nearby stock</Link></p> : <p role="status">Loading…</p>}</main>;
+    {loadError ? <LoadError problem={loadError} onRetry={() => { setLoadError(null); setAttempt((n) => n + 1); }} back={{ to: back, label: 'Back to nearby stock' }} />
+      : <p role="status">Loading…</p>}</main>;
   if (done) return <main id="content" className="page report-page">
     <h1 className="display">Thanks!</h1>
     <p role="status" className="notice notice--ok">{form.store.name} now shows {form.album.title} in nearby stock, verified for the next 24 hours.</p>

@@ -4,6 +4,7 @@ import { ApiError } from '../api';
 import { fetchCopy, removeCopy, updateCopy, type CopyDetail } from '../collection';
 import { Cover } from '../components/AlbumTile';
 import { CopyForm } from '../components/CopyForm';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 
 /** One copy you own (mockup Owned.dc.html): pressing, grades, price paid, where bought, notes. */
 export function OwnedPage() {
@@ -11,18 +12,21 @@ export function OwnedPage() {
   const navigate = useNavigate();
   const [copy, setCopy] = useState<CopyDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loadProblem, setLoadProblem] = useState<LoadProblem | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
     fetchCopy(Number(id), controller.signal).then(setCopy).catch((err) => {
-      if (!controller.signal.aborted) setError(err instanceof ApiError && err.status === 404 ? 'That copy isn’t in your collection.' : "Can't reach Binhopper right now.");
+      if (!controller.signal.aborted) setLoadProblem(describeLoadError(err, 'That copy isn’t in your collection.'));
     });
     return () => controller.abort();
-  }, [id]);
+  }, [id, attempt]);
 
   if (!copy) return <main id="content" className="page"><h1 className="display">Your copy</h1>
-    {error ? <p role="alert">{error} <Link to="/collection">Back to collection</Link></p> : <p role="status">Loading…</p>}</main>;
+    {loadProblem ? <LoadError problem={loadProblem} onRetry={() => { setLoadProblem(null); setAttempt((n) => n + 1); }} back={{ to: '/collection', label: 'Back to collection' }} />
+      : <p role="status">Loading…</p>}</main>;
   return <main id="content" className="page copy-page">
     <Link className="back-link" to="/collection">← Collection</Link>
     <header className="copy-header">

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ApiError } from '../api';
 import { Cover } from '../components/AlbumTile';
 import { GotItPrompt } from '../components/GotItPrompt';
+import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { HeartButton } from '../components/HeartButton';
 import { fetchListing, pendingHandoffs, recordHandoff, type HandoffListing } from '../handoff';
 import '../styles/handoff.css';
@@ -14,18 +14,20 @@ const STEPS = ['Find', 'Locate', 'Buy', 'Collect'];
 export function RecordPage() {
   const { id = '' } = useParams();
   const [record, setRecord] = useState<HandoffListing | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadProblem | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [asking, setAsking] = useState(() => pendingHandoffs().find((h) => h.listingId === Number(id)) ?? null);
   useEffect(() => {
     const controller = new AbortController();
     fetchListing(Number(id), controller.signal).then(setRecord).catch((err) => {
-      if (!controller.signal.aborted) setError(err instanceof ApiError && err.status === 404 ? 'This copy is no longer listed. It may have sold.' : "Can't reach Binhopper right now.");
+      if (!controller.signal.aborted) setError(describeLoadError(err, 'This copy is no longer listed. It may have sold.'));
     });
     return () => controller.abort();
-  }, [id]);
+  }, [id, attempt]);
 
   if (!record) return <main id="content" className="page"><h1 className="display">Locate, hold or buy</h1>
-    {error ? <p role="alert">{error} <Link to="/search">Back to search</Link></p> : <p role="status">Loading…</p>}</main>;
+    {error ? <LoadError problem={error} onRetry={() => { setError(null); setAttempt((n) => n + 1); }} back={{ to: '/search', label: 'Back to search' }} />
+      : <p role="status">Loading…</p>}</main>;
   const { album, store, pressing } = record;
   const handedOff = () => {
     recordHandoff({ listingId: record.listing_id, albumId: album.id, albumTitle: album.title, storeName: store.name });

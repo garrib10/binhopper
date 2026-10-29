@@ -104,6 +104,22 @@ and Labeler. Required before merging:
 `integration` (#94) and `system` (#95) run on every PR once merged. Add them to the rulesets
 after they have run once (see [BRANCHING.md › One-time GitHub settings](BRANCHING.md#one-time-github-settings)).
 
+## Performance baseline
+
+k6 load tests for nearby stock and search (`perf/`, #71), run on demand with Actions ›
+Performance baseline. 10 virtual users for a minute each, against MySQL with the sample seed.
+Baseline recorded 2026-10-29 on a local Mac (API with 2 workers, MySQL 8.4 in Docker):
+
+| Endpoint | Median | p95 | Threshold (fails the run) |
+| --- | --- | --- | --- |
+| `GET /api/albums/{id}/stock` | 37 ms | 73 ms | p95 < 300 ms |
+| `GET /api/search` | 49 ms | 77 ms | p95 < 400 ms |
+| `GET /api/browse` | 47 ms | 72 ms | p95 < 400 ms |
+
+Zero errors across 2,621 requests. Thresholds sit about 4–5× above the baseline to absorb
+slower CI runners; if a change legitimately needs more, record the new numbers here and raise
+the threshold in the same PR.
+
 ## Running tests locally
 
 Commands are in [README.md › Tests](../README.md#tests). In short: `pytest` in `backend/`,

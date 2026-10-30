@@ -234,7 +234,7 @@ Everything a user stores starts private, and the app collects only what the core
 - **Transport and secrets:** HTTPS everywhere; API keys only on the server, never in the React bundle.
 - **Monitoring:** Better Stack uptime monitors, a worker heartbeat, and the server's warnings and errors. Access logs and visitor IPs aren't shipped, and monitoring tokens live only in server environment variables.
 - **Abuse limits:** rate-limit stock reports per user, and search per IP address (search works signed out), to protect data quality and the Discogs quota.
-- **Policies before launch:** a privacy policy and terms of use, linked in You › Account.
+- **Policies:** a Privacy Policy (`/privacy`) and Terms of Use (`/terms`), readable signed out and linked from every page's footer, You › Account, and the sign-up and sign-in screens ("By continuing, you confirm you're 18 or older and agree to…"). Binhopper is for adults (18+) in the US; the terms follow Connecticut law. The pages describe what the code stores and shares, so a change to either goes in the same PR. A contact email is added before launch (#119).
 
 ## Acceptance criteria and test plan
 

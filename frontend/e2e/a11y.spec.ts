@@ -8,7 +8,8 @@ const SIGNED_IN = ['/search?q=rumours', '/genres', '/genres/Rock/years?decade=19
   '/albums/1/stores', '/records/1', '/wishlist', '/collection', '/collection?view=list', '/collection/add/1', '/collection/5',
   '/import', '/you/profile', '/you/settings', '/you/privacy', '/you/account', '/onboarding', '/stock/1/report',
   '/stores/9/report?album=1', '/not-a-page'];
-const SIGNED_OUT = ['/search', '/sign-in', '/create-account', '/forgot-password', '/reset-password#token=t', '/verify'];
+const SIGNED_OUT = ['/search', '/sign-in', '/create-account', '/forgot-password', '/reset-password#token=t', '/verify',
+  '/privacy', '/terms'];
 
 /** Interactive elements smaller than 44 px. Links inside running text are exempt (WCAG 2.5.8). */
 async function smallTargets(page: Page): Promise<string[]> {

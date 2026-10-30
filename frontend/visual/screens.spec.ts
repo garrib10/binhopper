@@ -14,6 +14,7 @@ const SCREENS: { name: string; path: string; signedIn?: boolean }[] = [
   { name: 'you-settings', path: '/you/settings' },
   { name: 'onboarding', path: '/onboarding' },
   { name: 'sign-in', path: '/sign-in', signedIn: false },
+  { name: 'privacy', path: '/privacy', signedIn: false },
 ];
 
 async function steady(page: Page) {

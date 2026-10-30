@@ -1929,7 +1929,7 @@
     },
     "/api/me/collection/from-listing": {
       "post": {
-        "description": "AC-10: \"Got it? Add to collection\" adds the copy and removes the album from the wishlist.",
+        "description": "AC-10: \"Got it? Add to collection\" adds the copy and takes it off the wishlist (rule 6).",
         "operationId": "got_it_api_me_collection_from_listing_post",
         "requestBody": {
           "content": {

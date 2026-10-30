@@ -22,7 +22,7 @@ export function GotItPrompt({ handoff, onDone, onAdded }: { handoff: Handoff; on
     try {
       const copy = await gotIt(handoff.listingId, anotherCopy);
       forgetHandoff(handoff.listingId);
-      forget(handoff.albumId);  // the heart empties: it left the wishlist
+      if (!copy.album_on_wishlist) forget(handoff.albumId);  // the heart empties unless another pressing is still wanted
       setState({ kind: 'added', copyId: copy.id, leftWishlist: copy.removed_from_wishlist });
       onAdded?.();
     } catch (err) {

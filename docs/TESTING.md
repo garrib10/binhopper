@@ -57,6 +57,13 @@ the feature issue that will add them.
 | AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
 | AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |
 
+Spec rules without an AC id are tested the same way and named by rule in the test:
+
+| Rule | Tests |
+| --- | --- |
+| Collection rule 2: only the pressing is required; "Add condition" nudge; every grade saves and lists | `test_collection_api.py` (all 7 × 7 grade pairs, pressing-only add), `CollectionPage.test.tsx`, `e2e-system/collection.spec.ts` (each grade through the UI) |
+| Collection rule 6: adding a copy takes the album off the wishlist unless the wish is for another pressing | `test_collection_api.py`, `test_handoff_api.py`, `test_discogs_import.py`, `CollectionPage.test.tsx`, `RecordPage.test.tsx`, `e2e-system/collection.spec.ts` |
+
 ## Test data
 
 | Data | Where | Used by |

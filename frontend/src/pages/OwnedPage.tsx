@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ApiError } from '../api';
 import { fetchCopy, removeCopy, updateCopy, type CopyDetail } from '../collection';
 import { Cover } from '../components/AlbumTile';
@@ -10,6 +10,8 @@ import { describeLoadError, LoadError, type LoadProblem } from '../components/Lo
 export function OwnedPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  // Set by "Add to collection": say what happened, including the wishlist (rule 6).
+  const justAdded = useLocation().state as { added?: boolean; leftWishlist?: boolean; stillWanted?: boolean } | null;
   const [copy, setCopy] = useState<CopyDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadProblem, setLoadProblem] = useState<LoadProblem | null>(null);
@@ -35,6 +37,12 @@ export function OwnedPage() {
         <p><Link to={`/albums/${copy.album.id}`}>{copy.album.artist.name}</Link></p>
         <p className="tag tag--ok">In your collection{copy.copy_number > 1 ? ` · copy ${copy.copy_number}` : ''}</p></div>
     </header>
+    {justAdded?.added && <p className="notice notice--ok" role="status">
+      Added to your collection.
+      {justAdded.leftWishlist && ` ${copy.album.title} moved off your wishlist.`}
+      {justAdded.stillWanted && ' It stays on your wishlist for the other pressing you want.'}
+      {!copy.media_grade && !copy.sleeve_grade && ' Add the media and sleeve condition anytime below.'}
+    </p>}
     <CopyForm pressings={copy.pressings} initialPressing={copy.pressing.id} initial={copy} submitLabel="Save my copy" busy={busy}
       onSubmit={async (pressingId, details) => {
         setBusy(true); setError(null);

@@ -134,3 +134,71 @@ def test_AC_13_another_users_collection_is_invisible(client, sign_in, rumours, s
     # Owning it in someone else's collection doesn't make it a duplicate for you.
     assert client.post(URL, json={"pressing_id": rumours[0].id}).status_code == 201
     assert session.scalar(select(func.count()).select_from(CollectionItem)) == 2
+
+
+# --- Rule 6: getting a copy takes it off the wishlist -------------------------------
+
+def wish(session, user, pressings, pressing=None):
+    from app.models import WishlistItem
+    session.add(WishlistItem(user_id=user.id, album_id=pressings[0].album_id,
+                             pressing_id=pressing.id if pressing else None))
+    session.commit()
+
+
+def wishlist_rows(session):
+    from app.models import WishlistItem
+    return session.scalar(select(func.count()).select_from(WishlistItem))
+
+
+def test_adding_any_pressing_removes_an_any_pressing_wish(client, sign_in, rumours, session):
+    user = sign_in()
+    wish(session, user, rumours)
+    body = client.post(URL, json={"pressing_id": rumours[1].id}).json()
+    assert (body["removed_from_wishlist"], body["album_on_wishlist"]) == (True, False)
+    assert wishlist_rows(session) == 0
+
+
+def test_adding_the_wanted_pressing_removes_that_wish(client, sign_in, rumours, session):
+    user = sign_in()
+    wish(session, user, rumours, rumours[0])
+    assert client.post(URL, json={"pressing_id": rumours[0].id}).json()["removed_from_wishlist"] is True
+    assert wishlist_rows(session) == 0
+
+
+def test_a_wish_for_a_different_specific_pressing_stays(client, sign_in, rumours, session):
+    user = sign_in()
+    wish(session, user, rumours, rumours[0])  # wants the Original press
+    body = client.post(URL, json={"pressing_id": rumours[1].id}).json()  # got the 180g reissue
+    assert (body["removed_from_wishlist"], body["album_on_wishlist"]) == (False, True)
+    assert wishlist_rows(session) == 1
+
+
+def test_other_users_wishlists_are_left_alone(client, sign_in, rumours, session):
+    other = sign_in("other@example.com")
+    wish(session, other, rumours)
+    sign_in("me@example.com")
+    assert client.post(URL, json={"pressing_id": rumours[0].id}).json()["removed_from_wishlist"] is False
+    assert wishlist_rows(session) == 1
+
+
+# --- Every grade saves and shows in the collection ------------------------------------
+
+@pytest.mark.parametrize("media", ["M", "NM", "VG+", "VG", "G+", "G", "P"])
+@pytest.mark.parametrize("sleeve", ["M", "NM", "VG+", "VG", "G+", "G", "P"])
+def test_every_media_and_sleeve_grade_saves_and_lists(client, sign_in, rumours, media, sleeve):
+    sign_in()
+    copy_id = client.post(URL, json={"pressing_id": rumours[0].id}).json()["id"]
+    assert client.patch(f"{URL}/{copy_id}", json={"pressing_id": rumours[0].id, "media_grade": media,
+                                                   "sleeve_grade": sleeve}).status_code == 200
+    [item] = client.get(URL).json()["items"]
+    assert (item["media_grade"], item["sleeve_grade"]) == (media, sleeve)
+    detail = client.get(f"{URL}/{copy_id}").json()
+    assert (detail["media_grade"], detail["sleeve_grade"]) == (media, sleeve)
+
+
+def test_only_the_pressing_is_required(client, sign_in, rumours):
+    sign_in()
+    copy = client.post(URL, json={"pressing_id": rumours[0].id}).json()
+    assert (copy["media_grade"], copy["sleeve_grade"], copy["price_paid"], copy["bought_at"], copy["notes"]) == (
+        None, None, None, None, None)
+    assert client.post(URL, json={"media_grade": "NM"}).status_code == 422  # no pressing

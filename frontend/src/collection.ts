@@ -45,12 +45,15 @@ export const updateCopy = (id: number, pressingId: number, details: CopyDetails)
   sendJson<Copy>('PATCH', `/me/collection/${id}`, { pressing_id: pressingId, ...details });
 export const removeCopy = (id: number) => sendJson<void>('DELETE', `/me/collection/${id}`);
 
+/** What adding a copy did to the wishlist (SPEC › Collection rule 6). */
+export interface WishlistEffect { removed_from_wishlist: boolean; album_on_wishlist: boolean }
+
 /** Thrown when the pressing is already owned: the app offers "Add as 2nd copy" (rule 3, AC-09). */
 export class AlreadyOwned extends Error {
   constructor(public copies: number) { super('You already own this pressing'); }
 }
 
-export async function addCopy(pressingId: number, details: CopyDetails, anotherCopy = false): Promise<Copy> {
+export async function addCopy(pressingId: number, details: CopyDetails, anotherCopy = false): Promise<Copy & WishlistEffect> {
   const response = await fetch('/api/me/collection', {
     method: 'POST', credentials: 'same-origin',
     headers: { ...CSRF_HEADER, 'Content-Type': 'application/json' },

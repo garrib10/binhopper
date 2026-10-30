@@ -51,6 +51,13 @@ describe('Collection page', () => {
     expect(screen.getByRole('row', { name: /Rumours Fleetwood Mac 180g reissue \(copy 2\)/ })).toBeVisible();
   });
 
+  it('shows placeholder tiles in the chosen view while loading', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
+    renderAt('/collection?view=list');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading your collection…');
+    expect(document.querySelector('.list-placeholder--list')?.children).toHaveLength(3);
+  });
+
   it('has an empty state', async () => {
     api({ 'GET /api/me/collection': () => ({ body: { items: [], stats: { records: 0, artists: 0, duplicates: 0, wishlist: 0 } } }) });
     renderAt('/collection');
@@ -116,4 +123,39 @@ describe('Your copy', () => {
 
 it('names copies 2nd, 3rd, 4th, 11th, 21st', () => {
   expect([2, 3, 4, 11, 21].map(ordinal)).toEqual(['2nd', '3rd', '4th', '11th', '21st']);
+});
+
+describe('Rule 6 and the condition nudges', () => {
+  it('says the record moved off the wishlist and invites adding the condition', async () => {
+    api({ 'GET /api/albums/1': () => ({ body: album }),
+      'POST /api/me/collection': () => ({ status: 201, body: { ...copy, id: 9, media_grade: null, sleeve_grade: null,
+        removed_from_wishlist: true, album_on_wishlist: false } }),
+      'GET /api/me/collection/9': () => ({ body: { ...copy, id: 9, media_grade: null, sleeve_grade: null, pressings: [] } }) });
+    renderAt('/collection/add/1');
+    await userEvent.click(await screen.findByRole('button', { name: /180g reissue/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add to collection' }));
+    expect(await screen.findByText(/moved off your wishlist/)).toHaveTextContent(
+      'Added to your collection. Rumours moved off your wishlist. Add the media and sleeve condition anytime below.');
+  });
+
+  it('says when it stays on the wishlist for another pressing', async () => {
+    api({ 'GET /api/albums/1': () => ({ body: album }),
+      'POST /api/me/collection': () => ({ status: 201, body: { ...copy, id: 9, removed_from_wishlist: false, album_on_wishlist: true } }),
+      'GET /api/me/collection/9': () => ({ body: { ...copy, id: 9, pressings: [] } }) });
+    renderAt('/collection/add/1');
+    await userEvent.click(await screen.findByRole('button', { name: /180g reissue/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add to collection' }));
+    const notice = await screen.findByText(/stays on your wishlist/);
+    expect(notice).toHaveTextContent('It stays on your wishlist for the other pressing you want.');
+    expect(notice).not.toHaveTextContent('moved off');
+  });
+
+  it('nudges copies without a condition, in grid and list', async () => {
+    api({ 'GET /api/me/collection': () => ({ body: { items: [{ ...copy, media_grade: null, sleeve_grade: null }],
+      stats: { records: 1, artists: 1, duplicates: 0, wishlist: 0 } } }) });
+    renderAt('/collection');
+    expect(await screen.findByText('Add condition')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'List' }));
+    expect(screen.getByRole('link', { name: 'Add condition: Rumours' })).toHaveAttribute('href', '/collection/5');
+  });
 });

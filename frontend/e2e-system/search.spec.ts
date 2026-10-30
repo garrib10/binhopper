@@ -28,3 +28,16 @@ for (const theme of ['light', 'dark'] as const) {
     await page.screenshot({ path: test.info().outputPath(`genre-year-${theme}.png`), fullPage: true });
   });
 }
+
+test('Search rules 1 and 5: a style from the search box and the picker, on the real catalog', async ({ page }) => {
+  await page.goto('/search');
+  await page.getByLabel('Search records', { exact: true }).fill('soft rock');
+  await page.getByRole('link', { name: 'Browse Soft Rock →' }).click();
+  await expect(page.getByRole('heading', { name: 'Soft Rock', level: 1 })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Rumours.*Fleetwood Mac/ })).toBeVisible();
+  await page.goto('/genres');
+  await page.getByRole('button', { name: 'Rock', exact: true }).click();
+  await page.getByRole('button', { name: 'Pop Rock', exact: true }).click();
+  await page.getByRole('link', { name: 'Show Pop Rock', exact: true }).click();
+  await expect(page.getByRole('link', { name: /Rumours.*Fleetwood Mac/ })).toBeVisible();
+});

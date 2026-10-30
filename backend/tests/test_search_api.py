@@ -55,3 +55,48 @@ def test_filters_cannot_match_different_pressings_of_the_same_album(client, sess
                      StockListing(source="manual", store_id=shop.id, pressing_id=cd.id, price=20, condition='New')])
     session.commit()
     assert client.get('/api/search?q=Cross&lp=true&new=true&under_30=true').json()['albums'] == []
+
+
+def add_genres(session, *rows):
+    from sqlalchemy import select
+    from app.models import Album, AlbumGenre, Artist
+    artist = session.scalar(select(Artist))
+    for title, genre, styles in rows:
+        album = Album(artist_id=artist.id, title=title)
+        session.add(album)
+        session.flush()
+        session.add_all([AlbumGenre(album_id=album.id, genre=genre, style=s) for s in styles] or
+                        [AlbumGenre(album_id=album.id, genre=genre, style=None)])
+    session.commit()
+
+
+def test_genres_list_every_genre_with_its_styles(client, session):  # Search rule 5
+    load(session)
+    add_genres(session, ('Loveless', 'Rock', ['Shoegaze', 'Noise']), ('Souvlaki', 'Rock', ['Shoegaze']),
+               ('Kind of Blue', 'Jazz', ['Modal']), ('Brass album', 'Brass & Military', []))
+    data = client.get('/api/genres').json()['genres']
+    assert [g['name'] for g in data] == ['Rock', 'Brass & Military', 'Jazz']  # most albums first, then A–Z
+    rock = data[0]
+    assert rock['albums'] == 3  # Rumours has two styles but counts once
+    assert rock['styles'][0] == 'Shoegaze'
+    assert set(rock['styles']) == {'Shoegaze', 'Noise', 'Pop Rock', 'Soft Rock'}
+    assert data[1]['styles'] == []
+
+
+def test_search_suggests_matching_genres_and_styles(client, session):  # Search rule 1
+    load(session)
+    add_genres(session, ('Loveless', 'Rock', ['Shoegaze']), ('Shoegaze pop', 'Pop', ['Shoegaze']),
+               ('Souvlaki', 'Rock', ['Shoegaze']))
+    data = client.get('/api/search', params={'q': 'shoe'}).json()
+    assert data['genres'] == [{'name': 'Shoegaze', 'genre': 'Rock'}]  # filed under Rock most
+    assert client.get('/api/search', params={'q': 'rock'}).json()['genres'][:2] == [
+        {'name': 'Rock', 'genre': 'Rock'}, {'name': 'Pop Rock', 'genre': 'Rock'}]  # starts-with first
+    assert client.get('/api/search', params={'q': '%%'}).json()['genres'] == []
+    assert client.get('/api/search', params={'q': 'shoe', 'offset': 50}).json()['genres'] == []
+    assert client.get('/api/search', params={'q': 'shoe', 'type': 'artists'}).json()['genres'] == []
+
+
+def test_browse_by_style(client, session):  # Search rule 5
+    load(session)
+    add_genres(session, ('Loveless', 'Rock', ['Shoegaze']))
+    assert [a['title'] for a in client.get('/api/browse?genre=Shoegaze').json()['albums']] == ['Loveless']

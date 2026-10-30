@@ -66,11 +66,11 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 ### Search
 
-1. One search box matches artist, album title and label. Results appear after 2+ characters, debounced about 300 ms.
+1. One search box matches artist, album title and label. Results appear after 2+ characters, debounced about 300 ms. When the search also names a genre or style, up to three "Browse Shoegaze →" links lead to that genre's or style's results.
 2. A switch picks Albums, Artists or Genre & year. Albums is the default.
 3. Filters: In stock nearby, LP, New, Used, Under $30. "In stock nearby" uses the user's current ZIP and radius.
 4. Each album result shows title, artist, year, format and a stock line ("3 stores within 25 mi · from $26" or "Nearest copy is 38 mi away").
-5. Genre & year: pick a genre, then a decade, then an optional year. Results sort by Most popular or In stock near me.
+5. Genre & year: pick a genre, then an optional style, then a decade, then an optional year. The picker lists every genre in the catalog, most albums first, and each genre's most common styles. Results sort by Most popular or In stock near me.
 6. No results → suggest checking spelling and offer browse by genre.
 
 ### Artist page

@@ -39,3 +39,22 @@ test('switching Albums / Artists / Genre & year doesn’t move the page', async 
   expect(new Set(spots).size, spots.join('\n')).toBe(1);
   await expect(page.getByRole('link', { name: 'Search', exact: true })).toHaveAttribute('aria-current', 'page');
 });
+
+test('Search rules 1 and 5: genres and styles from the search box and the picker', async ({ page }) => {
+  await page.route('**/api/**', (route) => route.fulfill({ status: 401, json: {} }));
+  await page.route('**/api/genres', (route) => route.fulfill({ json: { genres: [
+    { name: 'Rock', albums: 9, styles: ['Shoegaze', 'Pop Rock'] }, { name: 'Brass & Military', albums: 1, styles: [] }] } }));
+  await page.route('**/api/search?*', (route) => route.fulfill({ json: { albums: [album], artists: [], genres: [{ name: 'Shoegaze', genre: 'Rock' }] } }));
+  await page.route('**/api/browse?*', (route) => route.fulfill({ json: { albums: [album], artists: [] } }));
+  await page.goto('/search');
+  await page.getByLabel('Search records', { exact: true }).fill('shoegaze');
+  await page.getByRole('link', { name: 'Browse Shoegaze →' }).click();
+  await expect(page.getByRole('heading', { name: 'Shoegaze', level: 1 })).toBeVisible();
+  await page.getByRole('link', { name: 'Change genre or year' }).click();
+  await expect(page.getByRole('button', { name: 'Shoegaze' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Brass & Military' })).toBeVisible();
+  for (const target of await page.getByRole('main').getByRole('button').all()) {
+    expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(43.5);
+  }
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});

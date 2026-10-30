@@ -3,7 +3,7 @@
 Vercel's proxy (frontend/proxy.ts) adds `X-Origin-Secret`; anyone calling the Railway
 URL directly can't, so they can't spoof X-Forwarded-For past rate limits either.
 `/api/health` stays open for Railway's health check and the deploy check (it only
-reveals status and commit). With no secret configured (local dev, tests) nothing is
+reveals status and commit), and `/api/health/db` for uptime monitors (status only). With no secret configured (local dev, tests) nothing is
 checked.
 """
 
@@ -15,7 +15,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from app.config import settings
 
 HEADER = b"x-origin-secret"
-EXEMPT = {"/api/health"}
+EXEMPT = {"/api/health", "/api/health/db"}
 
 
 def configured_secrets() -> list[bytes]:

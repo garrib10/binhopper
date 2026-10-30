@@ -338,16 +338,59 @@ policy on a domain you own (#85, #119); until then it stays in Testing.
 the Resend owner's address → the email arrives → the link signs you in. `curl -i <APP_URL>/api/auth/me`
 (with the bypass header) returns 401 with `Cache-Control: no-store`.
 
-## 5. Better Stack dashboard
+## 5. Better Stack monitoring (#84)
 
-Issue #83 includes recording monitor setup; this guide does not provision it or close the
-separate monitoring implementation issue. In Better Stack Uptime, create GET/HTTP-status
-monitors for the production frontend and production `/api/health`, expected status 200.
-Enable TLS validation, choose a check frequency available on your plan, and configure the
-owner's notification destination/escalation policy. Optionally add clearly labelled staging
-monitors. Verify the notification destination using the dashboard's test facility. Health
-monitors only check availability; the deploy workflow checks commit identity. No Better
-Stack token belongs in the app or frontend.
+Better Stack tells you about an outage before a user does: uptime monitors, a heartbeat
+from the worker, and the API's and worker's warnings and errors. Its tokens live only in
+Better Stack and in Railway variables, never in the repo or the frontend.
+
+### Alerts first
+
+Better Stack → Uptime: under "How should we escalate incidents?", **Notify the primary
+responder** by e-mail (add push notifications with the Better Stack phone app). With no other
+team members, "If the primary responder doesn't acknowledge" has nobody to alert. When the
+monitors exist, send yourself a test alert from one of them to confirm it arrives.
+
+### Uptime monitors
+
+Production only, set up at launch (#119); staging isn't monitored. In a monitor group named
+**Binhopper**:
+
+| Monitor | URL | Expect | Interval |
+| --- | --- | --- | --- |
+| Binhopper app | `<APP_URL>/` | 200 | 3 min |
+| Binhopper API | `<API_URL>/api/health/db` | 200 | 3 min |
+
+`/api/health/db` returns 503 when MySQL doesn't answer, and like `/api/health` it's exempt
+from the origin secret. Turn on SSL/TLS verification and "Alert on SSL expiry" for each.
+
+### Worker heartbeat
+
+Only while the production `worker` service runs (a heartbeat for a stopped worker alerts
+constantly). Uptime → **Heartbeats** → create "Binhopper worker": period **5 minutes** (the worker's pass interval), grace **10 minutes**. Copy its
+URL into the `worker` service's variables as `HEARTBEAT_URL`. Each pass then checks in;
+a failed pass reports `/fail` and alerts at once, and a stopped worker alerts after the grace
+period. Pause the heartbeat when you turn the worker off.
+
+### Logs and errors
+
+Optional. Telemetry → **Sources** → Connect source → **HTTP** ("Binhopper"). Copy the source's **ingesting host** and **source token** into the
+`api` and `worker` services' variables:
+
+```
+LOGS_INGEST_URL=https://<ingesting host>
+LOGS_SOURCE_TOKEN=<source token>
+```
+
+Both must be set, or nothing ships. What ships: WARNING and above from the app and
+uvicorn's error logger, with tracebacks (for example "Exception in ASGI application" on a
+500). Access logs don't ship, so no visitor IPs or paths leave Railway. Records post from a
+background thread, so a Better Stack outage never slows requests. Set the source's retention
+to the shortest your plan allows. To be alerted on errors, add a Telemetry alert on
+`level = "error"` for the source.
+
+**Check:** after a redeploy, Railway's api logs show nothing about Better Stack, and the
+source's Live tail shows the next warning (the worker logs one per failed catalog job).
 
 ## 6. Rollback
 
@@ -397,7 +440,9 @@ verify the API/catalog and frontend, and document the incident and corrected pro
   and [Shareable Links](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/sharable-links)
 - [GitHub workflow_run semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
 - [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)
-- [Better Stack HTTP monitors](https://betterstack.com/docs/uptime/uptime-monitor/)
+- [Better Stack HTTP monitors](https://betterstack.com/docs/uptime/uptime-monitor/),
+  [heartbeats](https://betterstack.com/docs/uptime/cron-and-heartbeat-monitor/) and
+  [HTTP log sources](https://betterstack.com/docs/logs/http-rest-api/)
 
 ## Nearby map tiles (#36)
 

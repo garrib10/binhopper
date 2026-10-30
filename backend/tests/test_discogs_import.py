@@ -281,3 +281,23 @@ def test_the_callback_url_is_the_apps(client, sign_in, fake, monkeypatch):
     client.get("/api/discogs/connect", follow_redirects=False)
     header = fake.requests[0].headers["authorization"]
     assert 'oauth_callback="https%3A%2F%2Fbinhopper.example%2Fapi%2Fdiscogs%2Fcallback"' in header
+
+
+def test_imported_copies_take_matching_wishes_off_the_wishlist(client, sign_in, session, catalog):
+    user = sign_in()
+    connect(client, session, user)
+    session.add_all([WishlistItem(user_id=user.id, album_id=catalog[101].album_id),  # Rumours, any pressing
+                     WishlistItem(user_id=user.id, album_id=catalog[104].album_id, pressing_id=catalog[105].id)])
+    session.commit()
+    run(session, FakeDiscogs(collection=[collection_item(101), collection_item(104)]), user, wantlist=False)
+    wanted = session.scalars(select(WishlistItem.pressing_id)).all()
+    assert wanted == [catalog[105].id]  # the Rumours wish went; the Tusk wish for another pressing stayed
+
+
+def test_a_wantlist_entry_for_a_pressing_already_owned_is_skipped(client, sign_in, session, catalog):
+    user = sign_in()
+    connect(client, session, user)
+    session.add(CollectionItem(user_id=user.id, pressing_id=catalog[104].id, added_at=NOW - timedelta(days=1)))
+    session.commit()
+    job = run(session, FakeDiscogs(wants=[{"id": 104}]), user, collection=False)
+    assert (job.wishlisted, job.skipped) == (0, 1)

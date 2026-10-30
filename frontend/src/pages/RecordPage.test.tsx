@@ -63,6 +63,15 @@ describe('Locate, hold or buy', () => {
     expect(pendingHandoffs()).toEqual([]);  // answered: stop asking
   });
 
+  it('AC-10 keeps a wish for a different specific pressing (Collection rule 6)', async () => {
+    api(true, () => ({ status: 201, body: { id: 9, removed_from_wishlist: false, album_on_wishlist: true } }));
+    renderPage();
+    await userEvent.click(await screen.findByRole('link', { name: 'Call store' }));
+    await userEvent.click(screen.getByRole('button', { name: "It's on my shelf, add to collection" }));
+    expect(await screen.findByText(/Rumours is in your collection/)).toBeVisible();
+    expect(screen.queryByText(/moved off your wishlist/)).toBeNull();
+  });
+
   it('AC-10 offers "Add as 2nd copy" when the pressing is already owned', async () => {
     api(true, (body) => body.another_copy ? { status: 201, body: { id: 10, removed_from_wishlist: false } }
       : { status: 409, body: { detail: { message: 'You already own this pressing', copies: 1 } } });

@@ -1,7 +1,10 @@
-import { useEffect, useId, useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError } from '../api';
+import { useAuth } from '../AuthContext';
 import { Cover } from '../components/AlbumTile';
+import { ListPlaceholder } from '../components/ListPlaceholder';
+import { useCachedList } from '../listCache';
 import { loadLocation } from '../location';
 import { useWishlist } from '../WishlistContext';
 import { GotItPrompt } from '../components/GotItPrompt';
@@ -9,31 +12,21 @@ import { pendingHandoffs } from '../handoff';
 import '../styles/handoff.css';
 import {
   fetchWishlist, GRADES, removeWishlistItem, updateWishlistItem, wantText,
-  type Grade, type WishlistItem,
+  type Grade, type WishlistItem, type WishlistTarget,
 } from '../wishlist';
 
 const money = (value: number) => `$${value % 1 ? value.toFixed(2) : value}`;
 
-type State = { kind: 'loading' } | { kind: 'error' } | { kind: 'loaded'; items: WishlistItem[] };
-
 /** Wishlist (SPEC.md › Wishlist; mockup Wishlist.dc.html). */
 export function WishlistPage() {
   const [location] = useState(loadLocation);
-  const [state, setState] = useState<State>({ kind: 'loading' });
-  const [attempt, setAttempt] = useState(0);
+  const { state: auth } = useAuth();
+  // A return visit shows the last list at once while it refreshes.
+  const { state, update, reload } = useCachedList<WishlistItem[]>(auth.status === 'signed-in' ? auth.account.id : null,
+    `wishlist:${location.zip}:${location.radius}`, (signal) => fetchWishlist(location.zip, location.radius, signal).then((data) => data.items));
   // Hand-offs still waiting for "Got it?" (up to 7 days; SPEC › Locate, hold, buy rule 3).
   const [handoffs, setHandoffs] = useState(pendingHandoffs);
-  useEffect(() => {
-    const controller = new AbortController();
-    setState({ kind: 'loading' });
-    fetchWishlist(location.zip, location.radius, controller.signal)
-      .then((data) => { if (!controller.signal.aborted) setState({ kind: 'loaded', items: data.items }); })
-      .catch(() => { if (!controller.signal.aborted) setState({ kind: 'error' }); });
-    return () => controller.abort();
-  }, [location, attempt]);
-
-  const reload = () => setAttempt((n) => n + 1);
-  const count = state.kind === 'loaded' ? state.items.length : null;
+  const count = state.kind === 'loaded' ? state.data.length : null;
   return <main id="content" className="page wishlist-page">
     <header className="wishlist-header">
       <h1 className="display">Wishlist</h1>
@@ -42,23 +35,32 @@ export function WishlistPage() {
     <p className="muted">Stock within {location.radius} mi of {location.zip} · <Link to="/albums/1/stores">Change location</Link></p>
     {handoffs.length > 0 && <div className="wishlist-got-it">{handoffs.map((h) =>
       <GotItPrompt key={h.listingId} handoff={h} onAdded={reload} onDone={() => setHandoffs(pendingHandoffs())} />)}</div>}
-    {state.kind === 'loading' && <p role="status">Loading your wishlist…</p>}
+    {state.kind === 'loading' && <ListPlaceholder label="Loading your wishlist…" layout="cards" />}
     {state.kind === 'error' && <div className="error-state">
       <p role="alert" className="notice notice--danger">Can't reach Binhopper right now.</p>
       <button type="button" className="button button--primary" onClick={reload}>Try again</button>
     </div>}
-    {state.kind === 'loaded' && (state.items.length === 0
+    {state.kind === 'loaded' && (state.data.length === 0
       ? <div className="empty">
         <h2 className="section-title">Nothing on your wishlist yet</h2>
         <p>Tap the heart on any record to save it here. We'll show which shops near you have it.</p>
       </div>
-      : <ul className="wishlist-items">{state.items.map((item) =>
-        <WishlistCard key={item.id} item={item} radius={location.radius} onChange={reload} />)}</ul>)}
+      : <ul className="wishlist-items" aria-busy={state.refreshing}>{state.data.map((item) =>
+        <WishlistCard key={item.id} item={item} radius={location.radius}
+          onRemoved={() => { update((items) => items.filter((i) => i.id !== item.id)); reload(); }}
+          onSaved={(target) => { update((items) => items.map((i) => i.id === item.id ? withTarget(i, target) : i)); reload(); }} />)}</ul>)}
     {state.kind === 'loaded' && <Link className="wishlist-add" to="/search">Add a record to your wishlist</Link>}
   </main>;
 }
 
-function WishlistCard({ item, radius, onChange }: { item: WishlistItem; radius: number; onChange: () => void }) {
+/** The edited "Wants:" line shows at once; stock counts follow when the list refreshes. */
+function withTarget(item: WishlistItem, target: WishlistTarget): WishlistItem {
+  return { ...item, ...target, pressing_note: item.pressings.find((p) => p.id === target.pressing_id)?.note ?? null };
+}
+
+function WishlistCard({ item, radius, onRemoved, onSaved }: {
+  item: WishlistItem; radius: number; onRemoved: () => void; onSaved: (target: WishlistTarget) => void;
+}) {
   const { forget } = useWishlist();
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ function WishlistCard({ item, radius, onChange }: { item: WishlistItem; radius: 
     try {
       await removeWishlistItem(item.id);
       forget(album.id);
-      onChange();
+      onRemoved();
     } catch {
       setError("Couldn't remove it. Try again.");
     }
@@ -100,13 +102,13 @@ function WishlistCard({ item, radius, onChange }: { item: WishlistItem; radius: 
         {editing ? 'Close' : 'Change what you want'}</button>
       <button type="button" className="text-button" onClick={remove} aria-label={`Remove ${album.title} from wishlist`}>Remove</button>
     </div>
-    {editing && <TargetForm item={item} onSaved={() => { setEditing(false); onChange(); }} />}
+    {editing && <TargetForm item={item} onSaved={(target) => { setEditing(false); onSaved(target); }} />}
     {error && <p role="alert" className="field-error">{error}</p>}
   </li>;
 }
 
 /** Wishlist rule 2: any or one pressing, an optional price cap and minimum condition. */
-function TargetForm({ item, onSaved }: { item: WishlistItem; onSaved: () => void }) {
+function TargetForm({ item, onSaved }: { item: WishlistItem; onSaved: (target: WishlistTarget) => void }) {
   const id = useId();
   const [pressing, setPressing] = useState(item.pressing_id === null ? '' : String(item.pressing_id));
   const [maxPrice, setMaxPrice] = useState(item.max_price === null ? '' : String(item.max_price));
@@ -117,8 +119,9 @@ function TargetForm({ item, onSaved }: { item: WishlistItem; onSaved: () => void
     const price = maxPrice.trim() === '' ? null : Number(maxPrice);
     if (price !== null && !(price > 0)) { setError('Enter a price above $0, or leave it empty'); return; }
     try {
-      await updateWishlistItem(item.id, { pressing_id: pressing ? Number(pressing) : null, max_price: price, min_condition: grade || null });
-      onSaved();
+      const target = { pressing_id: pressing ? Number(pressing) : null, max_price: price, min_condition: grade || null };
+      await updateWishlistItem(item.id, target);
+      onSaved(target);
     } catch (err) {
       setError(err instanceof ApiError && err.status < 500 ? err.message : "Couldn't save. Try again.");
     }

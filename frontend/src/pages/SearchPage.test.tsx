@@ -49,7 +49,7 @@ it('allows genre, decade and optional year browsing', async () => {
   await advance(0);
   fireEvent.click(screen.getByRole('button', { name: '1977' }));
   await advance(0);
-  expect(fetch).not.toHaveBeenCalled();
+  expect(fetch.mock.calls.map(([url]) => String(url))).toEqual(['/api/genres']);  // no results until "Show"
   fireEvent.click(screen.getByRole('link', { name: 'Show Rock from 1977' }));
   await advance(0);
   const request = new URL(String(fetch.mock.calls.at(-1)![0]), 'http://test');
@@ -63,4 +63,53 @@ it('shows the notice the Discogs API terms require on every screen', () => {
   setup();
   expect(screen.getByRole('contentinfo')).toHaveTextContent(
     'This application uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs. ‘Discogs’ is a trademark of Zink Media, LLC.');
+});
+
+it('keeps "Search" highlighted in the header while browsing by genre and year', () => {
+  setup('/genres');
+  expect(screen.getByRole('link', { name: 'Search' })).toHaveAttribute('aria-current', 'page');
+});
+
+const catalog = { genres: [{ name: 'Rock', albums: 9, styles: ['Shoegaze', 'Pop Rock'] }, { name: 'Brass & Military', albums: 1, styles: [] }] };
+function setupWith(path: string, routes: Record<string, unknown>) {
+  vi.useFakeTimers();
+  const fetch = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+    const url = new URL(String(input), 'http://test');
+    return new Response(JSON.stringify(routes[url.pathname] ?? { albums: [], artists: [] }));
+  });
+  render(<MemoryRouter initialEntries={[path]}><AppShell /></MemoryRouter>);
+  return fetch;
+}
+
+it('Search rule 5: lists every catalog genre, then its styles, and browses a style', async () => {
+  const fetch = setupWith('/genres', { '/api/genres': catalog });
+  await advance(0);
+  expect(screen.getByRole('button', { name: 'Brass & Military' })).toBeVisible();  // beyond the starter list
+  fireEvent.click(screen.getByRole('button', { name: 'Rock' }));
+  await advance(0);
+  expect(screen.getByRole('heading', { name: '2 · Style (optional)' })).toBeVisible();
+  expect(screen.getByRole('heading', { name: '3 · Decade' })).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Shoegaze' }));
+  await advance(0);
+  fireEvent.click(screen.getByRole('link', { name: 'Show Shoegaze' }));
+  await advance(0);
+  expect(screen.getByRole('heading', { name: 'Shoegaze' })).toBeVisible();
+  const request = new URL(String(fetch.mock.calls.at(-1)![0]), 'http://test');
+  expect([request.pathname, request.searchParams.get('genre'), request.searchParams.has('style')]).toEqual(['/api/browse', 'Shoegaze', false]);
+  expect(screen.getByRole('link', { name: 'Change genre or year' })).toHaveAttribute('href', '/genres?genre=Rock&style=Shoegaze');
+});
+
+it('keeps the starter genres when the catalog list cannot load', async () => {
+  vi.useFakeTimers();
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response('{}', { status: 500 }));
+  render(<MemoryRouter initialEntries={['/genres']}><AppShell /></MemoryRouter>);
+  await advance(0);
+  expect(screen.getByRole('button', { name: 'Funk / Soul' })).toBeVisible();
+});
+
+it('Search rule 1: a search naming a genre or style offers to browse it', async () => {
+  setupWith('/search?q=shoegaze', { '/api/search': { albums: [], artists: [], genres: [{ name: 'Shoegaze', genre: 'Rock' }] } });
+  await advance(300);
+  expect(screen.getByRole('link', { name: 'Browse Shoegaze →' })).toHaveAttribute('href', '/genres/Shoegaze/years?genre=Rock&style=Shoegaze');
+  expect(screen.queryByText('No records found')).toBeNull();
 });

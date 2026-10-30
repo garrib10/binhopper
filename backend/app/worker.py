@@ -12,6 +12,7 @@ from app.db import SessionLocal, engine
 from app.discogs import RequestQueue, enqueue
 from app.discogs_import import drain_imports
 from app.inventory import drain_inventory
+from app.monitoring import beat, setup_logging
 from app.models import CatalogJob, utcnow
 
 log = logging.getLogger(__name__)
@@ -37,6 +38,18 @@ def drain(queue, now=utcnow):
     expire(s, now())
 
 
+def tick(queue, now=utcnow):
+    """One scheduled pass, then a heartbeat; a failed pass reports /fail and the next one retries."""
+    try:
+        drain(queue, now)
+    except Exception:
+        queue.session.rollback()
+        log.exception("Worker pass failed")
+        beat(ok=False)
+        return
+    beat()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--enqueue", action="append", default=[], metavar="KIND:ID")
@@ -53,10 +66,10 @@ def main():
                 enqueue(session, kind, int(identifier))
             queue = RequestQueue(session, settings.discogs_token, settings.discogs_user_agent)
             try:
-                drain(queue)
+                tick(queue)
                 if not args.once:
                     scheduler = BlockingScheduler(timezone="UTC")
-                    scheduler.add_job(drain, "interval", minutes=5, args=[queue], max_instances=1, coalesce=True)
+                    scheduler.add_job(tick, "interval", minutes=5, args=[queue], max_instances=1, coalesce=True)
                     scheduler.start()
             finally:
                 queue.close()
@@ -67,4 +80,5 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    setup_logging("worker")
     main()

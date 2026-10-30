@@ -93,6 +93,13 @@ describe('You', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('That username is taken');
   });
 
+  it('links the Privacy Policy and Terms of Use from You › Account (#85)', async () => {
+    api();
+    renderAt('/you/account');
+    expect(await screen.findByRole('link', { name: /Privacy Policy/ })).toHaveAttribute('href', '/privacy');
+    expect(screen.getByRole('link', { name: /Terms of Use/ })).toHaveAttribute('href', '/terms');
+  });
+
   it('AC-15 delete asks first, then deletes and signs out', async () => {
     const fetch = api();
     renderAt('/you/account');

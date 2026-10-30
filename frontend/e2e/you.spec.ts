@@ -60,3 +60,16 @@ test('AC-15 deleting the account asks first, then signs you out', async ({ page 
   await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
   expect(state.deleted).toBe(true);
 });
+
+test('choice controls in Settings and Privacy stay one touch target tall', async ({ page }) => {
+  await fakeApi(page);
+  for (const tab of ['settings', 'privacy']) {
+    await page.goto(`/you/${tab}`);
+    const groups = page.getByRole('main').locator('.segmented');
+    await expect(groups.first()).toBeVisible();
+    for (const group of await groups.all()) {
+      const box = (await group.boundingBox())!;
+      expect(box.height, `${tab}: ${await group.getAttribute('aria-label') ?? await group.getAttribute('aria-labelledby')}`).toBeLessThan(64);
+    }
+  }
+});

@@ -141,8 +141,11 @@ a {
   color: var(--color-danger);
 }
 
+/* Grows to fill a row, at least 240 px wide. The basis stays auto so that in a column (You,
+   search results) it keeps its own height instead of becoming 240 px tall. */
 .segmented {
-  flex: 1 1 240px;
+  flex: 1 1 auto;
+  min-width: min(240px, 100%);
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
@@ -154,6 +157,7 @@ a {
 
 .segmented--compact {
   flex: 0 1 auto;
+  min-width: auto;
 }
 
 .segmented__option {
@@ -429,6 +433,9 @@ a {
 .app-data-credit { max-width: 1240px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); }
 .app-data-credit a { display: inline-flex; align-items: center; min-height: var(--touch-target); }
 .app-data-credit p { margin: 0 0 var(--space-2); }
+.app-legal-links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.auth-legal { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); }
+.auth-legal a { color: var(--color-link); }
 
 /* Sign-in screens (#38): no mockups, so they follow Onboarding's form pattern. */
 .profile-link--text { min-width: 0; padding: 0 var(--space-4); border-radius: var(--radius-pill); }
@@ -592,3 +599,4 @@ a {
 .error-state__actions .button { display: inline-flex; align-items: center; text-decoration: none; }
 .store-list__note { margin: var(--space-2) 0 0; font-size: var(--text-sm); }
 .copy-header a { display: inline-flex; align-items: center; min-height: var(--touch-target); }
+.collection-tile__grade--missing { background: var(--color-surface); color: var(--color-text); border: 1px dashed var(--color-border-strong); }

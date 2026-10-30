@@ -46,16 +46,26 @@ the feature issue that will add them.
 | AC-09 | Duplicate pressing warns, "Add as 2nd copy" | Unit + E2E | `test_collection_api.py`, `CollectionPage.test.tsx`, `e2e/collection.spec.ts`, `e2e-system/collection.spec.ts` | done |
 | AC-10 | Hand-off purchase moves wishlist → collection | E2E | `test_handoff_api.py`, `RecordPage.test.tsx`, `e2e/handoff.spec.ts`, `e2e-system/handoff.spec.ts` | done |
 | AC-11 | Discogs import skips existing releases | API | `test_discogs_import.py`, `ImportPage.test.tsx`, `e2e/import.spec.ts` | done |
-| AC-12 | Search waits for 2+ characters and a pause | Unit | — | #33 |
+| AC-12 | Search waits for 2+ characters and a pause | Unit | `SearchPage.test.tsx` (debounce), `test_search_api.py`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` | done |
 | AC-13 | New account is private; others get 404 | API | `test_auth_api.py`, `test_auth_google.py`, `test_account_api.py` (new accounts private); `test_wishlist_api.py`, `test_collection_api.py` (others get 404); `e2e-system/you.spec.ts` | done (a public profile page comes with sharing, Later) |
 | AC-14 | "Match system" follows device dark mode | E2E | `e2e/nearby-stock.spec.ts`, `theme.test.ts`, `e2e/you.spec.ts`, `YouPage.test.tsx` | done |
 | AC-15 | Account delete removes data and sign-in | API + E2E | `test_account_api.py`, `YouPage.test.tsx`, `e2e/you.spec.ts`, `e2e-system/you.spec.ts` | done |
-| AC-16 | Never more than 60 Discogs calls per 60 s | Integration | — | #32, #70 |
+| AC-16 | Never more than 60 Discogs calls per 60 s | Integration | `test_catalog_import.py` (100 queued jobs in a rolling window; restart), `test_inventory.py` (shared quota), on SQLite and in the MySQL integration job | done |
 | AC-17 | Shops without online inventory listed apart, by distance, no price | API + Unit + E2E | `test_nearby_stock_api.py`, `StoreCard.test.tsx`, `NearbyStockPage.test.tsx`, `e2e/nearby-stock.spec.ts`, `e2e-system/nearby-stock.spec.ts` | done |
 | AC-18 | A "present" report moves the shop into the stock list | API + E2E | `test_reports_api.py`, `ReportPage.test.tsx`, `e2e/reports.spec.ts` (the system spec stays read-only: it shares the sample seed) | done |
 | AC-19 | Verify link signs in once, expires after 24 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts`, `e2e-system/auth.spec.ts` | done |
 | AC-20 | Same answer whether or not an email has an account | API | `test_auth_api.py`, `test_rate_limits.py`, `test_email.py` | done |
 | AC-21 | Reset ends every session; link once, within 1 h | API + E2E | `test_auth_api.py`, `e2e/auth.spec.ts` | done |
+
+Spec rules without an AC id are tested the same way and named by rule in the test:
+
+| Rule | Tests |
+| --- | --- |
+| Collection rule 2: only the pressing is required; "Add condition" nudge; every grade saves and lists | `test_collection_api.py` (all 7 × 7 grade pairs, pressing-only add), `CollectionPage.test.tsx`, `e2e-system/collection.spec.ts` (each grade through the UI) |
+| Collection rule 6: adding a copy takes the album off the wishlist unless the wish is for another pressing | `test_collection_api.py`, `test_handoff_api.py`, `test_discogs_import.py`, `CollectionPage.test.tsx`, `RecordPage.test.tsx`, `e2e-system/collection.spec.ts` |
+| Search rule 1: "Browse <genre or style> →" from the search box | `test_search_api.py`, `SearchPage.test.tsx`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` |
+| Search rule 5: every catalog genre, then its styles, then decade and year | `test_search_api.py`, `SearchPage.test.tsx`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` |
+| Privacy › Policies: both pages signed out, 18+, linked from the footer, You › Account, sign-up and sign-in | `LegalPages.test.tsx`, `YouPage.test.tsx`, `e2e/a11y.spec.ts` (both pages, axe + 44 px), `visual/screens.spec.ts` (privacy) |
 
 ## Test data
 

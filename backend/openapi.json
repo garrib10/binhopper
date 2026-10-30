@@ -1762,6 +1762,26 @@
         ]
       }
     },
+    "/api/genres": {
+      "get": {
+        "description": "Every genre in the catalog, most albums first, each with its most common styles (Search rule 5).",
+        "operationId": "genres_api_genres_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Genres",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_api_health_get",
@@ -1782,6 +1802,26 @@
           }
         },
         "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/health/db": {
+      "get": {
+        "description": "For uptime monitors (#84): also checks the database answers. Deploys use /api/health.",
+        "operationId": "health_db_api_health_db_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Db",
         "tags": [
           "health"
         ]
@@ -1929,7 +1969,7 @@
     },
     "/api/me/collection/from-listing": {
       "post": {
-        "description": "AC-10: \"Got it? Add to collection\" adds the copy and removes the album from the wishlist.",
+        "description": "AC-10: \"Got it? Add to collection\" adds the copy and takes it off the wishlist (rule 6).",
         "operationId": "got_it_api_me_collection_from_listing_post",
         "requestBody": {
           "content": {

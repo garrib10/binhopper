@@ -1,11 +1,17 @@
 import os
+from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.config import settings
 from app.csrf import CSRFMiddleware
+from app.db import get_session
+from app.monitoring import setup_logging
 from app.origin_secret import OriginSecretMiddleware
 from app.routers import stock
 from app.routers.auth import router as auth_router
@@ -19,6 +25,8 @@ from app.routers.discogs_import import router as discogs_import_router
 from app.routers.search import router as search_router
 from app.routers.albums import router as albums_router
 from app.routers.artists import router as artists_router
+
+setup_logging("api")
 
 app = FastAPI(
     title="Binhopper API",
@@ -70,3 +78,13 @@ app.include_router(artists_router)
 @app.get("/api/health", tags=["health"])
 def health() -> dict[str, str]:
     return {"status": "ok", "commit": os.getenv("RAILWAY_GIT_COMMIT_SHA", "local")}
+
+
+@app.get("/api/health/db", tags=["health"])
+def health_db(db: Annotated[Session, Depends(get_session)]):
+    """For uptime monitors (#84): also checks the database answers. Deploys use /api/health."""
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception:
+        return JSONResponse({"status": "database unavailable"}, status_code=503)
+    return {"status": "ok"}

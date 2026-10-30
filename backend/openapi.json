@@ -1807,6 +1807,26 @@
         ]
       }
     },
+    "/api/health/db": {
+      "get": {
+        "description": "For uptime monitors (#84): also checks the database answers. Deploys use /api/health.",
+        "operationId": "health_db_api_health_db_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Db",
+        "tags": [
+          "health"
+        ]
+      }
+    },
     "/api/listings/{listing_id}": {
       "get": {
         "description": "One copy at one shop, with everything needed to hand off to the shop.",

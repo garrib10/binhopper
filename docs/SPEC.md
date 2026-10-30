@@ -232,6 +232,7 @@ Everything a user stores starts private, and the app collects only what the core
 - **Connected accounts:** Discogs, Spotify and Apple Music use OAuth; tokens are encrypted at rest and removed on disconnect.
 - **Lists in the browser:** to open quickly, the last Wishlist and Collection shown stay in the tab's memory (never in browser storage) and are dropped on sign-out or account deletion.
 - **Transport and secrets:** HTTPS everywhere; API keys only on the server, never in the React bundle.
+- **Monitoring:** Better Stack uptime monitors, a worker heartbeat, and the server's warnings and errors. Access logs and visitor IPs aren't shipped, and monitoring tokens live only in server environment variables.
 - **Abuse limits:** rate-limit stock reports per user, and search per IP address (search works signed out), to protect data quality and the Discogs quota.
 - **Policies before launch:** a privacy policy and terms of use, linked in You › Account.
 

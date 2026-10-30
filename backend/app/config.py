@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     discogs_consumer_key: str = ""
     discogs_consumer_secret: str = ""
     token_encryption_key: str = ""
+    # Better Stack (#84), all optional. HEARTBEAT_URL goes on the worker only; logs need both
+    # the source's ingesting host (https://…betterstackdata.com) and its source token.
+    heartbeat_url: str = ""
+    logs_ingest_url: str = ""
+    logs_source_token: str = ""
     # Manually verified artist-ID → official shop URL; never guessed from a name.
     artist_store_urls: dict[int, HttpUrl] = Field(default_factory=dict)
 

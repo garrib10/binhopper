@@ -51,6 +51,13 @@ describe('Collection page', () => {
     expect(screen.getByRole('row', { name: /Rumours Fleetwood Mac 180g reissue \(copy 2\)/ })).toBeVisible();
   });
 
+  it('shows placeholder tiles in the chosen view while loading', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise(() => {}));
+    renderAt('/collection?view=list');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading your collection…');
+    expect(document.querySelector('.list-placeholder--list')?.children).toHaveLength(3);
+  });
+
   it('has an empty state', async () => {
     api({ 'GET /api/me/collection': () => ({ body: { items: [], stats: { records: 0, artists: 0, duplicates: 0, wishlist: 0 } } }) });
     renderAt('/collection');

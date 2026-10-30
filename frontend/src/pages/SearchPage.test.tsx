@@ -64,3 +64,8 @@ it('shows the notice the Discogs API terms require on every screen', () => {
   expect(screen.getByRole('contentinfo')).toHaveTextContent(
     'This application uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs. ‘Discogs’ is a trademark of Zink Media, LLC.');
 });
+
+it('keeps "Search" highlighted in the header while browsing by genre and year', () => {
+  setup('/genres');
+  expect(screen.getByRole('link', { name: 'Search' })).toHaveAttribute('aria-current', 'page');
+});

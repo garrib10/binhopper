@@ -1762,6 +1762,26 @@
         ]
       }
     },
+    "/api/genres": {
+      "get": {
+        "description": "Every genre in the catalog, most albums first, each with its most common styles (Search rule 5).",
+        "operationId": "genres_api_genres_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Genres",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_api_health_get",

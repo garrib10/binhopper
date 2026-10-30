@@ -207,6 +207,12 @@ function AccountTab({ settings, onExportFirst }: { settings: AccountSettings; on
         signOut().catch(() => setError("Couldn't sign out. Try again."));
       }}>Sign out</button>
     </Section>
+    <Section title="Policies">
+      <Link className="you-row you-row--link" to="/privacy"><span><strong>Privacy Policy</strong>
+        <span className="muted">What we store, who helps run the app, your rights</span></span></Link>
+      <Link className="you-row you-row--link" to="/terms"><span><strong>Terms of Use</strong>
+        <span className="muted">The rules for using Binhopper</span></span></Link>
+    </Section>
     <Section title="Delete account">
       {!confirming ? <>
         <p className="muted">Permanently remove your account and everything in it.</p>

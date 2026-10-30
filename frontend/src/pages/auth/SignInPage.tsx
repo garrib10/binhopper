@@ -4,6 +4,7 @@ import { ApiError } from '../../api';
 import { resendVerification, safeReturnTo, signIn } from '../../auth';
 import { useAuth } from '../../AuthContext';
 import { AuthLayout, FormMessage, GoogleButton, PasswordField, TextField } from '../../components/AuthForm';
+import { LegalNotice } from '../../components/LegalNotice';
 
 export function SignInPage() {
   const [params] = useSearchParams();
@@ -53,6 +54,7 @@ export function SignInPage() {
       <button className="button button--primary button--block" type="submit" disabled={busy}>
         {busy ? 'Signing in…' : 'Sign in'}</button>
     </form>
+    <LegalNotice />
     <p className="auth-links"><Link to="/forgot-password">Forgot password?</Link>
       <Link to={createLink}>Create an account</Link></p>
   </AuthLayout>;

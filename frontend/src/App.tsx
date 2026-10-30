@@ -10,6 +10,8 @@ import { loadLocation, saveLocation } from './location';
 import { AuthProvider, RequireAuth, useAuth } from './AuthContext';
 import { SignInPage } from './pages/auth/SignInPage';
 import { CreateAccountPage } from './pages/auth/CreateAccountPage';
+import { PrivacyPage } from './pages/legal/PrivacyPage';
+import { TermsPage } from './pages/legal/TermsPage';
 import { CheckEmailPage } from './pages/auth/CheckEmailPage';
 import { VerifyPage } from './pages/auth/VerifyPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
@@ -124,6 +126,8 @@ export function AppShell() {
       <Route path="/you" element={signedIn(<YouPage />)} />
       <Route path="/you/:tab" element={signedIn(<YouPage />)} />
       <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
       <Route path="/create-account" element={<CreateAccountPage />} />
       <Route path="/check-email" element={<CheckEmailPage />} />
       <Route path="/verify" element={<VerifyPage />} />
@@ -138,6 +142,7 @@ export function AppShell() {
       <p>Shop locations and map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</p>
       {/* Required wording, Discogs API Terms of Use › Discogs Intellectual Property. */}
       <p>This application uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs. ‘Discogs’ is a trademark of Zink Media, LLC.</p>
+      <nav aria-label="Legal" className="app-legal-links"><Link to="/privacy">Privacy Policy</Link><Link to="/terms">Terms of Use</Link></nav>
     </footer>
   </ThemeContext.Provider>;
 }

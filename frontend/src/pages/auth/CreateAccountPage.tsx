@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiError } from '../../api';
 import { MIN_PASSWORD, register, safeReturnTo } from '../../auth';
 import { AuthLayout, FormMessage, GoogleButton, PasswordField, TextField } from '../../components/AuthForm';
+import { LegalNotice } from '../../components/LegalNotice';
 
 export function CreateAccountPage() {
   const [params] = useSearchParams();
@@ -38,6 +39,7 @@ export function CreateAccountPage() {
       <button className="button button--primary button--block" type="submit" disabled={busy}>
         {busy ? 'Creating account…' : 'Create account'}</button>
     </form>
+    <LegalNotice />
     <p className="auth-links">Already have an account? <Link to="/sign-in">Sign in</Link></p>
   </AuthLayout>;
 }

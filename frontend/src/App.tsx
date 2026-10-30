@@ -92,6 +92,8 @@ function SearchEntry() {
 
 export function AppShell() {
   const [theme, setTheme] = useState<ThemePreference>(loadThemePreference);
+  // Browse by genre and year is part of search, so "Search" stays highlighted there too.
+  const searching = /^\/(search|genres)(\/|$)/.test(useLocation().pathname);
   useEffect(() => { applyTheme(theme); saveThemePreference(theme); }, [theme]);
   return <ThemeContext.Provider value={{ theme, setTheme }}>
     <a className="skip-link" href="#content">Skip to content</a>
@@ -99,7 +101,7 @@ export function AppShell() {
       <Link className="app-header__brand" to="/search"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="2.5" /></svg>Binhopper</Link>
       <SearchEntry />
       <nav aria-label="Main" className="main-nav">
-        <NavLink to="/search">Search</NavLink><NavLink to="/wishlist">Wishlist</NavLink>
+        <Link to="/search" aria-current={searching ? 'page' : undefined}>Search</Link><NavLink to="/wishlist">Wishlist</NavLink>
         <NavLink to="/albums/1/stores">Nearby</NavLink><NavLink to="/collection" end>Collection</NavLink>
       </nav>
       <ProfileLink />

@@ -20,6 +20,7 @@ from app.discogs_oauth import header
 from app.models import (
     CollectionItem, DiscogsAccount, ImportJob, ImportPending, Pressing, WishlistItem, utcnow,
 )
+from app.routers.collection import leave_wishlist
 from app.token_crypto import decrypt
 
 log = logging.getLogger(__name__)
@@ -53,12 +54,16 @@ def add_to_collection(s, job: ImportJob, pressing: Pressing, media, sleeve, note
         return
     s.add(CollectionItem(user_id=job.user_id, pressing_id=pressing.id, media_grade=media,
                          sleeve_grade=sleeve, notes=(notes or None) and notes[:2000], added_at=now))
+    leave_wishlist(s, job.user_id, pressing)  # SPEC › Collection rule 6
     job.added += 1
 
 
 def add_to_wishlist(s, job: ImportJob, pressing: Pressing, now) -> None:
-    if s.scalar(select(WishlistItem.id).where(WishlistItem.user_id == job.user_id,
-                                              WishlistItem.album_id == pressing.album_id)) is not None:
+    already_wanted = s.scalar(select(WishlistItem.id).where(
+        WishlistItem.user_id == job.user_id, WishlistItem.album_id == pressing.album_id)) is not None
+    already_owned = s.scalar(select(CollectionItem.id).where(
+        CollectionItem.user_id == job.user_id, CollectionItem.pressing_id == pressing.id)) is not None
+    if already_wanted or already_owned:  # owning that exact pressing satisfies the want (rule 6)
         job.skipped += 1
         return
     s.add(WishlistItem(user_id=job.user_id, album_id=pressing.album_id, pressing_id=pressing.id,

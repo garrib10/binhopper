@@ -108,20 +108,21 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 
 1. Locate: directions in the device's maps app, plus call store.
 2. Hold or buy in v1 hands off to the shop: its phone number, website or Discogs listing. In-app holds come in v1.1.
-3. After a hand-off, prompt "Got it? Add to collection," which also removes it from the wishlist. The prompt shows on that record's page and on the wishlist until the user answers ("add" or "No thanks"), for up to 7 days; it's remembered in the browser only. The copy is added with its pressing, the listing's price and condition, and the shop as "bought at"; an owned pressing asks before adding a second copy.
+3. After a hand-off, prompt "Got it? Add to collection," which also takes it off the wishlist (Collection rule 6). The prompt shows on that record's page and on the wishlist until the user answers ("add" or "No thanks"), for up to 7 days; it's remembered in the browser only. The copy is added with its pressing, the listing's price and condition, and the shop as "bought at"; an owned pressing asks before adding a second copy.
 
 ### Collection
 
 1. Add from search, album page, wishlist hand-off, or Discogs import.
-2. Each copy records pressing, media grade and sleeve grade (M, NM, VG+, VG, G+, G, P), price paid, where bought, notes.
+2. Each copy records pressing, media grade and sleeve grade (M, NM, VG+, VG, G+, G, P), price paid, where bought, notes. Only the pressing is required; the rest can be added or changed anytime, and copies without a condition show an "Add condition" nudge in the grid and list.
 3. Adding a pressing you already own warns "You already own this pressing" and offers "Add as 2nd copy."
 4. Views: grid or list; sort by recently added, artist A–Z, genre, year.
 5. Estimated value waits for marketplace price data (v1.2). Until then the collection shows records, artists, wishlist and duplicate counts. The collection belongs to a signed-in account.
+6. Adding a copy, by any route, takes the album off the wishlist when the wish is for any pressing or for that pressing. A wish for a different specific pressing stays, so a user can keep hunting for a particular version.
 
 ### Discogs import
 
 1. User connects their Discogs account (OAuth 1.0a; tokens encrypted at rest, removed on disconnect or account deletion) and picks collection, wantlist, or both.
-2. Wantlist items go to the wishlist; collection items keep pressing, condition and notes.
+2. Wantlist items go to the wishlist, unless the user already owns that pressing; collection items keep pressing, condition and notes, and follow Collection rule 6.
 3. Records already in the app are matched by Discogs release ID and skipped. The summary shows added, wishlisted and skipped counts.
 4. The import runs in the worker, through the same 60-per-minute Discogs queue as the catalog and inventory sync; the Import screen shows progress. Releases not in the catalog yet are looked up by the worker and land when found ("being looked up"); ones still unknown after a day are left out and counted. Two copies of a release in the Discogs collection come in as two copies; a pressing the user owned before the import is skipped.
 

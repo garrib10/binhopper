@@ -12,11 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.db import delete_where, get_session
+from app.db import get_session
 from app.freshness import classify
 from app.grades import GRADES
-from app.models import CollectionItem, StockListing, User, WishlistItem
-from app.routers.collection import DUPLICATE, copies_of, view
+from app.models import CollectionItem, StockListing, User
+from app.routers.collection import DUPLICATE, copies_of, leave_wishlist, view
 from app.routers.reports import visible_listing
 from app.routers.search import fresh_image
 from app.routers.stock import _missing_reports_last_24h, get_now
@@ -56,7 +56,7 @@ def listing(listing_id: int, db: DB, now: Now):
 
 @router.post("/me/collection/from-listing", status_code=201)
 def got_it(body: GotIt, user: Annotated[User, Depends(current_user)], db: DB, now: Now):
-    """AC-10: "Got it? Add to collection" adds the copy and removes the album from the wishlist."""
+    """AC-10: "Got it? Add to collection" adds the copy and takes it off the wishlist (rule 6)."""
     item = db.get(StockListing, body.listing_id)  # may have sold out since the hand-off
     if item is None:
         raise HTTPException(404, "Listing not found")
@@ -68,7 +68,6 @@ def got_it(body: GotIt, user: Annotated[User, Depends(current_user)], db: DB, no
                           price_paid=item.price, bought_at=item.store.name,
                           media_grade=grade if grade in GRADES else None)
     db.add(copy)
-    removed = delete_where(db, WishlistItem, WishlistItem.user_id == user.id,
-                           WishlistItem.album_id == item.pressing.album_id)
+    wishlist = leave_wishlist(db, user.id, item.pressing)  # rule 6: a different specific pressing stays
     db.commit()
-    return {**view(copy, len(owned) + 1, now), "removed_from_wishlist": removed > 0}
+    return {**view(copy, len(owned) + 1, now), **wishlist}

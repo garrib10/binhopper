@@ -1,6 +1,6 @@
 import { ApiError, errorDetail, type Freshness } from './api';
 import { CSRF_HEADER } from './auth';
-import { AlreadyOwned, type Copy } from './collection';
+import { AlreadyOwned, type Copy, type WishlistEffect } from './collection';
 
 export interface HandoffListing {
   listing_id: number;
@@ -22,7 +22,7 @@ export async function fetchListing(id: number, signal?: AbortSignal): Promise<Ha
 }
 
 /** "Got it? Add to collection" (AC-10): adds the copy and takes the album off the wishlist. */
-export async function gotIt(listingId: number, anotherCopy = false): Promise<Copy & { removed_from_wishlist: boolean }> {
+export async function gotIt(listingId: number, anotherCopy = false): Promise<Copy & WishlistEffect> {
   const response = await fetch('/api/me/collection/from-listing', {
     method: 'POST', credentials: 'same-origin', headers: { ...CSRF_HEADER, 'Content-Type': 'application/json' },
     body: JSON.stringify({ listing_id: listingId, another_copy: anotherCopy }),

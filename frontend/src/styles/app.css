@@ -592,3 +592,4 @@ a {
 .error-state__actions .button { display: inline-flex; align-items: center; text-decoration: none; }
 .store-list__note { margin: var(--space-2) 0 0; font-size: var(--text-sm); }
 .copy-header a { display: inline-flex; align-items: center; min-height: var(--touch-target); }
+.collection-tile__grade--missing { background: var(--color-surface); color: var(--color-text); border: 1px dashed var(--color-border-strong); }

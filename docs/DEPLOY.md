@@ -346,36 +346,35 @@ Better Stack and in Railway variables, never in the repo or the frontend.
 
 ### Alerts first
 
-Better Stack → Uptime → **On-call / Escalation policies**: make sure the default policy
-notifies you (email, and the mobile app or SMS if your plan has it). Every monitor below uses
-it. When the monitors exist, send yourself a test alert from one of them to confirm it arrives.
+Better Stack → Uptime: under "How should we escalate incidents?", **Notify the primary
+responder** by e-mail (add push notifications with the Better Stack phone app). With no other
+team members, "If the primary responder doesn't acknowledge" has nobody to alert. When the
+monitors exist, send yourself a test alert from one of them to confirm it arrives.
 
 ### Uptime monitors
 
-| Monitor | URL | Expect | Interval | Notes |
-| --- | --- | --- | --- | --- |
-| Staging app | `<staging APP_URL>/` | 200 | 3 min | Advanced → Request headers: `x-vercel-protection-bypass: <bypass secret>` (Vercel Deployment Protection) |
-| Staging API | `<staging API_URL>/api/health` | 200 | 30 min | Exempt from the origin secret. Wakes the sleeping API but not MySQL, so a long interval keeps staging costs low |
-| Production app | `<APP_URL>/` | 200 | 3 min | At launch (#119) |
-| Production API + database | `<API_URL>/api/health/db` | 200 | 3 min | At launch. Returns 503 when MySQL doesn't answer |
+Production only, set up at launch (#119); staging isn't monitored. In a monitor group named
+**Binhopper**:
 
-Turn on SSL/TLS verification and "Alert on SSL expiry" for each. **Don't** point
-`/api/health/db` at staging: checking it every few minutes keeps the serverless MySQL awake
-around the clock, which is what pre-launch mode avoids.
+| Monitor | URL | Expect | Interval |
+| --- | --- | --- | --- |
+| Binhopper app | `<APP_URL>/` | 200 | 3 min |
+| Binhopper API | `<API_URL>/api/health/db` | 200 | 3 min |
+
+`/api/health/db` returns 503 when MySQL doesn't answer, and like `/api/health` it's exempt
+from the origin secret. Turn on SSL/TLS verification and "Alert on SSL expiry" for each.
 
 ### Worker heartbeat
 
-Only while the `worker` service runs (it's off in pre-launch mode, and a heartbeat for a
-stopped worker alerts constantly). Uptime → **Heartbeats** → create "Discogs worker
-(staging)": period **5 minutes** (the worker's pass interval), grace **10 minutes**. Copy its
+Only while the production `worker` service runs (a heartbeat for a stopped worker alerts
+constantly). Uptime → **Heartbeats** → create "Binhopper worker": period **5 minutes** (the worker's pass interval), grace **10 minutes**. Copy its
 URL into the `worker` service's variables as `HEARTBEAT_URL`. Each pass then checks in;
 a failed pass reports `/fail` and alerts at once, and a stopped worker alerts after the grace
 period. Pause the heartbeat when you turn the worker off.
 
 ### Logs and errors
 
-Telemetry → **Sources** → Connect source → **HTTP**, one per environment (for example
-"Binhopper staging"). Copy the source's **ingesting host** and **source token** into the
+Optional. Telemetry → **Sources** → Connect source → **HTTP** ("Binhopper"). Copy the source's **ingesting host** and **source token** into the
 `api` and `worker` services' variables:
 
 ```

@@ -6,8 +6,10 @@ test('Wishlist and Collection show the last list at once on a return visit', asy
   await page.goto('/wishlist');
   await expect(page.getByRole('heading', { name: 'Rumours' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Main' });
+  // Scoped to the grid: the Wishlist page, still showing for a moment, also links to Rumours.
+  const collected = page.locator('.collection-grid').getByRole('link', { name: /Rumours/ });
   await nav.getByRole('link', { name: 'Collection' }).click();
-  await expect(page.getByRole('link', { name: /Rumours/ }).first()).toBeVisible();
+  await expect(collected).toBeVisible();
 
   // From now on the API answers slowly; the remembered lists must not wait for it.
   await page.route(/\/api\/me\/(wishlist|collection)\?/, async (route) => {
@@ -17,7 +19,7 @@ test('Wishlist and Collection show the last list at once on a return visit', asy
   await nav.getByRole('link', { name: 'Wishlist' }).click();
   await expect(page.getByRole('heading', { name: 'Rumours' })).toBeVisible({ timeout: 1_000 });
   await nav.getByRole('link', { name: 'Collection' }).click();
-  await expect(page.getByRole('link', { name: /Rumours/ }).first()).toBeVisible({ timeout: 1_000 });
+  await expect(collected).toBeVisible({ timeout: 1_000 });
 });
 
 test('a first visit shows placeholder cards while the list loads', async ({ page }) => {

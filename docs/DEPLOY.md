@@ -99,13 +99,14 @@ Railway supplies `PORT` and `RAILWAY_GIT_COMMIT_SHA`. Do not hardcode them. The 
 response is `status` plus `commit`; it reports process health, not database readiness.
 A failing migration prevents rollout before the app starts.
 
-**Watch-pattern consequence:** with the requested `backend/**` watch pattern, a promotion
-that changes only the frontend may not deploy the API. The verifier intentionally requires
-its SHA to equal the promotion SHA. For such promotions, explicitly deploy the **new branch
-HEAD** through Railway's source deployment controls, then verify the SHA. Redeploying an
-old deployment reuses its old code/SHA and will not satisfy this check. If the dashboard
-cannot deploy the new HEAD directly, include a reviewed backend configuration change in
-that promotion. Do not weaken the verifier to accept a stale SHA.
+**Watch-pattern consequence:** with the `backend/**` watch pattern, a promotion that changes
+only the frontend doesn't redeploy the API, and that's correct: its code hasn't changed. The
+Deploy workflow therefore expects the API to report the **last commit on the branch that
+changed `backend/`** (`git log -1 --first-parent HEAD -- backend`), which is the promotion SHA
+whenever backend code changed. A promotion with backend changes must still deploy that exact
+SHA, so a failed or skipped API rollout still fails the check; a frontend-only one shows a
+"Frontend-only promotion" notice instead of needing a manual Railway redeploy. Redeploying an
+old deployment reuses its old code/SHA and won't satisfy the check when backend code changed.
 
 ## 2. Vercel dashboard (#80)
 

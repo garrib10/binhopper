@@ -16,6 +16,7 @@ export type ListState<T> =
  *  fetch something different (sort, location), since it keys both the cache and the reload. */
 export function useCachedList<T>(owner: number | null, name: string, load: (signal: AbortSignal) => Promise<T>) {
   const key = owner === null ? null : `${owner}:${name}`;  // no account known yet: nothing is remembered
+  const shownFor = useRef(owner);  // whose list is on screen now
   const loader = useRef(load);
   loader.current = load;
   const [attempt, setAttempt] = useState(0);
@@ -26,7 +27,12 @@ export function useCachedList<T>(owner: number | null, name: string, load: (sign
   useEffect(() => {
     const controller = new AbortController();
     const cached = key === null ? undefined : lists.get(key) as T | undefined;
-    setState(cached === undefined ? { kind: 'loading' } : { kind: 'loaded', data: cached, refreshing: true });
+    const sameOwner = shownFor.current === owner;
+    shownFor.current = owner;
+    // Remembered: show it. Not yet (a sort or location not opened before): keep this account's
+    // current list on screen while the new one loads, so the page doesn't jump to placeholders.
+    setState((prev) => cached !== undefined ? { kind: 'loaded', data: cached, refreshing: true }
+      : prev.kind === 'loaded' && sameOwner ? { ...prev, refreshing: true } : { kind: 'loading' });
     loader.current(controller.signal)
       .then((data) => { if (!controller.signal.aborted) { if (key !== null) lists.set(key, data); setState({ kind: 'loaded', data, refreshing: false }); } })
       .catch(() => { if (!controller.signal.aborted) setState({ kind: 'error' }); });

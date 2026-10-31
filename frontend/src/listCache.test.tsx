@@ -40,6 +40,25 @@ describe('useCachedList', () => {
     expect(renderHook(() => useCachedList(1, 'wishlist', () => never)).result.current.state).toMatchObject({ data: ['Rumours'] });
   });
 
+  it('keeps the current list on screen while a sort not opened before loads', async () => {
+    const hook = renderHook(({ name, load }) => useCachedList(1, name, load),
+      { initialProps: { name: 'collection:recent', load: async () => ['Rumours'] } as { name: string; load: () => Promise<string[]> } });
+    await waitFor(() => expect(hook.result.current.state.kind).toBe('loaded'));
+    const year = deferred<string[]>();
+    hook.rerender({ name: 'collection:year', load: () => year.promise });
+    expect(hook.result.current.state).toEqual({ kind: 'loaded', data: ['Rumours'], refreshing: true });  // no jump to placeholders
+    await act(async () => year.resolve(['Rumours (1977)']));
+    expect(hook.result.current.state).toEqual({ kind: 'loaded', data: ['Rumours (1977)'], refreshing: false });
+  });
+
+  it("never shows one account's list while another's loads", async () => {
+    const hook = renderHook(({ owner, load }) => useCachedList(owner, 'wishlist', load),
+      { initialProps: { owner: 1, load: async () => ['mine'] } as { owner: number; load: () => Promise<string[]> } });
+    await waitFor(() => expect(hook.result.current.state.kind).toBe('loaded'));
+    hook.rerender({ owner: 2, load: () => new Promise<string[]>(() => {}) });
+    expect(hook.result.current.state).toEqual({ kind: 'loading' });
+  });
+
   it('forgets every list when the user signs out', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => String(input) === '/api/auth/me'
       ? new Response(JSON.stringify({ id: 1, username: 'collector-1', email: 'a@example.com', email_verified: true, sign_in_methods: ['password'] }))

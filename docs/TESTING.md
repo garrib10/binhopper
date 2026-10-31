@@ -62,7 +62,7 @@ Spec rules without an AC id are tested the same way and named by rule in the tes
 | Rule | Tests |
 | --- | --- |
 | Collection rule 2: only the pressing is required; "Add condition" nudge; every grade saves and lists | `test_collection_api.py` (all 7 × 7 grade pairs, pressing-only add), `CollectionPage.test.tsx`, `e2e-system/collection.spec.ts` (each grade through the UI) |
-| Collection rule 6: adding a copy takes the album off the wishlist unless the wish is for another pressing | `test_collection_api.py`, `test_handoff_api.py`, `test_discogs_import.py`, `CollectionPage.test.tsx`, `RecordPage.test.tsx`, `e2e-system/collection.spec.ts` |
+| Collection rule 6: adding a copy, or switching one to another pressing, takes the album off the wishlist unless the wish is for another pressing | `test_collection_api.py` (add and edit), `test_handoff_api.py`, `test_discogs_import.py`, `CollectionPage.test.tsx`, `RecordPage.test.tsx`, `e2e-system/collection.spec.ts` (add, and the owner's edit steps) |
 | Search rule 1: "Browse <genre or style> →" from the search box | `test_search_api.py`, `SearchPage.test.tsx`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` |
 | Search rule 5: every catalog genre, then its styles, then decade and year | `test_search_api.py`, `SearchPage.test.tsx`, `e2e/search.spec.ts`, `e2e-system/search.spec.ts` |
 | Privacy › Policies: both pages signed out, 18+, linked from the footer, You › Account, sign-up and sign-in | `LegalPages.test.tsx`, `YouPage.test.tsx`, `e2e/a11y.spec.ts` (both pages, axe + 44 px), `visual/screens.spec.ts` (privacy) |

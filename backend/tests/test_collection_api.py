@@ -173,6 +173,34 @@ def test_a_wish_for_a_different_specific_pressing_stays(client, sign_in, rumours
     assert wishlist_rows(session) == 1
 
 
+def test_switching_a_copy_to_the_wanted_pressing_removes_that_wish(client, sign_in, rumours, session):
+    """Rule 6 when editing: found on staging (owner, 2026-10-31)."""
+    user = sign_in()
+    wish(session, user, rumours, rumours[1])  # wants the 180g reissue
+    copy_id = client.post(URL, json={"pressing_id": rumours[0].id}).json()["id"]  # got the Original press
+    assert wishlist_rows(session) == 1
+    body = client.patch(f"{URL}/{copy_id}", json={"pressing_id": rumours[1].id}).json()  # it was the 180g after all
+    assert (body["removed_from_wishlist"], body["album_on_wishlist"]) == (True, False)
+    assert wishlist_rows(session) == 0
+
+
+def test_editing_a_copy_without_changing_its_pressing_leaves_the_wishlist(client, sign_in, rumours, session):
+    user = sign_in()
+    copy_id = client.post(URL, json={"pressing_id": rumours[0].id}).json()["id"]
+    wish(session, user, rumours, rumours[0])  # wished again later, e.g. for a second copy
+    body = client.patch(f"{URL}/{copy_id}", json={"pressing_id": rumours[0].id, "media_grade": "NM"}).json()
+    assert body["removed_from_wishlist"] is False
+    assert wishlist_rows(session) == 1
+
+
+def test_adding_the_wanted_pressing_when_another_is_owned_removes_that_wish(client, sign_in, rumours, session):
+    user = sign_in()
+    client.post(URL, json={"pressing_id": rumours[0].id})  # owns the Original press
+    wish(session, user, rumours, rumours[1])  # wants the 180g reissue
+    assert client.post(URL, json={"pressing_id": rumours[1].id}).json()["removed_from_wishlist"] is True
+    assert wishlist_rows(session) == 0
+
+
 def test_other_users_wishlists_are_left_alone(client, sign_in, rumours, session):
     other = sign_in("other@example.com")
     wish(session, other, rumours)

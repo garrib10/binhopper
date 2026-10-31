@@ -117,7 +117,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 3. Adding a pressing you already own warns "You already own this pressing" and offers "Add as 2nd copy."
 4. Views: grid or list; sort by recently added, artist A–Z, genre, year.
 5. Estimated value waits for marketplace price data (v1.2). Until then the collection shows records, artists, wishlist and duplicate counts. The collection belongs to a signed-in account.
-6. Adding a copy, by any route, takes the album off the wishlist when the wish is for any pressing or for that pressing. A wish for a different specific pressing stays, so a user can keep hunting for a particular version.
+6. Adding a copy, by any route, or changing a copy to another pressing, takes the album off the wishlist when the wish is for any pressing or for that pressing. A wish for a different specific pressing stays, so a user can keep hunting for a particular version.
 
 ### Discogs import
 

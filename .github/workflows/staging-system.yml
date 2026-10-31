@@ -46,6 +46,13 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ steps.target.outputs.sha }}
+          fetch-depth: 0  # history, to find the commit Railway last deployed
+      # Same rule as Deploy: Railway rebuilds the API only when backend/** changes, so the API
+      # reports the last commit on this branch that changed backend/ (the promotion itself
+      # whenever backend code changed).
+      - name: Find the API commit Railway should be serving
+        id: api
+        run: echo "commit=$(git log -1 --first-parent --format=%H HEAD -- backend)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -57,16 +64,17 @@ jobs:
         working-directory: frontend
       - name: Read-only system tests against staging
         env:
-          EXPECTED_COMMIT: ${{ steps.target.outputs.sha }}
+          EXPECTED_COMMIT: ${{ steps.api.outputs.commit }}
         run: npm run e2e:system
         working-directory: frontend
       - name: Link results for release sign-off
         if: always()
         env:
           CHECKED_COMMIT: ${{ steps.target.outputs.sha }}
+          API_COMMIT: ${{ steps.api.outputs.commit }}
           SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
         run: |
-          echo "Staging commit: $CHECKED_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Staging commit: $CHECKED_COMMIT (API: $API_COMMIT)" >> "$GITHUB_STEP_SUMMARY"
           echo "Deploy check: $SOURCE_RUN" >> "$GITHUB_STEP_SUMMARY"
           echo "Copy this run's URL into the release sign-off issue." >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7

@@ -85,6 +85,9 @@ it('Search rule 5: lists every catalog genre, then its styles, and browses a sty
   const fetch = setupWith('/genres', { '/api/genres': catalog });
   await advance(0);
   expect(screen.getByRole('button', { name: 'Brass & Military' })).toBeVisible();  // beyond the starter list
+  expect(screen.getByRole('button', { name: 'Jazz' })).toBeVisible();  // the starter list stays, even with a small catalog
+  expect(screen.getAllByRole('button').filter((b) => b.closest('.genre-picker')).map((b) => b.textContent).slice(0, 3))
+    .toEqual(['Rock', 'Brass & Military', 'Jazz']);  // catalog genres first
   fireEvent.click(screen.getByRole('button', { name: 'Rock' }));
   await advance(0);
   expect(screen.getByRole('heading', { name: '2 · Style (optional)' })).toBeVisible();
@@ -112,4 +115,10 @@ it('Search rule 1: a search naming a genre or style offers to browse it', async 
   await advance(300);
   expect(screen.getByRole('link', { name: 'Browse Shoegaze →' })).toHaveAttribute('href', '/genres/Shoegaze/years?genre=Rock&style=Shoegaze');
   expect(screen.queryByText('No records found')).toBeNull();
+});
+
+it('keeps Appearance out of the header: it lives in You › Settings only', () => {
+  setup();
+  expect(screen.getByRole('banner')).not.toHaveTextContent('Match system');
+  expect(screen.queryByRole('group', { name: 'Appearance' })).toBeNull();
 });

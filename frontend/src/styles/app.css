@@ -135,6 +135,15 @@ a {
   font-weight: 700;
 }
 
+/* Phones (down to a 344 px fold cover): ZIP and radius share one row. The ZIP box narrows and
+   the radius buttons lose their side padding; each stays a 44 px target. */
+@media (max-width: 599px) {
+  .controls { flex-wrap: nowrap; }
+  .controls .zip-field { width: 92px; flex: none; padding: 4px 10px 0; }
+  .controls .segmented { min-width: 0; flex: 1 1 0; gap: 2px; }
+  .controls .segmented__option { padding: 0; }
+}
+
 .field-error {
   margin: 4px 0 0;
   font-size: 12px;
@@ -336,7 +345,6 @@ a {
   .header-search { order: 3; flex-basis: 100%; }
   .main-nav { position: fixed; bottom: 0; left: 0; right: 0; justify-content: space-around; padding: 4px 8px max(16px, env(safe-area-inset-bottom)); z-index: 5; background: var(--color-surface); border-top: 1px solid var(--color-border); }
   .main-nav a { font-size: 12px; }
-  .shell-header .segmented { flex-basis: 100%; order: 4; }
 }
 
 /* Album, DesktopAlbum and DarkAlbum. Tiles are shared with artist discography. */
@@ -430,10 +438,11 @@ a {
   .stock-map { height: 530px; }
 }
 
-.app-data-credit { max-width: 1240px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); }
+/* Centered under every page, whatever its layout (a wide grid or the policies' single column). */
+.app-data-credit { max-width: 760px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); text-align: center; }
 .app-data-credit a { display: inline-flex; align-items: center; min-height: var(--touch-target); }
 .app-data-credit p { margin: 0 0 var(--space-2); }
-.app-legal-links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.app-legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-4); }
 .auth-legal { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); }
 .auth-legal a { color: var(--color-link); }
 

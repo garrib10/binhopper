@@ -81,7 +81,7 @@ test('a 4-digit ZIP is rejected without calling the API', async ({ page }) => { 
 
 for (const theme of ['Light', 'Dark']) {
   test(`AC-01 AC-03 AC-04 map follows ZIP and radius with real API in ${theme}`, async ({ page }) => {
-    await page.getByRole('button', { name: theme }).click();
+    await page.emulateMedia({ colorScheme: theme === 'Dark' ? 'dark' : 'light' });  // "Match system", the default
     await expect(page.locator('.shop-marker')).toHaveCount(4);
     await expect(page.getByRole('link', { name: 'Discogs marketplace' })).toHaveAttribute('href', /Rumours/);
     await page.screenshot({ path: test.info().outputPath(`nearby-${theme}.png`), fullPage: true });

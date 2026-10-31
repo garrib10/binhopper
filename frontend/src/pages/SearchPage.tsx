@@ -12,6 +12,9 @@ const DECADES = [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020];
 const FILTERS = [['in_stock_nearby', 'In stock nearby'], ['lp', 'LP'], ['new', 'New'], ['used', 'Used'], ['under_30', 'Under $30']];
 const EMPTY: SearchResult = { albums: [], artists: [] };
 const FALLBACK: Genre[] = GENRES.map((name) => ({ name, albums: 0, styles: [] }));
+/** The catalog's genres first (most albums, with their styles), then the rest of the starter list,
+ *  so a small catalog never shrinks the picker to a few buttons. */
+const withStarters = (catalog: Genre[]) => [...catalog, ...FALLBACK.filter((g) => !catalog.some((c) => c.name === g.name))];
 
 function ResultRow({ album, radius, grid }: { album: SearchAlbum; radius: number; grid: boolean }) {
   const [failed, setFailed] = useState(false);
@@ -45,7 +48,7 @@ export function SearchPage() {
   useEffect(() => {
     if (!picker) return;
     const controller = new AbortController();
-    fetchGenres(controller.signal).then((list) => { if (list) setGenres(list); });
+    fetchGenres(controller.signal).then((list) => { if (list) setGenres(withStarters(list)); });
     return () => controller.abort();
   }, [picker]);
   const styles = genres.find((g) => g.name === genre)?.styles ?? [];

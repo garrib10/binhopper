@@ -41,8 +41,11 @@ export const fetchCollection = (sort: CollectionSort, signal?: AbortSignal) =>
 export const fetchCopy = (id: number, signal?: AbortSignal) => getJson<CopyDetail>(`/me/collection/${id}`, signal);
 export const fetchOwned = (albumId: number, signal?: AbortSignal) =>
   getJson<{ copies: Record<string, number> }>(`/me/collection/owned?album_id=${albumId}`, signal);
+/** Saving a copy under a different pressing can satisfy a wish too (rule 6); `album_on_wishlist`
+ *  is null when the pressing didn't change. */
 export const updateCopy = (id: number, pressingId: number, details: CopyDetails) =>
-  sendJson<Copy>('PATCH', `/me/collection/${id}`, { pressing_id: pressingId, ...details });
+  sendJson<Copy & { removed_from_wishlist: boolean; album_on_wishlist: boolean | null }>(
+    'PATCH', `/me/collection/${id}`, { pressing_id: pressingId, ...details });
 export const removeCopy = (id: number) => sendJson<void>('DELETE', `/me/collection/${id}`);
 
 /** What adding a copy did to the wishlist (SPEC › Collection rule 6). */

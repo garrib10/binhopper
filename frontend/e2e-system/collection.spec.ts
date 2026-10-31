@@ -65,3 +65,28 @@ test('every media and sleeve grade saves, edits and shows in the collection', as
     await expect(page.getByRole('row', { name: /Rumours/ }).getByRole('cell', { name: `${media} / ${sleeve}`, exact: true })).toBeVisible();
   }
 });
+
+test('Collection rule 6 when editing: switching a copy to the wanted pressing takes the wish off', async ({ page }, testInfo) => {
+  // The owner's steps on staging (2026-10-31).
+  await signUp(page, `rule6-edit-${testInfo.project.name}`);
+  await page.goto('/albums/1');
+  await page.getByRole('button', { name: 'Add to wishlist' }).click();
+  await expect(page.getByRole('button', { name: 'On wishlist' })).toBeVisible();
+  await page.goto('/wishlist');
+  await page.getByRole('button', { name: 'Change what you want' }).click();
+  await page.getByLabel('Pressing').selectOption({ label: '180g reissue' });
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Wants: 180g reissue')).toBeVisible();
+
+  await page.goto('/albums/1');
+  await page.getByRole('link', { name: 'Add to collection' }).click();
+  await page.getByRole('button', { name: /Original press/ }).click();
+  await page.getByRole('button', { name: 'Add to collection' }).click();
+  await expect(page.getByRole('status')).toContainText('It stays on your wishlist for the other pressing you want.');
+
+  await page.getByRole('button', { name: /180g reissue/ }).click();  // it was the reissue after all
+  await page.getByRole('button', { name: 'Save my copy' }).click();
+  await expect(page).toHaveURL(/\/collection$/);
+  await page.goto('/wishlist');
+  await expect(page.getByRole('heading', { name: 'Nothing on your wishlist yet' })).toBeVisible();
+});

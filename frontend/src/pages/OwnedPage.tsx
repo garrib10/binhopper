@@ -5,11 +5,13 @@ import { fetchCopy, removeCopy, updateCopy, type CopyDetail } from '../collectio
 import { Cover } from '../components/AlbumTile';
 import { CopyForm } from '../components/CopyForm';
 import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
+import { useWishlist } from '../WishlistContext';
 
 /** One copy you own (mockup Owned.dc.html): pressing, grades, price paid, where bought, notes. */
 export function OwnedPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const { forget } = useWishlist();
   // Set by "Add to collection": say what happened, including the wishlist (rule 6).
   const justAdded = useLocation().state as { added?: boolean; leftWishlist?: boolean; stillWanted?: boolean } | null;
   const [copy, setCopy] = useState<CopyDetail | null>(null);
@@ -46,7 +48,11 @@ export function OwnedPage() {
     <CopyForm pressings={copy.pressings} initialPressing={copy.pressing.id} initial={copy} submitLabel="Save my copy" busy={busy}
       onSubmit={async (pressingId, details) => {
         setBusy(true); setError(null);
-        try { await updateCopy(copy.id, pressingId, details); navigate('/collection'); } catch (err) {
+        try {
+          const saved = await updateCopy(copy.id, pressingId, details);
+          if (saved.removed_from_wishlist && !saved.album_on_wishlist) forget(copy.album.id);  // rule 6, like adding
+          navigate('/collection');
+        } catch (err) {
           setError(err instanceof ApiError && err.status < 500 ? err.message : "Couldn't save. Try again.");
         } finally { setBusy(false); }
       }}>

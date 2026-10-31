@@ -18,7 +18,7 @@ interface Props {
 type State =
   | { kind: 'loading' }
   | { kind: 'error'; message: string; canRetry: boolean }
-  | { kind: 'loaded'; data: NearbyStockResponse };
+  | { kind: 'loaded'; data: NearbyStockResponse; refreshing?: boolean };
 
 const UNKNOWN_ZIP = "We don't have that ZIP yet. Check it or try a nearby one.";
 const UNREACHABLE = "Can't reach Binhopper right now.";
@@ -51,7 +51,10 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
 
   useEffect(() => {
     const controller = new AbortController();
-    setState({ kind: 'loading' });
+    // A new radius or ZIP for the same album keeps the map and shops on screen until the new
+    // results arrive, instead of blanking the page; another album starts fresh.
+    setState((prev) => prev.kind === 'loaded' && prev.data.album_id === albumId
+      ? { ...prev, refreshing: true } : { kind: 'loading' });
     fetchNearbyStock(albumId, zip, radius, controller.signal)
       .then((data) => { if (!controller.signal.aborted) setState({ kind: 'loaded', data }); })
       .catch((err: unknown) => {
@@ -107,7 +110,7 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
 
       <div className="nearby-layout">
       {state.kind === 'loaded' && <StockMap data={state.data} />}
-      <section aria-live="polite" aria-busy={state.kind === 'loading'}>
+      <section aria-live="polite" aria-busy={state.kind === 'loading' || (state.kind === 'loaded' && !!state.refreshing)}>
         {state.kind === 'loading' && <p className="muted">Finding shops…</p>}
 
         {state.kind === 'error' && (

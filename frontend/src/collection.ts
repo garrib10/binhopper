@@ -1,4 +1,5 @@
 import { ApiError, errorDetail } from './api';
+import { dropLists } from './listCache';
 import { CSRF_HEADER, sendJson } from './auth';
 import type { Grade } from './grades';
 
@@ -45,8 +46,16 @@ export const fetchOwned = (albumId: number, signal?: AbortSignal) =>
  *  is null when the pressing didn't change. */
 export const updateCopy = (id: number, pressingId: number, details: CopyDetails) =>
   sendJson<Copy & { removed_from_wishlist: boolean; album_on_wishlist: boolean | null }>(
-    'PATCH', `/me/collection/${id}`, { pressing_id: pressingId, ...details });
-export const removeCopy = (id: number) => sendJson<void>('DELETE', `/me/collection/${id}`);
+    'PATCH', `/me/collection/${id}`, { pressing_id: pressingId, ...details }).then(changed);
+export const removeCopy = (id: number) => sendJson<void>('DELETE', `/me/collection/${id}`).then(changed);
+
+/** After any change to a copy: the remembered Collection lists (and the Wishlist, if the copy took
+ *  a wish off it) are out of date, so the next visit loads them fresh instead of flashing old ones. */
+export function changed<T>(result: T): T {
+  dropLists('collection');
+  if ((result as { removed_from_wishlist?: boolean } | undefined)?.removed_from_wishlist) dropLists('wishlist');
+  return result;
+}
 
 /** What adding a copy did to the wishlist (SPEC › Collection rule 6). */
 export interface WishlistEffect { removed_from_wishlist: boolean; album_on_wishlist: boolean }
@@ -65,7 +74,7 @@ export async function addCopy(pressingId: number, details: CopyDetails, anotherC
   const body = await response.json().catch(() => ({}));
   if (response.status === 409) throw new AlreadyOwned(body.detail?.copies ?? 1);
   if (!response.ok) throw new ApiError(response.status, errorDetail(body) ?? 'Something went wrong. Try again.');
-  return body;
+  return changed(body);
 }
 
 /** 2nd, 3rd, 4th… */

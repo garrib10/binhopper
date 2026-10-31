@@ -196,11 +196,15 @@ def change_copy(copy_id: int, body: CopyChange, user: Me, db: DB, now: Now):
     pressing = db.get(Pressing, body.pressing_id)
     if pressing is None or pressing.album_id != item.pressing.album_id:
         raise HTTPException(422, "That pressing isn't part of this album")
+    switched = pressing.id != item.pressing_id
     for field, value in body.model_dump().items():
         setattr(item, field, value)
+    # Now owning a different pressing can satisfy a wish for it, as adding one would (rule 6).
+    wishlist = (leave_wishlist(db, user.id, pressing) if switched
+                else {"removed_from_wishlist": False, "album_on_wishlist": None})
     db.commit()
     db.refresh(item)
-    return view(item, copies_of(db, user, item.pressing_id).index(item.id) + 1, now)
+    return {**view(item, copies_of(db, user, item.pressing_id).index(item.id) + 1, now), **wishlist}
 
 
 @router.delete("/{copy_id}", status_code=204)

@@ -93,6 +93,24 @@ describe('NearbyStockPage', () => {
     expect(fetchSpy.mock.calls.length).toBe(callsBefore);
   });
 
+  it('keeps the map and shops on screen while a new radius loads', async () => {
+    const store = { listing_id: 1, store_id: 1, store_name: 'Spin Cycle Records', area: 'Chelsea', distance_mi: 3.2,
+      pressing_id: 1, pressing_note: null, price: 26, condition: 'New', quantity: 2,
+      freshness: 'current' as const, last_updated_at: null, lat: 40.75, lng: -74, phone: null };
+    let answer: (r: Response) => void = () => {};
+    vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify({ album_id: 1, zip: '10011', radius_mi: 25, stores: [store], nearest_outside_mi: null })))
+      .mockImplementationOnce(() => new Promise<Response>((resolve) => { answer = resolve; }));
+    render(page);
+    expect(await screen.findByRole('heading', { name: '1 store has it' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: '50 mi' }));
+    expect(screen.getByRole('region', { name: /Map of shops/ })).toBeInTheDocument();  // not blanked
+    expect(screen.getByRole('heading', { name: 'Spin Cycle Records' })).toBeInTheDocument();
+    expect(screen.queryByText('Finding shops…')).toBeNull();
+    answer(new Response(JSON.stringify({ album_id: 1, zip: '10011', radius_mi: 50, stores: [store, { ...store, listing_id: 2, store_id: 2, store_name: 'Dead Wax Exchange' }], nearest_outside_mi: null })));
+    expect(await screen.findByRole('heading', { name: '2 stores have it' })).toBeInTheDocument();
+  });
+
   describe('errors', () => {
     it('explains an unknown ZIP', async () => {  // AC-04
       mockError(404, { detail: 'Unknown ZIP code' });

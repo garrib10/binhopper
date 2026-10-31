@@ -131,7 +131,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 1. Opened from the profile button in the header on every main screen, mobile and desktop.
 2. Tabs: Profile, Settings, Privacy, Account (side tabs on desktop). Desktop's Notifications tab arrives with alerts in v1.1.
 3. Profile: initials avatar (photo upload comes later), username, favorite genres, connected accounts (Discogs in v1; Spotify and Apple Music listen links need no account).
-4. Settings: home ZIP, default radius, current-location toggle (off by default), appearance (Light, Dark, Match system; default Match system).
+4. Settings: home ZIP, default radius, current-location toggle (off by default), appearance (Light, Dark, Match system; default Match system). Appearance is chosen only here, not in the header; signed-out visitors follow their device.
 5. Privacy: profile, collection and wishlist each set to Everyone or Only me (default Only me); a Friends option comes with the social features (Later). Export collection (CSV) and download all data.
 6. Account: email, sign-in method, password (reset by email), sign out, delete account with confirmation. Help pages, terms and privacy policy links arrive with the policies before launch.
 

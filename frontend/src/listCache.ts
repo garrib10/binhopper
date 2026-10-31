@@ -7,6 +7,22 @@ const lists = new Map<string, unknown>();
 /** Signing out, or deleting the account, drops every remembered list. */
 export function forgetLists() { lists.clear(); }
 
+/** A change made elsewhere drops the remembered copies of those lists (names start with `kind:`),
+ *  so the next visit loads them fresh instead of flashing what was there before. */
+export function dropLists(kind: 'wishlist' | 'collection') {
+  for (const key of [...lists.keys()]) if (key.split(':')[1] === kind) lists.delete(key);
+}
+
+/** An album left the wishlist: take it out of every remembered wishlist now, keeping it instant. */
+export function dropFromWishlists(albumId: number) {
+  for (const [key, items] of lists) {
+    if (key.split(':')[1] === 'wishlist' && Array.isArray(items)) {
+      lists.set(key, items.filter((item: { album?: { id?: number } }) => item.album?.id !== albumId));
+    }
+  }
+  dropLists('collection');  // its stats count the wishlist
+}
+
 export type ListState<T> =
   | { kind: 'loading' }
   | { kind: 'error' }

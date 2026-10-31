@@ -1,6 +1,6 @@
 import { ApiError, errorDetail, type Freshness } from './api';
 import { CSRF_HEADER } from './auth';
-import { AlreadyOwned, type Copy, type WishlistEffect } from './collection';
+import { AlreadyOwned, changed, type Copy, type WishlistEffect } from './collection';
 
 export interface HandoffListing {
   listing_id: number;
@@ -30,7 +30,7 @@ export async function gotIt(listingId: number, anotherCopy = false): Promise<Cop
   const body = await response.json().catch(() => ({}));
   if (response.status === 409) throw new AlreadyOwned(body.detail?.copies ?? 1);
   if (!response.ok) throw new ApiError(response.status, errorDetail(body) ?? 'Something went wrong. Try again.');
-  return body;
+  return changed(body);
 }
 
 /** A hand-off the user hasn't answered "Got it?" for yet. Kept in this browser only. */

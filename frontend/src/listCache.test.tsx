@@ -2,7 +2,7 @@ import { act, render, renderHook, screen, waitFor } from '@testing-library/react
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AuthProvider, useAuth } from './AuthContext';
-import { useCachedList } from './listCache';
+import { dropFromWishlists, dropLists, useCachedList } from './listCache';
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -76,5 +76,25 @@ describe('useCachedList', () => {
     view.unmount();
     const never = new Promise<string[]>(() => {});
     expect(renderHook(() => useCachedList(1, 'wishlist', () => never)).result.current.state).toEqual({ kind: 'loading' });
+  });
+
+  it('an album that left the wishlist never flashes on the next visit', async () => {
+    const rumours = { id: 7, album: { id: 1 } }, blue = { id: 8, album: { id: 2 } };
+    const first = renderHook(() => useCachedList(1, 'wishlist:10011:25', async () => [rumours, blue]));
+    await waitFor(() => expect(first.result.current.state.kind).toBe('loaded'));
+    first.unmount();
+    dropFromWishlists(1);  // e.g. a copy of Rumours took its wish off
+    const never = new Promise<typeof rumours[]>(() => {});
+    expect(renderHook(() => useCachedList(1, 'wishlist:10011:25', () => never)).result.current.state)
+      .toEqual({ kind: 'loaded', data: [blue], refreshing: true });
+  });
+
+  it('a changed copy makes the next Collection visit load fresh', async () => {
+    const first = renderHook(() => useCachedList(1, 'collection:recent', async () => ['Rumours']));
+    await waitFor(() => expect(first.result.current.state.kind).toBe('loaded'));
+    first.unmount();
+    dropLists('collection');
+    const never = new Promise<string[]>(() => {});
+    expect(renderHook(() => useCachedList(1, 'collection:recent', () => never)).result.current.state).toEqual({ kind: 'loading' });
   });
 });

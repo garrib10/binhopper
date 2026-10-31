@@ -36,12 +36,14 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: refs/heads/staging
+          fetch-depth: 0  # history, to find the commit Railway last deployed
           persist-credentials: false
       - name: Check out trusted production branch
         if: (github.event.workflow_run.head_branch || github.ref_name) == 'main'
         uses: actions/checkout@v7
         with:
           ref: refs/heads/main
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Require the CI-verified promotion commit
@@ -70,9 +72,21 @@ jobs:
       - name: Test deployment verifier
         run: python -m unittest discover -s .github/scripts -p 'test_*.py'
 
-      # Waits for the promoted commit at API_URL, then at APP_URL/api/health through
+      # Waits for the API commit at API_URL, then at APP_URL/api/health through
       # Vercel's /api proxy, then checks the frontend. Pre-launch, production has no
       # API_URL/APP_URL yet, so the script skips with a notice instead of failing.
+      # Railway rebuilds the API only when backend/** changes (Watch Paths), so a frontend-only
+      # promotion keeps the API on an earlier commit: the last one on this branch that changed
+      # backend/. (Promotions are merge commits, so --first-parent walks this branch's own history.)
+      - name: Find the API commit Railway should be serving
+        id: api
+        run: |
+          commit="$(git log -1 --first-parent --format=%H HEAD -- backend)"
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+          if [ "$commit" != "$(git rev-parse HEAD)" ]; then
+            echo "::notice title=Frontend-only promotion::No backend changes since $commit, so the API stays on it (Railway Watch Paths)."
+          fi
+
       - name: Verify deployed API, the app's /api proxy and frontend
         timeout-minutes: 11
         env:
@@ -80,6 +94,6 @@ jobs:
           APP_URL: ${{ vars.APP_URL }}
           # Vercel Protection Bypass for Automation (environment secret); sent to APP_URL only.
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          # The promoted commit. Not GITHUB_SHA: GitHub ignores overrides of GITHUB_* variables.
-          EXPECTED_COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # The API's commit: the promotion itself, or the last one that changed backend/ (above).
+          EXPECTED_COMMIT: ${{ steps.api.outputs.commit }}
         run: python .github/scripts/check_deploy.py

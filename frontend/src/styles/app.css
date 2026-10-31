@@ -430,10 +430,11 @@ a {
   .stock-map { height: 530px; }
 }
 
-.app-data-credit { max-width: 1240px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); }
+/* Centered under every page, whatever its layout (a wide grid or the policies' single column). */
+.app-data-credit { max-width: 760px; margin: 0 auto; padding: 0 var(--space-5) 100px; color: var(--color-text-muted); font-size: var(--text-sm); text-align: center; }
 .app-data-credit a { display: inline-flex; align-items: center; min-height: var(--touch-target); }
 .app-data-credit p { margin: 0 0 var(--space-2); }
-.app-legal-links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.app-legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-4); }
 .auth-legal { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); }
 .auth-legal a { color: var(--color-link); }
 

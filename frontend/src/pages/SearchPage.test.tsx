@@ -85,6 +85,9 @@ it('Search rule 5: lists every catalog genre, then its styles, and browses a sty
   const fetch = setupWith('/genres', { '/api/genres': catalog });
   await advance(0);
   expect(screen.getByRole('button', { name: 'Brass & Military' })).toBeVisible();  // beyond the starter list
+  expect(screen.getByRole('button', { name: 'Jazz' })).toBeVisible();  // the starter list stays, even with a small catalog
+  expect(screen.getAllByRole('button').filter((b) => b.closest('.genre-picker')).map((b) => b.textContent).slice(0, 3))
+    .toEqual(['Rock', 'Brass & Military', 'Jazz']);  // catalog genres first
   fireEvent.click(screen.getByRole('button', { name: 'Rock' }));
   await advance(0);
   expect(screen.getByRole('heading', { name: '2 · Style (optional)' })).toBeVisible();

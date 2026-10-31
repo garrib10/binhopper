@@ -116,3 +116,9 @@ it('Search rule 1: a search naming a genre or style offers to browse it', async 
   expect(screen.getByRole('link', { name: 'Browse Shoegaze →' })).toHaveAttribute('href', '/genres/Shoegaze/years?genre=Rock&style=Shoegaze');
   expect(screen.queryByText('No records found')).toBeNull();
 });
+
+it('keeps Appearance out of the header: it lives in You › Settings only', () => {
+  setup();
+  expect(screen.getByRole('banner')).not.toHaveTextContent('Match system');
+  expect(screen.queryByRole('group', { name: 'Appearance' })).toBeNull();
+});

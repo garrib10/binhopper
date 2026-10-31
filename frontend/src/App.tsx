@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactElement } from 'react';
 import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ThemePicker } from './components/ThemePicker';
 import { SearchPage } from './pages/SearchPage';
 import { ArtistPage } from './pages/ArtistPage';
 import { AlbumPage } from './pages/AlbumPage';
@@ -107,7 +106,6 @@ export function AppShell() {
         <NavLink to="/albums/1/stores">Nearby</NavLink><NavLink to="/collection" end>Collection</NavLink>
       </nav>
       <ProfileLink />
-      <ThemePicker value={theme} onChange={setTheme} />
     </div></header>
     <Routes>
       <Route path="/" element={<Navigate to="/search" replace />} />

@@ -50,13 +50,6 @@ test('empty radius offers a wider search', async ({ page }) => {  // AC-03
   await expect(page.getByText('Nearest copy is 38 mi away.')).toBeVisible();
 });
 
-test('dark mode can be chosen and survives a reload', async ({ page }) => {  // AC-14
-  await page.getByRole('button', { name: 'Dark' }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-});
-
 test('has no automatically detectable accessibility problems', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '2 stores have it' })).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
@@ -65,7 +58,7 @@ test('has no automatically detectable accessibility problems', async ({ page }) 
 
 for (const theme of ['Light', 'Dark']) {
   test(`server error offers Try again and passes axe in ${theme.toLowerCase()} mode`, async ({ page }) => {
-    await page.getByRole('button', { name: theme }).click();
+    await page.emulateMedia({ colorScheme: theme === 'Dark' ? 'dark' : 'light' });  // "Match system", the default
     await page.route('**/api/albums/*/stock?*', (route) => route.fulfill({ status: 503, body: '' }));
     await page.getByRole('button', { name: '10 mi' }).click();
     await expect(page.getByRole('alert')).toHaveText("Can't reach Binhopper right now.");
@@ -91,7 +84,7 @@ test('AC-01 map pins and list refresh together without geolocation', async ({ pa
 
 for (const theme of ['Light', 'Dark']) {
   test(`AC-03 AC-05 map, stale call and online fallback in ${theme}`, async ({ page }) => {
-    await page.getByRole('button', { name: theme }).click();
+    await page.emulateMedia({ colorScheme: theme === 'Dark' ? 'dark' : 'light' });  // "Match system", the default
     await page.route('**/api/albums/*/stock?*', route => route.fulfill({ json: {
       album_id: 1, zip: '10011', center_lat: 40.74, center_lng: -74, radius_mi: 10,
       stores: [{ ...STORES[0], source: 'manual', discogs_url: null, freshness: 'out_of_date' }], nearest_outside_mi: null,
@@ -121,7 +114,7 @@ test('AC-05 Discogs stock has a followed individual-listing attribution', async 
 
 for (const theme of ['Light', 'Dark']) {
   test(`AC-05 attribution is visible in ${theme}`, async ({ page }) => {
-    await page.getByRole('button', { name: theme }).click();
+    await page.emulateMedia({ colorScheme: theme === 'Dark' ? 'dark' : 'light' });  // "Match system", the default
     await expect(page.getByRole('link', { name: 'Data provided by Discogs.' })).toBeVisible();
     await page.screenshot({ path: test.info().outputPath(`inventory-${theme}.png`), fullPage: true });
   });
@@ -147,5 +140,21 @@ for (const theme of ['light', 'dark'] as const) {
       expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(43.5);
     }
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+}
+
+// Phones from a 344 px fold cover to a 412 px Pixel: the ZIP box and the radius buttons share one row.
+for (const width of [344, 360, 375, 393, 412]) {
+  test(`ZIP and radius sit on one row at ${width} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    const zip = (await page.getByLabel('ZIP code').boundingBox())!;
+    const radius = (await page.getByRole('group', { name: 'Search radius' }).boundingBox())!;
+    expect(Math.abs((zip.y + zip.height / 2) - (radius.y + radius.height / 2))).toBeLessThan(12);
+    expect(radius.x + radius.width).toBeLessThanOrEqual(width);
+    for (const option of await page.getByRole('group', { name: 'Search radius' }).getByRole('button').all()) {
+      const box = (await option.boundingBox())!;
+      expect(box.height).toBeGreaterThanOrEqual(43.5);
+      expect(await option.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);  // "100 mi" fits
+    }
   });
 }

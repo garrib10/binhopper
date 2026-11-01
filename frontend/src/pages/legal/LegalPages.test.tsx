@@ -31,10 +31,12 @@ describe('Privacy Policy and Terms of Use (#85)', () => {
     expect(within(screen.getByRole('main')).getAllByRole('link', { name: 'Privacy Policy' })[0]).toHaveAttribute('href', '/privacy');
   });
 
-  it('says a contact address comes before launch rather than showing a made-up one', () => {
-    signedOutAt('/privacy');
-    expect(screen.getAllByText(/the contact address listed here before launch/).length).toBeGreaterThan(0);
-    expect(screen.queryByRole('link', { name: /@/ })).toBeNull();
+  it.each(['/privacy', '/terms'])('%s gives Binhopper\'s own contact address', (path) => {
+    signedOutAt(path);
+    const links = screen.getAllByRole('link', { name: 'binhopper.app@gmail.com' });
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) expect(link).toHaveAttribute('href', 'mailto:binhopper.app@gmail.com');
+    expect(screen.queryByText(/listed here before launch/)).toBeNull();
   });
 
   it('links both pages from every screen footer', () => {

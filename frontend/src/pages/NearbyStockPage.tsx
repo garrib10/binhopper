@@ -6,7 +6,7 @@ import { StockMap } from '../components/StockMap';
 import { OnlineSellers, type OnlineResult } from '../components/OnlineSellers';
 import { getCatalog } from '../catalog';
 import { fetchListing } from '../handoff';
-import { prefetch } from '../pageData';
+import { peek, prefetch, share } from '../pageData';
 import { ListPlaceholder } from '../components/ListPlaceholder';
 
 interface Props {
@@ -39,7 +39,11 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
   const [zip, setZip] = useState(initialZip);
   const [zipError, setZipError] = useState<string | null>(null);
   const [radius, setRadius] = useState<Radius>(initialRadius);
-  const [state, setState] = useState<State>({ kind: 'loading' });
+  // Coming back (from Hold or buy, say) shows the last results for this album, ZIP and radius at once.
+  const [state, setState] = useState<State>(() => {
+    const seen = peek<NearbyStockResponse>(`nearby:${albumId}:${initialZip}:${initialRadius}`);
+    return seen ? { kind: 'loaded', data: seen, refreshing: true } : { kind: 'loading' };
+  });
   const [attempt, setAttempt] = useState(0);
   const [online, setOnline] = useState<OnlineResult | null>(null);
   const [onlineError, setOnlineError] = useState(false);
@@ -56,12 +60,14 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
     const controller = new AbortController();
     // A new radius or ZIP for the same album keeps the map and shops on screen until the new
     // results arrive, instead of blanking the page; another album starts fresh.
-    setState((prev) => prev.kind === 'loaded' && prev.data.album_id === albumId
-      ? { ...prev, refreshing: true } : { kind: 'loading' });
+    const seen = peek<NearbyStockResponse>(`nearby:${albumId}:${zip}:${radius}`);
+    setState((prev) => seen ? { kind: 'loaded', data: seen, refreshing: true }
+      : prev.kind === 'loaded' && prev.data.album_id === albumId ? { ...prev, refreshing: true } : { kind: 'loading' });
     fetchNearbyStock(albumId, zip, radius, controller.signal)
       .then((data) => {
         if (controller.signal.aborted) return;
         setState({ kind: 'loaded', data });
+        share(`nearby:${albumId}:${zip}:${radius}`, data);
         // Most visits go on to Hold or buy: have those pages ready (a handful of small reads).
         for (const store of data.stores.slice(0, 6)) void prefetch(`listing:${store.listing_id}`, () => fetchListing(store.listing_id));
       })

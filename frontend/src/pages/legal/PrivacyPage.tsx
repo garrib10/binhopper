@@ -24,7 +24,8 @@ export function PrivacyPage() {
         including the pressing, condition, price paid, where you bought it and your notes.</li>
       <li><strong>Stock reports</strong> you send about a shop's listing ("still there", "gone", a new price).</li>
       <li><strong>Discogs, if you connect it:</strong> your Discogs username, the access tokens Discogs gives us (encrypted),
-        and the collection and wantlist you choose to import, with their condition grades and notes.</li>
+        and which releases are in the collection and wantlist you choose to import. Your condition grades and notes on
+        Discogs aren't copied.</li>
       <li><strong>Sign-in records:</strong> when each signed-in browser was created and last used, stored with a scrambled
         (hashed) version of your sign-in cookie.</li>
     </ul>

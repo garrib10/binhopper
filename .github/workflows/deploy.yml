@@ -63,7 +63,7 @@ jobs:
         working-directory: frontend
 
       - name: Check backend installs and imports
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install . && python -c "import app.main"

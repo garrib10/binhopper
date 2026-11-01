@@ -26,7 +26,10 @@ test('AC-09 adding an owned pressing warns, and "Add as 2nd copy" creates copy 2
 test('Collection rule 6: adding a copy takes the album off the wishlist; rule 2: only the pressing is required', async ({ page }, testInfo) => {
   await signUp(page, `rule6-${testInfo.project.name}`);
   await page.goto('/albums/1');
+  // The heart turns on at once; wait for the save itself, since the add form now opens instantly.
+  const saved = page.waitForResponse((r) => r.url().endsWith('/api/me/wishlist') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Add to wishlist' }).click();
+  await saved;
   await expect(page.getByRole('button', { name: 'On wishlist' })).toBeVisible();
 
   await page.getByRole('link', { name: 'Add to collection' }).click();
@@ -70,12 +73,16 @@ test('Collection rule 6 when editing: switching a copy to the wanted pressing ta
   // The owner's steps on staging (2026-10-31).
   await signUp(page, `rule6-edit-${testInfo.project.name}`);
   await page.goto('/albums/1');
+  const saved = page.waitForResponse((r) => r.url().endsWith('/api/me/wishlist') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Add to wishlist' }).click();
+  await saved;
   await expect(page.getByRole('button', { name: 'On wishlist' })).toBeVisible();
   await page.goto('/wishlist');
   await page.getByRole('button', { name: 'Change what you want' }).click();
   await page.getByLabel('Pressing').selectOption({ label: '180g reissue' });
+  const wanted = page.waitForResponse((r) => /\/api\/me\/wishlist\/\d+$/.test(r.url()) && r.request().method() === 'PATCH');
   await page.getByRole('button', { name: 'Save' }).click();
+  await wanted;
   await expect(page.getByText('Wants: 180g reissue')).toBeVisible();
 
   await page.goto('/albums/1');

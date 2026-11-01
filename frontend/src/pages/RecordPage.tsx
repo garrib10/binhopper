@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Cover } from '../components/AlbumTile';
 import { GotItPrompt } from '../components/GotItPrompt';
 import { describeLoadError, LoadError, type LoadProblem } from '../components/LoadError';
 import { HeartButton } from '../components/HeartButton';
 import { fetchListing, pendingHandoffs, recordHandoff, type HandoffListing } from '../handoff';
+import { usePageData } from '../pageData';
 import '../styles/handoff.css';
+import { PagePlaceholder } from '../components/PagePlaceholder';
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const STEPS = ['Find', 'Locate', 'Buy', 'Collect'];
@@ -13,21 +15,14 @@ const STEPS = ['Find', 'Locate', 'Buy', 'Collect'];
 /** Locate, hold or buy one copy (SPEC.md › Locate, hold, buy; mockup Record.dc.html). */
 export function RecordPage() {
   const { id = '' } = useParams();
-  const [record, setRecord] = useState<HandoffListing | null>(null);
-  const [error, setError] = useState<LoadProblem | null>(null);
   const [attempt, setAttempt] = useState(0);
+  // Usually already fetched from Nearby, so the page draws complete at once.
+  const { data: record, error: failed } = usePageData<HandoffListing>(`listing:${id}`, () => fetchListing(Number(id)), attempt);
+  const error: LoadProblem | null = failed ? describeLoadError(failed, 'This copy is no longer listed. It may have sold.') : null;
   const [asking, setAsking] = useState(() => pendingHandoffs().find((h) => h.listingId === Number(id)) ?? null);
-  useEffect(() => {
-    const controller = new AbortController();
-    fetchListing(Number(id), controller.signal).then(setRecord).catch((err) => {
-      if (!controller.signal.aborted) setError(describeLoadError(err, 'This copy is no longer listed. It may have sold.'));
-    });
-    return () => controller.abort();
-  }, [id, attempt]);
-
   if (!record) return <main id="content" className="page"><h1 className="display">Locate, hold or buy</h1>
-    {error ? <LoadError problem={error} onRetry={() => { setError(null); setAttempt((n) => n + 1); }} back={{ to: '/search', label: 'Back to search' }} />
-      : <p role="status">Loading…</p>}</main>;
+    {error ? <LoadError problem={error} onRetry={() => setAttempt((n) => n + 1)} back={{ to: '/search', label: 'Back to search' }} />
+      : <PagePlaceholder label="Loading this copy…" />}</main>;
   const { album, store, pressing } = record;
   const handedOff = () => {
     recordHandoff({ listingId: record.listing_id, albumId: album.id, albumTitle: album.title, storeName: store.name });

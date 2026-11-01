@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 import type { NearbyStore, OtherShop } from '../api';
+import { fetchListing } from '../handoff';
+import { loadsOnIntent } from '../pageData';
+import { fetchListing as fetchStockReport } from '../reports';
 
 /** "2 hr ago", "9 days ago" (mockup StaleStock.dc.html); the API sends naive UTC times. */
 export function age(iso: string | null | undefined, now = Date.now()): string | null {
@@ -77,10 +80,13 @@ export function StoreCard({ store, index, now = Date.now() }: Props) {
       <ShopActions name={store.store_name} phone={store.phone} lat={store.lat} lng={store.lng}
         callLabel={store.freshness === 'out_of_date' ? 'Call to confirm' : 'Call shop'} />
       <div className="store-card__links">
+        {/* Both pages start loading on hover, focus or touch, so they open complete. */}
         <Link className="store-card__report" to={`/records/${store.listing_id}`}
+          {...loadsOnIntent(`listing:${store.listing_id}`, () => fetchListing(store.listing_id))}
           aria-label={`Hold or buy: ${store.store_name}`}>Hold or buy</Link>
         {/* A stale listing asks the visitor who called or went to say what they found. */}
         <Link className="store-card__report" to={`/stock/${store.listing_id}/report`}
+          {...loadsOnIntent(`stock:${store.listing_id}`, () => fetchStockReport(store.listing_id))}
           aria-label={`${stale ? 'I checked it' : 'Report stock'}: ${store.store_name}`}>{stale ? 'I checked it' : 'Report stock'}</Link>
       </div>
     </li>

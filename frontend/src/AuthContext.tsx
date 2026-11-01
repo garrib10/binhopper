@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { Navigate, useLocation } from 'react-router-dom';
 import { getMe, signOut as postSignOut, type Account } from './auth';
 import { forgetLists } from './listCache';
+import { forgetPageData } from './pageData';
 
 type AuthState =
   | { status: 'loading' }
@@ -30,12 +31,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false; };
   }, []);
   const setAccount = useCallback((account: Account | null) => {
-    if (!account) forgetLists();  // signed out or account deleted: no lists left behind in this tab
+    if (!account) { forgetLists(); forgetPageData(); }  // signed out or deleted: nothing left behind in this tab
     setState(account ? { status: 'signed-in', account } : { status: 'signed-out' });
   }, []);
   const signOut = useCallback(async () => {
     await postSignOut();
     forgetLists();
+    forgetPageData();
     setState({ status: 'signed-out' });
   }, []);
   const value = useMemo(() => ({ state, setAccount, signOut }), [state, setAccount, signOut]);

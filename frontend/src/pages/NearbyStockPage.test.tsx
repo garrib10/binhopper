@@ -98,9 +98,12 @@ describe('NearbyStockPage', () => {
       pressing_id: 1, pressing_note: null, price: 26, condition: 'New', quantity: 2,
       freshness: 'current' as const, last_updated_at: null, lat: 40.75, lng: -74, phone: null };
     let answer: (r: Response) => void = () => {};
-    vi.spyOn(globalThis, 'fetch')
-      .mockResolvedValueOnce(new Response(JSON.stringify({ album_id: 1, zip: '10011', radius_mi: 25, stores: [store], nearest_outside_mi: null })))
-      .mockImplementationOnce(() => new Promise<Response>((resolve) => { answer = resolve; }));
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input);
+      if (url.startsWith('/api/listings/')) return new Promise<Response>(() => {});  // Hold or buy, fetched early
+      if (url.includes('radius=50')) return new Promise<Response>((resolve) => { answer = resolve; });
+      return Promise.resolve(new Response(JSON.stringify({ album_id: 1, zip: '10011', radius_mi: 25, stores: [store], nearest_outside_mi: null })));
+    });
     render(page);
     expect(await screen.findByRole('heading', { name: '1 store has it' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: '50 mi' }));

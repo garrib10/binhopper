@@ -5,6 +5,9 @@ import { OtherShopCard, StoreCard } from '../components/StoreCard';
 import { StockMap } from '../components/StockMap';
 import { OnlineSellers, type OnlineResult } from '../components/OnlineSellers';
 import { getCatalog } from '../catalog';
+import { fetchListing } from '../handoff';
+import { prefetch } from '../pageData';
+import { ListPlaceholder } from '../components/ListPlaceholder';
 
 interface Props {
   albumId: number;
@@ -56,7 +59,12 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
     setState((prev) => prev.kind === 'loaded' && prev.data.album_id === albumId
       ? { ...prev, refreshing: true } : { kind: 'loading' });
     fetchNearbyStock(albumId, zip, radius, controller.signal)
-      .then((data) => { if (!controller.signal.aborted) setState({ kind: 'loaded', data }); })
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        setState({ kind: 'loaded', data });
+        // Most visits go on to Hold or buy: have those pages ready (a handful of small reads).
+        for (const store of data.stores.slice(0, 6)) void prefetch(`listing:${store.listing_id}`, () => fetchListing(store.listing_id));
+      })
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
         setState({ kind: 'error', ...describeError(err) });
@@ -110,8 +118,11 @@ export function NearbyStockPage({ albumId, albumTitle, artistName, initialZip = 
 
       <div className="nearby-layout">
       {state.kind === 'loaded' && <StockMap data={state.data} />}
+      {/* First load: the map's and the shop cards' shapes, so nothing moves when they arrive. */}
+      {state.kind === 'loading' && <div className="stock-map-panel" aria-hidden="true">
+        <div className="stock-map stock-map--placeholder" /><p className="map-caption">&nbsp;</p></div>}
       <section aria-live="polite" aria-busy={state.kind === 'loading' || (state.kind === 'loaded' && !!state.refreshing)}>
-        {state.kind === 'loading' && <p className="muted">Finding shops…</p>}
+        {state.kind === 'loading' && <ListPlaceholder label="Finding shops…" layout="cards" />}
 
         {state.kind === 'error' && (
           <div className="error-state">

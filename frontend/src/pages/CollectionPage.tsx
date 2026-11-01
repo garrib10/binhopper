@@ -1,9 +1,13 @@
 import { useAuth } from '../AuthContext';
 import { Link, useSearchParams } from 'react-router-dom';
-import { fetchCollection, gradePair, type CollectionResponse, type CollectionSort } from '../collection';
+import { fetchCollection, fetchCopy, gradePair, type CollectionResponse, type CollectionSort } from '../collection';
 import { Cover } from '../components/AlbumTile';
 import { ListPlaceholder } from '../components/ListPlaceholder';
 import { useCachedList } from '../listCache';
+import { loadsOnIntent } from '../pageData';
+
+/** A copy's page starts loading on hover, focus or touch, so it opens complete. */
+const opensCopy = (id: number) => loadsOnIntent(`copy:${id}`, () => fetchCopy(id));
 
 const SORTS: [CollectionSort, string][] = [['recent', 'Recently added'], ['artist', 'Artist A–Z'], ['genre', 'Genre'], ['year', 'Year']];
 const added = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -52,7 +56,7 @@ export function CollectionPage() {
     </div>}
     {state.kind === 'loaded' && state.data.items.length > 0 && (view === 'grid'
       ? <ul className="collection-grid" aria-busy={state.refreshing}>{state.data.items.map((copy) => <li key={copy.id}>
-        <Link className="collection-tile" to={`/collection/${copy.id}`}>
+        <Link className="collection-tile" to={`/collection/${copy.id}`} {...opensCopy(copy.id)}>
           <Cover url={copy.album.cover_url} title={copy.album.title} />
           {/* No condition yet: a nudge, since only the pressing is required (rule 2). */}
           <span className={`collection-tile__grade${gradePair(copy) ? '' : ' collection-tile__grade--missing'}`}>{gradePair(copy) ?? 'Add condition'}</span>
@@ -62,7 +66,7 @@ export function CollectionPage() {
       : <div className="collection-table-wrap"><table className="collection-table" aria-busy={state.refreshing}>
         <thead><tr><th scope="col">Album</th><th scope="col">Artist</th><th scope="col">Pressing</th><th scope="col">Media / Sleeve</th><th scope="col">Added</th></tr></thead>
         <tbody>{state.data.items.map((copy) => <tr key={copy.id}>
-          <td><Link to={`/collection/${copy.id}`}>{copy.album.title}</Link></td>
+          <td><Link to={`/collection/${copy.id}`} {...opensCopy(copy.id)}>{copy.album.title}</Link></td>
           <td>{copy.album.artist.name}</td>
           <td>{copy.pressing.note}{copy.copy_number > 1 ? ` (copy ${copy.copy_number})` : ''}</td>
           <td>{gradePair(copy) ?? <Link to={`/collection/${copy.id}`} aria-label={`Add condition: ${copy.album.title}`}>Add condition</Link>}</td>

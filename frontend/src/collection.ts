@@ -1,5 +1,6 @@
 import { ApiError, errorDetail } from './api';
 import { dropLists } from './listCache';
+import { forgetPageData } from './pageData';
 import { CSRF_HEADER, sendJson } from './auth';
 import type { Grade } from './grades';
 
@@ -53,6 +54,7 @@ export const removeCopy = (id: number) => sendJson<void>('DELETE', `/me/collecti
  *  a wish off it) are out of date, so the next visit loads them fresh instead of flashing old ones. */
 export function changed<T>(result: T): T {
   dropLists('collection');
+  forgetPageData('copy:');
   if ((result as { removed_from_wishlist?: boolean } | undefined)?.removed_from_wishlist) dropLists('wishlist');
   return result;
 }

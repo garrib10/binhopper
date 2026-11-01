@@ -44,7 +44,11 @@ test('a record that leaves the wishlist does not flash on the next visit', async
     await route.fulfill({ json: { items: [] } });
   });
   await page.route('**/api/me/collection', (route) => route.request().method() === 'POST'
-    ? route.fulfill({ status: 201, json: { id: 9, album: { id: 1, title: 'Rumours' }, removed_from_wishlist: true, album_on_wishlist: false } })
+    ? route.fulfill({ status: 201, json: { id: 9, copy_number: 1, added_at: '2026-10-31T12:00:00',
+      album: { id: 1, title: 'Rumours', year: 1977, cover_url: null, artist: { id: 1, name: 'Fleetwood Mac' } },
+      pressing: { id: 12, note: '180g reissue', label: 'Warner Bros.', format: 'LP' },
+      media_grade: null, sleeve_grade: null, price_paid: null, bought_at: null, notes: null,
+      removed_from_wishlist: true, album_on_wishlist: false } })
     : route.fallback());
   const nav = page.getByRole('navigation', { name: 'Main' });
   await page.goto('/wishlist');

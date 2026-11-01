@@ -27,6 +27,8 @@ import { AddCopyPage } from './pages/AddCopyPage';
 import { ReportPage } from './pages/ReportPage';
 import { SightingPage } from './pages/SightingPage';
 import { WishlistProvider } from './WishlistContext';
+import { fetchSettings } from './account';
+import { loadsOnIntent, prefetch } from './pageData';
 
 export function App() { return <BrowserRouter><AuthProvider><WishlistProvider><AppShell /></WishlistProvider></AuthProvider></BrowserRouter>; }
 
@@ -59,6 +61,9 @@ function NotFound() {
 /** Signed out: "Sign in". Signed in: the "You" button (account and settings). */
 function ProfileLink() {
   const { state } = useAuth();
+  // Signed in: have the You page's settings ready (one small read), so it opens without a jump.
+  const signedInId = state.status === 'signed-in' ? state.account.id : null;
+  useEffect(() => { if (signedInId !== null) void prefetch('settings', () => fetchSettings()); }, [signedInId]);
   const location = useLocation();
   if (state.status === 'loading') return <span className="profile-link profile-link--pending" aria-hidden="true" />;
   if (state.status === 'signed-out') {
@@ -67,7 +72,7 @@ function ProfileLink() {
     return <Link className="profile-link profile-link--text"
       to={authScreen ? '/sign-in' : `/sign-in?return_to=${encodeURIComponent(here)}`}>Sign in</Link>;
   }
-  return <NavLink className="profile-link" to="/you" aria-label="You: account and settings">You</NavLink>;
+  return <NavLink className="profile-link" to="/you" aria-label="You: account and settings" {...youPage}>You</NavLink>;
 }
 
 const signedIn = (element: ReactElement) => <RequireAuth>{element}</RequireAuth>;
@@ -90,6 +95,8 @@ function SearchEntry() {
         }
       }} /><button type="submit" aria-label="Search">↗</button></form>;
 }
+
+const youPage = loadsOnIntent('settings', () => fetchSettings());
 
 export function AppShell() {
   const [theme, setTheme] = useState<ThemePreference>(loadThemePreference);

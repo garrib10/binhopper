@@ -10,6 +10,8 @@ import { FormMessage } from '../components/AuthForm';
 import { saveLocation } from '../location';
 import type { ThemePreference } from '../theme';
 import { useTheme } from '../ThemeContext';
+import { PagePlaceholder } from '../components/PagePlaceholder';
+import { peek, prefetch, share } from '../pageData';
 
 // Notifications (desktop's fifth tab) arrives with alerts in v1.1.
 const TABS = [['profile', 'Profile'], ['settings', 'Settings'], ['privacy', 'Privacy'], ['account', 'Account']] as const;
@@ -23,16 +25,16 @@ export function YouPage() {
   const { tab: param } = useParams();
   const navigate = useNavigate();
   const tab: Tab = TABS.some(([key]) => key === param) ? (param as Tab) : 'profile';
-  const [settings, setSettings] = useState<AccountSettings | null>(null);
+  // Usually fetched already (the header's You link loads it early), so the page draws at once.
+  const [settings, setSettings] = useState<AccountSettings | null>(() => peek<AccountSettings>('settings') ?? null);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
   const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
   useEffect(() => {
-    const controller = new AbortController();
-    fetchSettings(controller.signal).then(setSettings).catch(() => {
-      if (!controller.signal.aborted) setError("Can't reach Binhopper right now.");
-    });
-    return () => controller.abort();
+    let active = true;
+    prefetch('settings', () => fetchSettings()).then((fresh) => { if (active) setSettings(fresh); })
+      .catch(() => { if (active && peek('settings') === undefined) setError("Can't reach Binhopper right now."); });
+    return () => { active = false; };
   }, [attempt]);
 
   const go = (next: Tab) => navigate(`/you/${next}`, { replace: true });
@@ -47,10 +49,11 @@ export function YouPage() {
 
   if (!settings) return <main id="content" className="page shell-page"><h1 className="display">You</h1>
     {error ? <><p role="alert">{error}</p><button type="button" className="button" onClick={() => setAttempt((n) => n + 1)}>Try again</button></>
-      : <p role="status">Loading…</p>}</main>;
+      : <PagePlaceholder label="Loading your settings…" />}</main>;
   const save = async (change: SettingsChange) => {
     const updated = await saveSettings(change);
     setSettings(updated);
+    share('settings', updated);
     return updated;
   };
   return <main id="content" className="you-page">

@@ -122,7 +122,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 ### Discogs import
 
 1. User connects their Discogs account (OAuth 1.0a; tokens encrypted at rest, removed on disconnect or account deletion) and picks collection, wantlist, or both.
-2. Wantlist items go to the wishlist, unless the user already owns that pressing; collection items keep pressing, condition and notes, and follow Collection rule 6.
+2. Wantlist items go to the wishlist, unless the user already owns that pressing. Collection items keep the pressing only and follow Collection rule 6. Discogs' condition grades and notes are restricted user data under Discogs' API terms and aren't copied; the user adds their own condition afterwards. This stays until Discogs agrees in writing to more (#119).
 3. Records already in the app are matched by Discogs release ID and skipped. The summary shows added, wishlisted and skipped counts.
 4. The import runs in the worker, through the same 60-per-minute Discogs queue as the catalog and inventory sync; the Import screen shows progress. Releases not in the catalog yet are looked up by the worker and land when found ("being looked up"); ones still unknown after a day are left out and counted. Two copies of a release in the Discogs collection come in as two copies; a pressing the user owned before the import is skipped.
 

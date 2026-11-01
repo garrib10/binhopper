@@ -7,6 +7,7 @@ import { HeartButton } from '../components/HeartButton';
 import { useAuth } from '../AuthContext';
 import { fetchOwned } from '../collection';
 import { loadLocation } from '../location';
+import { share } from '../pageData';
 
 export function AlbumPage() {
   const { id } = useParams();
@@ -19,7 +20,7 @@ export function AlbumPage() {
     const controller = new AbortController();
     setAlbum(null); setError(null); setTab('tracks');
     getCatalog<AlbumDetail>(`/albums/${id}?zip=${saved.zip}&radius=${saved.radius}`, controller.signal)
-      .then((data) => { if (!controller.signal.aborted) setAlbum(data); })
+      .then((data) => { if (!controller.signal.aborted) { setAlbum(data); share(`album:${id}`, data); } })  // Add to collection reuses it
       .catch((cause) => { if (!controller.signal.aborted) setError(describeLoadError(cause, "That album isn't in Binhopper.")); });
     return () => controller.abort();
   }, [id, saved, attempt]);

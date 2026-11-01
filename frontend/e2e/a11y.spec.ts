@@ -68,8 +68,13 @@ async function tabTo(page: Page, role: 'link' | 'button', name: string | RegExp)
     const outline = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement | null;
       if (!el || el === document.body) return 'none-needed';
-      const style = getComputedStyle(el);
-      const shown = (style.outlineStyle !== 'none' && style.outlineWidth !== '0px') || style.boxShadow !== 'none';
+      const ring = (node: Element) => {
+        const style = getComputedStyle(node);
+        return (style.outlineStyle !== 'none' && style.outlineWidth !== '0px') || style.boxShadow !== 'none';
+      };
+      // A field inside a box that shows focus as a whole (the header search, the ZIP card) counts.
+      const box = el.closest('.header-search, .zip-field');
+      const shown = ring(el) || (box !== null && ring(box));
       return shown ? 'visible' : `missing on ${el.tagName.toLowerCase()}#${el.id}.${el.className} "${(el.getAttribute('aria-label') ?? el.textContent ?? '').trim().slice(0, 40)}"`;
     });
     expect(outline, 'every focused control shows a focus outline').not.toMatch(/^missing/);

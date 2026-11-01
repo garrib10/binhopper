@@ -82,3 +82,31 @@ test('You opens complete from the header', async ({ page }) => {
   await opensComplete(page, 'You');
   await expect(page.getByRole('tab', { name: 'Profile' })).toBeVisible({ timeout: 500 });
 });
+
+test('coming back to Nearby from Hold or buy shows its results at once', async ({ page }) => {
+  await page.goto('/albums/1/stores');
+  await expect(page.getByRole('heading', { name: /stores? ha(s|ve) it/ })).toBeVisible();
+  await page.getByRole('link', { name: /^Hold or buy:/ }).first().click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Rumours' })).toBeVisible();
+  await slowFromNowOn(page, /\/api\/albums\/\d+\/stock\?/);
+  await page.getByRole('link', { name: '← Nearby stock' }).click();
+  expect(await page.locator('.list-placeholder, .stock-map--placeholder').count()).toBe(0);
+  await expect(page.getByRole('heading', { name: /stores? ha(s|ve) it/ })).toBeVisible({ timeout: 500 });
+});
+
+// The owner saw a stray orange line at the edge of the search box and a rectangle inside the
+// ZIP card: their own focus rings, clipped. The whole box shows focus now.
+test('the search box and the ZIP card show focus as a whole', async ({ page }) => {
+  await page.goto('/albums/1/stores');
+  await page.getByLabel('Search records').focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');  // keyboard focus, so :focus-visible applies
+  const box = page.locator('.header-search');
+  expect(await box.evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe('none');
+  expect(await page.getByLabel('Search records').evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('none');
+
+  await page.getByLabel('ZIP code').focus();
+  const card = page.locator('.zip-field');
+  expect(await card.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('solid');
+  expect(await page.getByLabel('ZIP code').evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('none');
+});

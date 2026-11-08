@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 
 from app.config import settings
 from app.discogs import RequestQueue
-from app.discogs_import import drain_imports, grade
+from app.discogs_import import drain_imports
 from app.main import app
 from app.models import (
     Album, Artist, CatalogJob, CollectionItem, DiscogsAccount, ImportJob, ImportPending, Pressing, User,
@@ -177,7 +177,8 @@ def run(session, fake, user, collection=True, wantlist=True, created=NOW):
     return job
 
 
-def test_collection_keeps_pressing_condition_and_notes_and_wantlist_goes_to_the_wishlist(client, sign_in, session, catalog):
+def test_collection_keeps_the_pressing_only_and_wantlist_goes_to_the_wishlist(client, sign_in, session, catalog):
+    """Pressings only (#119): Discogs' grades and notes are restricted user data and never copied."""
     user = sign_in()
     connect(client, session, user)
     fake = FakeDiscogs(collection=[collection_item(101, "Very Good Plus (VG+)", "Near Mint (NM or M-)", "Gatefold")],
@@ -185,7 +186,7 @@ def test_collection_keeps_pressing_condition_and_notes_and_wantlist_goes_to_the_
     job = run(session, fake, user)
     assert (job.status, job.added, job.wishlisted, job.skipped) == ("done", 1, 1, 0)
     copy = session.scalar(select(CollectionItem))
-    assert (copy.pressing_id, copy.media_grade, copy.sleeve_grade, copy.notes) == (catalog[101].id, "VG+", "NM", "Gatefold")
+    assert (copy.pressing_id, copy.media_grade, copy.sleeve_grade, copy.notes) == (catalog[101].id, None, None, None)
     want = session.scalar(select(WishlistItem))
     assert (want.album_id, want.pressing_id) == (catalog[104].album_id, catalog[104].id)
     calls = [r for r in fake.requests if "/users/" in r.url.path]
@@ -240,7 +241,8 @@ def test_unknown_releases_wait_for_the_catalog_lookup_then_land(client, sign_in,
     drain_imports(queue_for(session, fake), now=lambda: NOW + timedelta(days=2))
     session.refresh(job)
     assert (job.status, job.unmatched) == ("done", 1)
-    assert session.scalar(select(CollectionItem.media_grade)) == "M"
+    assert session.scalar(select(CollectionItem.media_grade)) is None  # pressings only, even after waiting
+    assert session.scalar(select(func.count()).select_from(ImportPending)) == 0
 
 
 def test_a_revoked_connection_fails_the_import_with_a_message(client, sign_in, session, catalog):
@@ -259,14 +261,6 @@ def test_deleting_the_account_removes_discogs_data(client, sign_in, session, cat
     assert client.delete("/api/me").status_code == 204
     for model in (DiscogsAccount, ImportJob, ImportPending, User):
         assert session.scalar(select(func.count()).select_from(model)) == 0, model.__name__
-
-
-@pytest.mark.parametrize("text, expected", [("Mint (M)", "M"), ("Near Mint (NM or M-)", "NM"),
-                                            ("Very Good Plus (VG+)", "VG+"), ("Very Good (VG)", "VG"),
-                                            ("Good Plus (G+)", "G+"), ("Good (G)", "G"), ("Fair (F)", "P"),
-                                            ("Poor (P)", "P"), ("Generic", None), (None, None)])
-def test_discogs_condition_names_become_grades(text, expected):
-    assert grade(text) == expected
 
 
 def test_the_data_download_lists_the_connection(client, sign_in, session):

@@ -122,7 +122,7 @@ Each v1 feature below lists the rules the build must follow; numbered rules map 
 ### Discogs import
 
 1. User connects their Discogs account (OAuth 1.0a; tokens encrypted at rest, removed on disconnect or account deletion) and picks collection, wantlist, or both.
-2. Wantlist items go to the wishlist, unless the user already owns that pressing; collection items keep pressing, condition and notes, and follow Collection rule 6.
+2. Wantlist items go to the wishlist, unless the user already owns that pressing. Collection items keep the pressing only and follow Collection rule 6. Discogs' condition grades and notes are restricted user data under Discogs' API terms and aren't copied; the user adds their own condition afterwards. This stays until Discogs agrees in writing to more (#119).
 3. Records already in the app are matched by Discogs release ID and skipped. The summary shows added, wishlisted and skipped counts.
 4. The import runs in the worker, through the same 60-per-minute Discogs queue as the catalog and inventory sync; the Import screen shows progress. Releases not in the catalog yet are looked up by the worker and land when found ("being looked up"); ones still unknown after a day are left out and counted. Two copies of a release in the Discogs collection come in as two copies; a pressing the user owned before the import is skipped.
 
@@ -234,7 +234,7 @@ Everything a user stores starts private, and the app collects only what the core
 - **Transport and secrets:** HTTPS everywhere; API keys only on the server, never in the React bundle.
 - **Monitoring:** Better Stack uptime monitors, a worker heartbeat, and the server's warnings and errors. Access logs and visitor IPs aren't shipped, and monitoring tokens live only in server environment variables.
 - **Abuse limits:** rate-limit stock reports per user, and search per IP address (search works signed out), to protect data quality and the Discogs quota.
-- **Policies:** a Privacy Policy (`/privacy`) and Terms of Use (`/terms`), readable signed out and linked from every page's footer, You › Account, and the sign-up and sign-in screens ("By continuing, you confirm you're 18 or older and agree to…"). Binhopper is for adults (18+) in the US; the terms follow Connecticut law. The pages describe what the code stores and shares, so a change to either goes in the same PR. A contact email is added before launch (#119).
+- **Policies:** a Privacy Policy (`/privacy`) and Terms of Use (`/terms`), readable signed out and linked from every page's footer, You › Account, and the sign-up and sign-in screens ("By continuing, you confirm you're 18 or older and agree to…"). Binhopper is for adults (18+) in the US; the terms follow Connecticut law. The pages describe what the code stores and shares, so a change to either goes in the same PR. The contact address is `binhopper.app@gmail.com`, Binhopper's own inbox; it moves to an address on the domain in v1.1.
 
 ## Acceptance criteria and test plan
 

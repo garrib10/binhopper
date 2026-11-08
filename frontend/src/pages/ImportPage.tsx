@@ -78,7 +78,7 @@ export function ImportPage() {
           <fieldset className="import-card import-choices">
             <legend className="section-title">What to import</legend>
             <label><input type="checkbox" checked={collection} onChange={(e) => setCollection(e.target.checked)} />
-              <span><strong>Collection</strong><span className="muted">With pressing, condition and notes</span></span></label>
+              <span><strong>Collection</strong><span className="muted">Which pressings you own. Add their condition here afterwards</span></span></label>
             <label><input type="checkbox" checked={wantlist} onChange={(e) => setWantlist(e.target.checked)} />
               <span><strong>Wantlist → Wishlist</strong><span className="muted">We'll check nearby stock right away</span></span></label>
             <p className="muted">Records already in your Binhopper collection are matched by pressing and skipped, so nothing gets doubled.</p>

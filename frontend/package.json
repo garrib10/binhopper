@@ -17,7 +17,7 @@
     "visual:update": "sh scripts/visual-docker.sh --update-snapshots"
   },
   "dependencies": {
-    "@vercel/functions": "3.10.6",
+    "@vercel/functions": "3.11.0",
     "leaflet": "^1.9.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.65.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.0.1",
